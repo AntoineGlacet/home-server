@@ -1,3 +1,37 @@
+# .gitignore
+# git ignore is read from top to bottom
+# start by excluding the large folders we do not track
+# then include (!) the tree structures and files  we want to keep
+# finally, ignore generic and secret files
+
+# all docker configs
+HA/config/**
+!/HA/config/mosquitto
+!/HA/config/zigbee2mqtt
+!/HA/config/homeassistant
+
+plex/config/**
+!/plex/config/jackett
+!/plex/config/plex
+!/plex/config/radarr
+!/plex/config/sonarr
+!/plex/config/transmission
+
+tools/config/**
+!/tools/config/heimdall
+!/tools/config/portainer
+
+# HA secrets
+**/secrets.yaml
+
+# keep specific HA config
+!/HA/config/homeassistant/automations.yaml
+!/HA/config/homeassistant/scripts.yaml
+!/HA/config/homeassistant/configuration.yaml
+
+# Specific keeps
+!.gitkeep
+
 # Generic ignores
 *.log*
 *.conf
@@ -11,25 +45,6 @@ __pycache__
 .vscode
 .Trash*
 
-# Specific keeps
-!.gitkeep
-
 # things we do not use
 /wordpress
 /calibre
-
-# all docker configs
-/plex/config/*
-/HA/config/*
-/tools/config/*
-
-# HA secrets
-*/secrets.yaml
-
-# keep specific HA config
-!/HA/config/homeassistant/
-/HA/config/homeassistant/*
-
-!/HA/config/homeassistant/automations.yaml
-!/HA/config/homeassistant/scripts.yaml
-!/HA/config/homeassistant/configuration.yaml

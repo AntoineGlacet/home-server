@@ -23,7 +23,7 @@ Each stack has a folder 'config' where each container store its persistent confi
 on top of that are simple scripts to stop and start all stacks with one command.
 
 # Tree structure
-
+```
 home-server
 ├── LICENSE
 ├── README.md
@@ -57,3 +57,4 @@ home-server
 │       ├── heimdall                  <- web UI portal
 |       ├── portainer                 <- web UI for container management
 |       └── samba                     <- file sharing server
+```

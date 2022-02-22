@@ -1,0 +1,52 @@
+services:
+  # portal to access all other web UI
+  heimdall:
+    container_name: heimdall
+    restart: unless-stopped
+    image: linuxserver/heimdall:latest
+    volumes:
+      - ./config/heimdall:/config
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - 8002:80
+  # Portainer CE
+  # Managing containers via nice web UI
+  portainer-ce:
+    container_name: portainer
+    image: portainer/portainer-ce
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/portainer:/data
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    restart: unless-stopped
+    ports:
+      - 8000:8000 # Agent
+      - 9000:9000 # Web UI  
+  # share files with Windows
+  samba:
+    container_name: samba
+    image: dperson/samba
+    volumes:
+      - ${DATA}:/data
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - 139:139/tcp
+      - 445:445/tcp
+      - 137:137/udp
+      - 138:138/udp
+      - 139:139/udp
+    command: >
+      samba.sh
+        -w "WORKGROUP"
+        -u ${SAMBA_USER};${SAMBA_PASSWORD}
+        -s "data;/data;yes;no;yes;all;;comment"
+    restart: unless-stopped

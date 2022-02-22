@@ -1,0 +1,35 @@
+# Generic ignores
+*.log*
+*.conf
+*.db*
+*.pyc
+._*
+__pycache__
+.env
+
+# IDE
+.vscode
+.Trash*
+
+# Specific keeps
+!.gitkeep
+
+# things we do not use
+/wordpress
+/calibre
+
+# all docker configs
+/plex/config/*
+/HA/config/*
+/tools/config/*
+
+# HA secrets
+*/secrets.yaml
+
+# keep specific HA config
+!/HA/config/homeassistant/
+/HA/config/homeassistant/*
+
+!/HA/config/homeassistant/automations.yaml
+!/HA/config/homeassistant/scripts.yaml
+!/HA/config/homeassistant/configuration.yaml

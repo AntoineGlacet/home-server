@@ -1,0 +1,48 @@
+#configuration.yaml
+
+# includes
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# base conf
+homeassistant:
+  time_zone: "Asia/Tokyo"
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+# spotify
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+
+# spotcast
+spotcast:
+  sp_dc: !secret sp_dc
+  sp_key: !secret sp_key
+# linkplay audiopro
+media_player:
+  - platform: linkplay
+    host: 192.168.1.207
+    name: Bedroom Audiopro C5
+
+# sensor for phone alarm
+sensor:
+  platform: template
+  sensors:
+    minutes_next_alarm_antoine:
+      friendly_name: "Minutes until Next Alarm antoine"
+      unit_of_measurement: "m"
+      #entity_id: sensor.time
+      value_template: >-
+        {% set dummy = states("sensor.time") %}
+        {{((states('sensor.redmi_note_8_pro_next_alarm')|as_timestamp|int - now()|as_timestamp|int)/60)|int}}
+      availability_template: "{{ not is_state('sensor.redmi_note_8_pro_next_alarm','unavailable') }}"
+      attribute_templates:
+        time: "{{ state_attr('sensor.redmi_note_8_pro_next_alarm','Local Time') }}"

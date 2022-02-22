@@ -1,0 +1,43 @@
+# automations.yaml
+
+# wake up routine
+- alias: Wake up alarm routine
+  description: play spotify in bedroom and ramp up volume at phone alarm
+
+  trigger:
+  - below: '11'
+    entity_id: sensor.minutes_next_alarm_antoine
+    platform: numeric_state
+
+  #condition:
+  #- after: '6:30'
+  #  before: '10:00'
+  #  condition: time
+
+  action:
+  # script to turn on light and ramp up brightness
+  # executed in parallel
+  - service: script.turn_on
+    target:
+      entity_id: script.ramp_up_brightness
+
+  # make sure volume is low
+  # redundant with next step
+  # but catches exceptions (?)
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.05
+    target:
+      entity_id: media_player.bedroom_audiopro_c5
+
+  # script to play a playlist in bedroom audipro
+  - service: script.play_spotify_jazz_bedroom
+    data:
+      start_volume: 0.1
+  - service: script.ramp_up_volume
+    data:
+      media_target: media_player.bedroom_audiopro_c5
+      volume_target: 0.3
+      delay: 30000
+
+  mode: restart

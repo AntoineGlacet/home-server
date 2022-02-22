@@ -1,0 +1,47 @@
+version: '3'
+services:
+  # Home Assistant
+  # The core of my smart-home automations
+  home-assistant:
+    container_name: home-assistant
+    image: homeassistant/${HOME_ASSISTANT_IMAGE}
+    volumes:
+      - ./config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    restart: unless-stopped
+    network_mode: host
+
+  # MQTT
+  # A Mosquitto broker for my devices communicating via MQTT
+  mqtt:
+    container_name: mqtt
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    ports:
+      - 1888:1883
+    volumes:
+      - ./config/mosquitto/data:/mosquitto/data
+      - ./config/mosquitto/log:/mosquitto/log
+      - ./config/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  # Zigbee2MQTT
+  # A bridge for zigbee devices to be able to communicate via MQTT
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    image: koenkk/zigbee2mqtt
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      ZIGBEE2MQTT_CONFIG_MQTT_SERVER: ${MQTT_SERVER}
+      ZIGBEE2MQTT_CONFIG_MQTT_USER: ${MQTT_USER}
+      ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD: ${MQTT_PASSWORD}
+    volumes:
+      - /run/udev:/run/udev:ro
+      - ./config/zigbee2mqtt:/app/data
+    devices:
+      - /dev/ttyACM0
+    privileged: true
+    network_mode: host

@@ -1,0 +1,101 @@
+services:
+  # torrent tracker search
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/jackett:/config
+      - ${DOWNLOADS}:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+  # torrent client
+  # special image bundled with VPN
+  transmission:
+    # https://haugene.github.io/docker-transmission-openvpn/
+    image: haugene/transmission-openvpn
+    container_name: transmission
+    volumes:
+      # need to add the config folder to ./config/transmission
+      - ${DATA}:/data
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - CREATE_TUN_DEVICE=true
+      - OPENVPN_PROVIDER=NORDVPN
+      - NORDVPN_COUNTRY=${NORDVPN_COUNTRY}
+      - NORDVPN_CATEGORY=${NORDVPN_CATEGORY}
+      - NORDVPN_PROTOCOL=tcp
+      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - WEBPROXY_ENABLED=false
+      - TRANSMISSION_DOWNLOAD_DIR=/data/downloads
+      - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
+      - TRANSMISSION_SEED_QUEUE_ENABLED=true
+      - TRANSMISSION_INCOMPLETE_DIR_ENABLED=false
+      - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=30
+      - LOCAL_NETWORK=192.168.0.0/16
+      - DISABLE_PORT_UPDATER=true
+      - TRANSMISSION_WEB_UI=combustion
+    cap_add:
+      - NET_ADMIN
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+    ports:
+      - "9091:9091"
+    restart: unless-stopped
+  # TV show library
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/sonarr:/config
+      - ${DATA}:/data
+    ports:
+      - 8989:8989
+    depends_on:
+      - jackett
+      - transmission
+    restart: unless-stopped
+  # movie library
+  radaar:
+    image: linuxserver/radarr
+    container_name: radarr
+    hostname: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/radarr:/config
+      - ${DATA}:/data
+    ports:
+      - 7878:7878
+    depends_on:
+      - jackett
+      - transmission
+    restart: unless-stopped
+  # plex media server
+  plex:
+    image: ghcr.io/linuxserver/plex
+    container_name: plex
+    network_mode: host
+    volumes:
+      - ./config/plex:/config
+      - ${MEDIA}:/media
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - version=docker
+    restart: unless-stopped

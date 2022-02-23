@@ -39,14 +39,12 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     ports:
-      - 139:139/tcp
-      - 445:445/tcp
+      - 139:139
+      - 445:445
       - 137:137/udp
       - 138:138/udp
-      - 139:139/udp
     command: >
       samba.sh
-        -w "WORKGROUP"
+        -s "data;/data;yes;no;no;all"
         -u ${SAMBA_USER};${SAMBA_PASSWORD}
-        -s "data;/data;yes;no;yes;all;;comment"
     restart: unless-stopped

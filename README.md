@@ -25,13 +25,13 @@ on top of that are simple scripts to stop and start all stacks with one command.
 # Tree structure
 ```
 home-server
-├── LICENSE
+├── .env                              <- all env variables (not uploaded to github)
+├── LICENSE                                   └──> passwords and other secrets
 ├── README.md
 ├── start-all.sh                      <- script to start all docker-compose
 ├── stop-all.sh                       <- script to stop all docker-compose
-|
+├── update-all.sh                     <- script to update all docker-compose|
 ├── HA
-|   ├── .env
 |   ├── docker-compose.yml
 │   └── config            
 │       ├── homeassistant             <- manages all smart home
@@ -42,7 +42,6 @@ home-server
 |       └── zigbee2mqtt               <- for zigbee devices
 |
 ├── plex
-|   ├── .env
 |   ├── docker-compose.yml
 │   └── config            
 │       ├── jackett                   <- torrent tracker aggregator
@@ -51,7 +50,6 @@ home-server
 |       ├── sonarr                    <- TV library manager
 |       └── transmission              <- torrent downloader (+VPN client)
 ├── tools
-|   ├── .env
 |   ├── docker-compose.yml
 │   └── config            
 │       ├── heimdall                  <- web UI portal

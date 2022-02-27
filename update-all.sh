@@ -7,5 +7,9 @@ declare -a StringArray=("HA" "plex" "tools" )
 # Loop over folders and reference the env-file
 # Iterate the string array using for loop
 for val in ${StringArray[@]}; do
+   docker-compose --file $val/docker-compose.yml --env-file .env pull
    docker-compose --file $val/docker-compose.yml --env-file .env up -d
 done
+
+# prune
+docker system prune -f

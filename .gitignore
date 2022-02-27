@@ -3,6 +3,10 @@
 # start by excluding the large folders we do not track
 # then include (!) the tree structures and files  we want to keep
 # finally, ignore generic and secret files
+ 
+# things we do not use
+/wordpress
+/calibre
 
 # all docker configs
 HA/config/**
@@ -45,6 +49,3 @@ __pycache__
 .vscode
 .Trash*
 
-# things we do not use
-/wordpress
-/calibre

@@ -25,6 +25,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
+      - TZ=${TZ}
       - CREATE_TUN_DEVICE=true
       - OPENVPN_PROVIDER=NORDVPN
       - NORDVPN_COUNTRY=${NORDVPN_COUNTRY}

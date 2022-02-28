@@ -14,16 +14,18 @@ HA/config/**
 !/HA/config/zigbee2mqtt
 !/HA/config/homeassistant
 
-plex/config/**
-!/plex/config/jackett
-!/plex/config/plex
-!/plex/config/radarr
-!/plex/config/sonarr
-!/plex/config/transmission
+media/config/**
+!/media/config/jackett
+!/media/config/plex
+!/media/config/radarr
+!/media/config/sonarr
+!/media/config/transmission
+!/media/config/calibre
 
 tools/config/**
 !/tools/config/heimdall
 !/tools/config/portainer
+!/tools/config/adguard
 
 # HA secrets
 **/secrets.yaml

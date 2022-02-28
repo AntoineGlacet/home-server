@@ -20,8 +20,8 @@ services:
     image: haugene/transmission-openvpn
     container_name: transmission
     volumes:
-      # need to add the config folder to ./config/transmission
-      - ${DATA}:/data
+      - ./config/transmission:/config
+      - ${DOWNLOADS}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -34,7 +34,8 @@ services:
       - OPENVPN_USERNAME=${OPENVPN_USERNAME}
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
       - WEBPROXY_ENABLED=false
-      - TRANSMISSION_DOWNLOAD_DIR=/data/downloads
+      - TRANSMISSION_HOME=/config
+      - TRANSMISSION_DOWNLOAD_DIR=/data
       - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
       - TRANSMISSION_SEED_QUEUE_ENABLED=true
       - TRANSMISSION_INCOMPLETE_DIR_ENABLED=false
@@ -53,7 +54,7 @@ services:
     restart: unless-stopped
   # TV show library
   sonarr:
-    image: ghcr.io/linuxserver/sonarr
+    image: linuxserver/sonarr
     container_name: sonarr
     environment:
       - PUID=${PUID}
@@ -100,3 +101,21 @@ services:
       - TZ=${TZ}
       - version=docker
     restart: unless-stopped
+
+  # ebooks library and server
+  calibre:
+    image: linuxserver/calibre:arm64v8-arch
+    container_name: calibre
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/calibre:/config # Where calibre should store its database and library
+      - ${BOOKS}:/books
+      - ${COMICS}:/comics
+      - ${DOWNLOADS}:/downloads
+    ports:
+      - 8081:8081/tcp # Calibre webserver gui.
+      - 8080:8080/tcp # Calibre desktop gui.

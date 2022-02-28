@@ -6,21 +6,21 @@ configuration for my home server running on Raspberry Pi 4
 
 Everything is organised around 3 stacks:
 
-- HA (home assistant)
+- **HA (home assistant)**
 To run a smart home and automation. This includes home asssistant mosquitto and zigbee2mqtt
 
-- plex (media server)
+- **media (media server)**
 To manage video media library (including downloads) and streaming it.
 This includes jackett, plex, radarr, sonarr and transmission.
+Also includes Calibre for ebook server
 
-- tools
+- **Tools**
 some supervision and file sharing tools.
-This includes heimdall, portainer and samba.
+This includes adguard, heimdall, portainer and samba
 
-Each stack has its own docker-compose.yml file with the configuration and a .env file with secrets (not uploaded to github).
-Each stack has a folder 'config' where each container store its persistent config infos.
+Each stack has its own docker-compose.yml file with the configuration and a folder 'config' where each container store its persistent config infos.
 
-on top of that are simple scripts to stop and start all stacks with one command.
+on the root folder there is a .env file with secrets (not uploaded to github) and some simple scripts to start, stop and update all stacks with one command.
 
 # Tree structure
 ```
@@ -41,17 +41,19 @@ home-server
 |       ├── mosquitto                 <- message broker
 |       └── zigbee2mqtt               <- for zigbee devices
 |
-├── plex
+├── media
 |   ├── docker-compose.yml
 │   └── config            
+│       ├── calibre                   <- ebook server
 │       ├── jackett                   <- torrent tracker aggregator
-|       ├── plex                      <- media server
+|       ├── plex                      <- media server (video)
 |       ├── radarr                    <- movie library manager
 |       ├── sonarr                    <- TV library manager
 |       └── transmission              <- torrent downloader (+VPN client)
 ├── tools
 |   ├── docker-compose.yml
 │   └── config            
+│       ├── adguard                   <- network-wide ad blocking
 │       ├── heimdall                  <- web UI portal
 |       ├── portainer                 <- web UI for container management
 |       └── samba                     <- file sharing server

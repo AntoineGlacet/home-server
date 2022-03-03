@@ -21,7 +21,7 @@ services:
     container_name: transmission
     volumes:
       - ./config/transmission:/config
-      - ${DOWNLOADS}:/data
+      - ${DATA}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -35,12 +35,12 @@ services:
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
       - WEBPROXY_ENABLED=false
       - TRANSMISSION_HOME=/config
-      - TRANSMISSION_DOWNLOAD_DIR=/data
+      - TRANSMISSION_DOWNLOAD_DIR=/data/downloads
       - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
       - TRANSMISSION_SEED_QUEUE_ENABLED=true
       - TRANSMISSION_INCOMPLETE_DIR_ENABLED=false
       - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=30
-      - LOCAL_NETWORK=192.168.0.0/16
+      - LOCAL_NETWORK=${LOCAL_NETWORK}
       - DISABLE_PORT_UPDATER=true
       - TRANSMISSION_WEB_UI=combustion
     cap_add:
@@ -113,9 +113,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ./config/calibre:/config # Where calibre should store its database and library
-      - ${BOOKS}:/books
-      - ${COMICS}:/comics
-      - ${DOWNLOADS}:/downloads
+      - ${DATA}:/data
     ports:
       - 8081:8081/tcp # Calibre webserver gui.
       - 8080:8080/tcp # Calibre desktop gui.

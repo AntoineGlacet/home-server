@@ -29,8 +29,11 @@ spotcast:
 # linkplay audiopro
 media_player:
   - platform: linkplay
-    host: 192.168.1.207
+    host: 10.13.89.207
     name: Bedroom Audiopro C5
+  - platform: linkplay
+    host: 10.13.89.64
+    name: Living room Audiopro C10
 
 # sensor for phone alarm
 sensor:

@@ -1,7 +1,8 @@
 services:
   # torrent tracker search
   jackett:
-    image: linuxserver/jackett
+    # https://hub.docker.com/r/linuxserver/jackett
+    image: lscr.io/linuxserver/jackett
     container_name: jackett
     environment:
       - PUID=${PUID}
@@ -13,48 +14,10 @@ services:
     ports:
       - 9117:9117
     restart: unless-stopped
-  # torrent client
-  # special image bundled with VPN
-  transmission:
-    # https://haugene.github.io/docker-transmission-openvpn/
-    image: haugene/transmission-openvpn
-    container_name: transmission
-    volumes:
-      - ./config/transmission:/config
-      - ${DATA}:/data
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - CREATE_TUN_DEVICE=true
-      - OPENVPN_PROVIDER=NORDVPN
-      - NORDVPN_COUNTRY=${NORDVPN_COUNTRY}
-      - NORDVPN_CATEGORY=${NORDVPN_CATEGORY}
-      - NORDVPN_PROTOCOL=tcp
-      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
-      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      - WEBPROXY_ENABLED=false
-      - TRANSMISSION_HOME=/config
-      - TRANSMISSION_DOWNLOAD_DIR=/data/downloads
-      - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
-      - TRANSMISSION_SEED_QUEUE_ENABLED=true
-      - TRANSMISSION_INCOMPLETE_DIR_ENABLED=false
-      - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=30
-      - LOCAL_NETWORK=${LOCAL_NETWORK}
-      - DISABLE_PORT_UPDATER=true
-      - TRANSMISSION_WEB_UI=combustion
-    cap_add:
-      - NET_ADMIN
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-    ports:
-      - "9091:9091"
-    restart: unless-stopped
   # TV show library
   sonarr:
-    image: linuxserver/sonarr
+    # https://hub.docker.com/r/linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr
     container_name: sonarr
     environment:
       - PUID=${PUID}
@@ -71,7 +34,8 @@ services:
     restart: unless-stopped
   # movie library
   radaar:
-    image: linuxserver/radarr
+    # https://hub.docker.com/r/linuxserver/radarr
+    image: lscr.io/linuxserver/radarr
     container_name: radarr
     hostname: radarr
     environment:
@@ -89,7 +53,8 @@ services:
     restart: unless-stopped
   # plex media server
   plex:
-    image: ghcr.io/linuxserver/plex
+    # https://hub.docker.com/r/linuxserver/plex
+    image: lscr.io/linuxserver/plex
     container_name: plex
     network_mode: host
     volumes:
@@ -102,9 +67,10 @@ services:
       - version=docker
     restart: unless-stopped
 
-  # ebooks library and server
+  # ebooks library manager and server (include webserver)
   calibre:
-    image: linuxserver/calibre:arm64v8-arch
+    # https://hub.docker.com/r/linuxserver/calibre
+    image: lscr.io/linuxserver/calibre:arm64v8-arch
     container_name: calibre
     restart: unless-stopped
     environment:
@@ -112,8 +78,49 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./config/calibre:/config # Where calibre should store its database and library
+      - ./config/calibre:/config
       - ${DATA}:/data
     ports:
       - 8081:8081/tcp # Calibre webserver gui.
       - 8080:8080/tcp # Calibre desktop gui.
+  # torrent client
+  # special image bundled with VPN
+  transmission:
+    # https://haugene.github.io/docker-transmission-openvpn/
+    image: haugene/transmission-openvpn
+    container_name: transmission
+    volumes:
+      - ./config/transmission:/config
+      - ${DATA}:/data
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      # VPN and networking https://haugene.github.io/docker-transmission-openvpn/provider-specific/
+      - CREATE_TUN_DEVICE=true
+      - OPENVPN_PROVIDER=NORDVPN
+      - NORDVPN_COUNTRY=${NORDVPN_COUNTRY}
+      - NORDVPN_CATEGORY=${NORDVPN_CATEGORY}
+      - NORDVPN_PROTOCOL=tcp
+      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - WEBPROXY_ENABLED=false
+      - LOCAL_NETWORK=${LOCAL_NETWORK}
+      - DISABLE_PORT_UPDATER=true
+      # Transmission config
+      - TRANSMISSION_HOME=/config
+      - TRANSMISSION_DOWNLOAD_DIR=/data/downloads
+      - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
+      - TRANSMISSION_SEED_QUEUE_ENABLED=true
+      - TRANSMISSION_INCOMPLETE_DIR_ENABLED=false
+      - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=30
+      - TRANSMISSION_WEB_UI=combustion
+    cap_add:
+      - NET_ADMIN
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+    ports:
+      - "9091:9091"
+    restart: unless-stopped

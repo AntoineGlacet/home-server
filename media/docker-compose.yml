@@ -4,13 +4,13 @@ services:
     # https://hub.docker.com/r/linuxserver/jackett
     image: lscr.io/linuxserver/jackett
     container_name: jackett
+    volumes:
+      - ./config/jackett:/config
+      - ${DOWNLOADS}:/downloads
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/jackett:/config
-      - ${DOWNLOADS}:/downloads
     ports:
       - 9117:9117
     restart: unless-stopped
@@ -19,13 +19,13 @@ services:
     # https://hub.docker.com/r/linuxserver/sonarr
     image: lscr.io/linuxserver/sonarr
     container_name: sonarr
+    volumes:
+      - ./config/sonarr:/config
+      - ${DATA}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/sonarr:/config
-      - ${DATA}:/data
     ports:
       - 8989:8989
     depends_on:
@@ -38,13 +38,13 @@ services:
     image: lscr.io/linuxserver/radarr
     container_name: radarr
     hostname: radarr
+    volumes:
+      - ./config/radarr:/config
+      - ${DATA}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/radarr:/config
-      - ${DATA}:/data
     ports:
       - 7878:7878
     depends_on:
@@ -73,13 +73,13 @@ services:
     image: lscr.io/linuxserver/calibre:arm64v8-arch
     container_name: calibre
     restart: unless-stopped
+    volumes:
+      - ./config/calibre:/config
+      - ${DATA}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/calibre:/config
-      - ${DATA}:/data
     ports:
       - 8081:8081/tcp # Calibre webserver gui.
       - 8080:8080/tcp # Calibre desktop gui.

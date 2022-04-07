@@ -5,13 +5,13 @@ play_spotify_jazz_bedroom:
       description: volume to start okayback
       example: 0.2
   sequence:
-  - service: spotcast.start
-    data:
-      spotify_device_id: 24f69e50b933dffe442dba122d1a3b1fbf862c16
-      start_volume: '{{ start_volume }}'
-      uri: spotify:playlist:37i9dQZF1DX6QClArDhvcW
-      random_song: true
-      shuffle: true
+    - service: spotcast.start
+      data:
+        spotify_device_id: 24f69e50b933dffe442dba122d1a3b1fbf862c16
+        start_volume: "{{ start_volume }}"
+        uri: spotify:playlist:37i9dQZF1DX4CgJVlGEIo5
+        random_song: true
+        shuffle: true
   mode: single
 
 ramp_up_volume:
@@ -27,31 +27,32 @@ ramp_up_volume:
       description: The time in ms between volume increment
       example: 1000 (1 second)
   sequence:
-  - repeat:
-      sequence:
-      - delay:
-          milliseconds: '{{ delay }}'
-      - service: media_player.volume_up
-        data:
-          entity_id: '{{ media_target }}'
-      until:
-      - condition: template
-        value_template: '{{ state_attr(media_target,''volume_level'') >= volume_target
-          }}'
+    - repeat:
+        sequence:
+          - delay:
+              milliseconds: "{{ delay }}"
+          - service: media_player.volume_up
+            data:
+              entity_id: "{{ media_target }}"
+        until:
+          - condition: template
+            value_template:
+              "{{ state_attr(media_target,'volume_level') >= volume_target
+              }}"
   mode: single
 
 ramp_up_brightness:
   alias: Ramp up brightness
   sequence:
-  - service: light.turn_on
-    target:
-      entity_id: light.lightbulb_ikea_1
-    data:
-      brightness_pct: 1
-  - service: light.turn_on
-    target:
-      entity_id: light.lightbulb_ikea_1
-    data:
-      transition: 400
-      brightness_pct: 80
+    - service: light.turn_on
+      target:
+        entity_id: light.lightbulb_ikea_1
+      data:
+        brightness_pct: 1
+    - service: light.turn_on
+      target:
+        entity_id: light.lightbulb_ikea_1
+      data:
+        transition: 400
+        brightness_pct: 80
   mode: single

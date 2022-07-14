@@ -39,14 +39,17 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     ports:
-      - 139:139
-      - 445:445
-      - 137:137/udp
-      - 138:138/udp
+      - "137:137/udp"
+      - "138:138/udp"
+      - "139:139/tcp"
+      - "445:445/tcp"
     command: >
       samba.sh
+        -w "WORKGROUP"
         -s "data;/data;yes;no;no;all"
-        -u ${SAMBA_USER};${SAMBA_PASSWORD}
+        -u "${SAMBA_USER};${SAMBA_PASSWORD}"
+        -p
+        -n
     restart: unless-stopped
   # AdGuard Home
   # Ad-blocking DNS server

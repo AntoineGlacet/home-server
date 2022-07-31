@@ -3,37 +3,6 @@
 # start by excluding the large folders we do not track
 # then include (!) the tree structures and files  we want to keep
 # finally, ignore generic and secret files
- 
-# things we do not use
-/wordpress
-/calibre
-
-# all docker configs
-HA/config/**
-!/HA/config/mosquitto
-!/HA/config/zigbee2mqtt
-!/HA/config/homeassistant
-
-media/config/**
-!/media/config/jackett
-!/media/config/plex
-!/media/config/radarr
-!/media/config/sonarr
-!/media/config/transmission
-!/media/config/calibre
-
-tools/config/**
-!/tools/config/heimdall
-!/tools/config/portainer
-!/tools/config/adguard
-
-# HA secrets
-**/secrets.yaml
-
-# keep specific HA config
-!/HA/config/homeassistant/automations.yaml
-!/HA/config/homeassistant/scripts.yaml
-!/HA/config/homeassistant/configuration.yaml
 
 # Specific keeps
 !.gitkeep

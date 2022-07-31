@@ -12,22 +12,32 @@ services:
       - TZ=${TZ}
     ports:
       - 8002:80
-  # Portainer CE
-  # Managing containers via nice web UI
-  portainer-ce:
-    container_name: portainer
-    image: portainer/portainer-ce
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/portainer:/data
+  # fast, nodern VPN
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    restart: unless-stopped
+      # - SERVERURL=wireguard.domain.com #optional
+      # - SERVERPORT=51820 #optional
+      - PEERS=KapPC,Phone #optional
+      # - PEERDNS=auto #optional
+      # - INTERNAL_SUBNET=10.13.13.0 #optional
+      # - ALLOWEDIPS=0.0.0.0/0 #optional
+      # - LOG_CONFS=true #optional
+    volumes:
+      - ./config/wireguard:/config
+      - /lib/modules:/lib/modules
     ports:
-      - 8000:8000 # Agent
-      - 9000:9000 # Web UI  
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
   # share files with Windows
   samba:
     container_name: samba

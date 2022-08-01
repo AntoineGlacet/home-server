@@ -20,3 +20,6 @@ __pycache__
 .vscode
 .Trash*
 
+# test directory
+test
+

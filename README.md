@@ -11,12 +11,12 @@ To run a smart home and automation. This includes home asssistant mosquitto and 
 
 - **media (media server)**
 To manage video media library (including downloads) and streaming it.
-This includes jackett, plex, radarr, sonarr and transmission.
+This includes prowlar, plex, radarr, sonarr, overseerr, transmission and nordlynx (VPN).
 Also includes Calibre for ebook server
 
 - **Tools**
 some supervision and file sharing tools.
-This includes adguard, heimdall, portainer and samba
+This includes adguard, heimdall, samba and wireguard
 
 Each stack has its own docker-compose.yml file with the configuration and a folder 'config' where each container store its persistent config infos.
 
@@ -45,16 +45,17 @@ home-server
 |   ├── docker-compose.yml
 │   └── config            
 │       ├── calibre                   <- ebook server
-│       ├── jackett                   <- torrent tracker aggregator
+│       ├── overseerr                 <- media discovery and request
 |       ├── plex                      <- media server (video)
+|       ├── prowlarr                  <- indexer aggregator
 |       ├── radarr                    <- movie library manager
 |       ├── sonarr                    <- TV library manager
-|       └── transmission              <- torrent downloader (+VPN client)
+|       └── transmission              <- torrent client
 ├── tools
 |   ├── docker-compose.yml
 │   └── config            
 │       ├── adguard                   <- network-wide ad blocking
 │       ├── heimdall                  <- web UI portal
 |       ├── portainer                 <- web UI for container management
-|       └── samba                     <- file sharing server
+|       └── wireguard                 <- VPN server
 ```

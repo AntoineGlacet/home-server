@@ -24,6 +24,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - PEERS=KapPC,Phone #optional
+      - PEERDNS=adguard # config with adguard needs work./
     volumes:
       - ./config/wireguard:/config
       - /lib/modules:/lib/modules

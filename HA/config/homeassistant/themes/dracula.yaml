@@ -1,0 +1,156 @@
+---
+# Based on the Dracula colour scheme: https://github.com/dracula/dracula-theme
+# Dracula theme
+# Author: MrYadro
+# Updated by: collateral127
+Dracula:
+  # Main Interface Colours
+  dark-primary-color: "#5194f7"
+  dark-theme-base-color: "#f8f8f2"
+  dracula-cyan: "#8be9fd"
+  dracula-green: "#50fa7b"
+  dracula-orange: "#ffb86c"
+  dracula-pink: "#ff79c6"
+  dracula-purple: "#bd93f9"
+  dracula-red: "#ff5555"
+  dracula-yellow: "#f1fa8c"
+  dracula-selection: "#44475a"
+  dracula-selected-text: "#f8f8f3"
+  light-primary-color: "#6572a0"
+  light-theme-disabled-color: "#6272a4"
+  light-theme-secondary-color: "#6572a0"
+  primary-background-color: "#282a36"
+  background-color: var(--primary-background-color)
+  primary-color: var(--dracula-purple)
+  primary-text-color: "#f8f8f2"
+  secondary-background-color: "#343745"
+  tertiary-background-color: "#21222b"
+  secondary-text-color: "#6572a0"
+  text-primary-color: "#f8f8f2"
+  divider-color: "#191a20"
+  unknown-color: "#777775"
+  accent-color: var(--primary-color)
+  # Header Colours
+  app-header-background-color: var(--tertiary-background-color)
+  app-header-text-color: var(--dark-theme-base-color)
+  # Sidebar Menu Colours
+  sidebar-background-color: var(--secondary-background-color)
+  sidebar-icon-color: var(--light-primary-color)
+  sidebar-selected-icon-color: var(--dracula-selected-text)
+  sidebar-selected-text-color: var(--dracula-selected-text)
+  sidebar-text-color: var(--light-primary-color)
+  slider-bar-color: var(--dracula-pink)
+  slider-color: var(--dracula-pink)
+  slider-secondary-color: var(--dracula-pink)
+  # Button Colours
+  paper-item-icon-active-color: var(--state-icon-active-color)
+  paper-item-icon-color: var(--state-icon-color)
+  # States and Badge Colours
+  error-color: var(--dracula-red)
+  success-color: var(--dracula-green)
+  info-color: var(--dracula-cyan)
+  warning-color: var(--dracula-orange)
+  state-on-color: var(--dracula-green)
+  state-off-color: var(--dracula-red)
+  state-home-color: var(--dracula-green)
+  state-not_home-color: var(--dracula-red)
+  state-unknown-color: var(--unknown-color)
+  state-icon-active-color: var(--primary-text-color)
+  state-icon-color: var(--light-primary-color)
+  state-icon-unavailable-color: var(--dracula-selection)
+  # Slider Colours
+  paper-slider-active-color: var(--light-theme-disabled-color)
+  paper-slider-container-color: var(--tertiary-background-color)
+  paper-slider-knob-color: var(--primary-text-color)
+  paper-slider-knob-start-color: var(--dracula-green)
+  paper-slider-pin-color: var(--light-theme-disabled-color)
+  paper-slider-secondary-color: var(--dracula-yellow)
+  # Label Colours
+  label-badge-background-color: var(--primary-background-color)
+  label-badge-blue: var(--dracula-cyan)
+  label-badge-green: var(--dracula-green)
+  label-badge-grey: var(--light-theme-disabled-color)
+  label-badge-red: var(--dracula-red)
+  label-badge-text-color: var(--dracula-selected-text)
+  label-badge-yellow: var(--dracula-yellow)
+  # Card Colours
+  card-background-color: var(--secondary-background-color)
+  paper-blue-400: var(--dracula-cyan)
+  paper-card-header-color: var(--tertiary-background-color)
+  paper-card-background-color: var(--card-background-color)
+  paper-green-400: var(--dracula-green)
+  paper-grey-200: var(--light-theme-disabled-color)
+  paper-grey-50: var(--light-theme-disabled-color)
+  paper-grey-500: var(--light-theme-disabled-color)
+  paper-listbox-background-color: var(--card-background-color)
+  paper-orange-400: var(--dracula-orange)
+  paper-spinner-color: var(--tertiary-background-color)
+  # Switch Colours
+  switch-checked-button-color: var(--primary-text-color)
+  switch-checked-color: var(--primary-text-color)
+  switch-checked-track-color: var(--primary-text-color)
+  switch-unchecked-button-color: var(--light-primary-color)
+  switch-unchecked-track-color: var(--light-primary-color)
+  # Toggle Colours
+  paper-toggle-button-checked-button-color: var(--switch-checked-button-color)
+  paper-toggle-button-checked-bar-color: var(--switch-checked-track-color)
+  paper-toggle-button-unchecked-button-color: var(--switch-unchecked-button-color)
+  paper-toggle-button-unchecked-bar-color: var(--switch-unchecked-track-color)
+  # Table Colours
+  table-row-alternative-background-color: var(--secondary-background-color)
+  table-row-background-color: var(--primary-background-color)
+  data-table-background-color: var(--primary-background-color)
+  mdc-checkbox-unchecked-color: var(--primary-text-color)
+  # Dropdown Colours
+  material-background-color: var(--tertiary-background-color)
+  material-secondary-background-color: var(--primary-text-color)
+  mdc-theme-surface: var(--tertiary-background-color)
+  mdc-select-fill-color: var(--tertiary-background-color)
+  mdc-select-label-ink-color: var(--primary-text-color)
+  mdc-select-ink-color: var(--primary-text-color)
+  input-dropdown-icon-color: var(--light-primary-color)
+  # Pre/Code Colours
+  markdown-code-background-color: var(--dracula-selection)
+  codemirror-atom: var(--dracula-orange)
+  # Banner Colours
+  banner-card-heading-color-dark: var(--tertiary-background-color)
+  banner-card-heading-color-light: var(--primary-text-color)
+  # Google Colours
+  google-blue-500: var(--dracula-cyan)
+  google-green-500: var(--dracula-green)
+  google-red-500: var(--dracula-red)
+  google-yellow-500: var(--dracula-yellow)
+  disabled-text-color: var(--light-theme-disabled-color)
+  # Material Colours
+  material-body-text-color: var(--light-primary-color)
+  material-disabled-color: var(--light-theme-disabled-color)
+  material-divider-color: var(--divider-color)
+  material-success-color: var(--dracula-green)
+  material-error-color: var(--dracula-red)
+  # Checkbox colours
+  mdc-checkbox-disabled-color: var(--light-theme-disabled-color)
+  # Dialog colours
+  mdc-dialog-content-ink-color: var(--dracula-pink)
+  mdc-dialog-heading-ink-color: var(--dracula-pink)
+  # Material Theme Colours
+  mdc-theme-background: var(--dracula-green)
+  mdc-theme-on-primary: var(--light-primary-color)
+  mdc-theme-on-secondary: var(--tertiary-background-color)
+  mdc-theme-on-surface: var(--dracula-red)
+  mdc-theme-primary: var(--primary-text-color)
+  mdc-theme-secondary: "#d2ba85"
+  mdc-theme-text-primary-on-background: var(--primary-text-color)
+  # Label Colours
+  mdc-floating-label: var(--primary-text-color)
+  # Text Field
+  mdc-text-field: var(--primary-background-color)
+  mdc-text-field-label-ink-color: var(--primary-text-color)
+  mdc-text-field-ink-color: var(--primary-text-color)
+  mdc-text-field-fill-color: var(--tertiary-background-color)
+  mdc-ripple-color: var(--primary-background-color)
+  # Input Field Colours
+  input-fill-color: var(--tertiary-background-color)
+  input-disabled-fill-color: var(--tertiary-background-color)
+  # Misc Colours
+  error-state-color: var(--dracula-pink)
+  scrollbar-thumb-color: var(--tertiary-background-color)

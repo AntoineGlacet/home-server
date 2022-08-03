@@ -6,6 +6,7 @@ services:
     image: homeassistant/${HOME_ASSISTANT_IMAGE}
     volumes:
       - ./config/homeassistant:/config
+      - ${MEDIA}:/media
       - /etc/localtime:/etc/localtime:ro
     environment:
       - PUID=${PUID}

@@ -9,3 +9,4 @@
 !config/homeassistant/automations.yaml
 !config/homeassistant/scripts.yaml
 !config/homeassistant/configuration.yaml
+!config/homeassistant/sensors.yaml

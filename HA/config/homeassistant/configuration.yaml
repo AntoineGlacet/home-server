@@ -1,17 +1,21 @@
 #configuration.yaml
+# base conf
+homeassistant:
+  time_zone: "Asia/Tokyo"
+  latitude: !secret latitude
+  longitude: !secret longitude
+  unit_system: metric
+  media_dirs:
+    media: /media
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
 
 # includes
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
-
-# base conf
-homeassistant:
-  time_zone: "Asia/Tokyo"
-
-# Configure a default setup of Home Assistant (frontend, api, etc)
-default_config:
+sensor: !include sensors.yaml
 
 # Text to speech
 tts:
@@ -26,26 +30,12 @@ spotify:
 spotcast:
   sp_dc: !secret sp_dc
   sp_key: !secret sp_key
+
 # linkplay audiopro
 media_player:
   - platform: linkplay
-    host: 10.13.89.207
-    name: Bedroom Audiopro C5
+    host: 10.13.89.162
+    name: linkplayC5
   - platform: linkplay
     host: 10.13.89.64
-    name: Living room Audiopro C10
-
-# sensor for phone alarm
-sensor:
-  platform: template
-  sensors:
-    minutes_next_alarm_antoine:
-      friendly_name: "Minutes until Next Alarm antoine"
-      unit_of_measurement: "m"
-      #entity_id: sensor.time
-      value_template: >-
-        {% set dummy = states("sensor.time") %}
-        {{((states('sensor.redmi_note_8_pro_next_alarm')|as_timestamp|int - now()|as_timestamp|int)/60)|int}}
-      availability_template: "{{ not is_state('sensor.redmi_note_8_pro_next_alarm','unavailable') }}"
-      attribute_templates:
-        time: "{{ state_attr('sensor.redmi_note_8_pro_next_alarm','Local Time') }}"
+    name: LinkplayC10

@@ -1,0 +1,15 @@
+#############
+# TEMPLATES #
+#############
+
+- platform: template
+  sensors:
+    minutes_next_alarm_antoine:
+      friendly_name: "Minutes until Next Alarm antoine"
+      unit_of_measurement: "m"
+      value_template: >-
+        {% set dummy = states("sensor.time") %}
+        {{((states('sensor.redmi_note_8_pro_next_alarm')|as_timestamp|int - now()|as_timestamp|int)/60)|int}}
+      availability_template: "{{ not is_state('sensor.redmi_note_8_pro_next_alarm','unavailable') }}"
+      attribute_templates:
+        time: "{{ state_attr('sensor.redmi_note_8_pro_next_alarm','Local Time') }}"

@@ -1,13 +1,13 @@
-play_spotify_jazz_bedroom:
-  alias: play jazz on bedroom1
+play_spotify_bedroom:
+  alias: play playlist on BedroomC5
   fields:
     start_volume:
-      description: volume to start okayback
-      example: 0.2
+      description: volume to start playback
+      example: "0.2"
   sequence:
     - service: spotcast.start
       data:
-        spotify_device_id: 24f69e50b933dffe442dba122d1a3b1fbf862c16
+        spotify_device_id: !secret spotify_BedroomC5_id
         start_volume: "{{ start_volume }}"
         uri: spotify:playlist:37i9dQZF1DX4CgJVlGEIo5
         random_song: true
@@ -19,10 +19,10 @@ ramp_up_volume:
   fields:
     media_target:
       description: The media player to target
-      example: media_player.bedroom_audiopro_c5
+      example: media_player.linkplayC5
     volume_target:
       description: The target volume to increase to
-      example: 0.5
+      example: "0.5"
     delay:
       description: The time in ms between volume increment
       example: 1000 (1 second)
@@ -41,8 +41,8 @@ ramp_up_volume:
               }}"
   mode: single
 
-ramp_up_brightness:
-  alias: Ramp up brightness
+ramp_up_brightness_ikea_1:
+  alias: Ramp up brightness lightbulb_ikea_1
   sequence:
     - service: light.turn_on
       target:

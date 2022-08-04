@@ -31,7 +31,7 @@
       data:
         volume_level: 0.05
       target:
-        entity_id: media_player.linkplayC5
+        entity_id: media_player.linkplay_c5
 
     # script to play a playlist in bedroom audipro
     - service: script.play_spotify_bedroom
@@ -39,8 +39,8 @@
         start_volume: 0.1
     - service: script.ramp_up_volume
       data:
-        media_target: media_player.linkplayC5
-        volume_target: 0.3
-        delay: "30000"
+        media_target: media_player.linkplay_c5
+        volume_target: 0.5
+        delay: "20000" # in milliseconds
 
   mode: restart

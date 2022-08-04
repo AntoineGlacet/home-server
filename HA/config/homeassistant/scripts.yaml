@@ -19,7 +19,7 @@ ramp_up_volume:
   fields:
     media_target:
       description: The media player to target
-      example: media_player.linkplayC5
+      example: media_player.linkplay_c5
     volume_target:
       description: The target volume to increase to
       example: "0.5"
@@ -46,12 +46,12 @@ ramp_up_brightness_ikea_1:
   sequence:
     - service: light.turn_on
       target:
-        entity_id: light.lightbulb_ikea_1
+        entity_id: light.bedroom_1
       data:
         brightness_pct: 1
     - service: light.turn_on
       target:
-        entity_id: light.lightbulb_ikea_1
+        entity_id: light.bedroom_1
       data:
         transition: 400
         brightness_pct: 80

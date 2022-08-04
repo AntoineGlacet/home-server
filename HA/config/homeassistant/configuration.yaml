@@ -10,6 +10,19 @@ homeassistant:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
+# hacs icons package
+simpleicons:
+# panel:
+panel_iframe:
+  router:
+    title: "Node-Red"
+    url: "http://10.13.89.90:1880"
+    icon: si:node-red
+  zigbee2mqtt:
+    title: "Zigbee2MQTT"
+    url: "http://10.13.89.90:8099"
+    icon: si:zigbee
+
 # add themes folder
 frontend:
   themes: !include_dir_merge_named themes
@@ -39,7 +52,7 @@ spotcast:
 media_player:
   - platform: linkplay
     host: 10.13.89.162
-    name: linkplayC5
+    name: linkplay_c5
   - platform: linkplay
     host: 10.13.89.64
-    name: LinkplayC10
+    name: linkplay_c10

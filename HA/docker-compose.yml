@@ -48,3 +48,17 @@ services:
       - /dev/ttyACM0
     privileged: true
     network_mode: host
+
+  node-red:
+    image: nodered/node-red:latest
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/node-red:/data
+    ports:
+      - "1880:1880"
+    restart: unless-stopped
+    depends_on:
+      - home-assistant

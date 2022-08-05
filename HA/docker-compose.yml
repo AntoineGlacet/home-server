@@ -50,6 +50,7 @@ services:
     network_mode: host
 
   node-red:
+    container_name: node-red
     image: nodered/node-red:latest
     environment:
       - PUID=${PUID}

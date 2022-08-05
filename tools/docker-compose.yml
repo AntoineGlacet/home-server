@@ -75,3 +75,16 @@ services:
       - 8380:80/tcp
       - 8300:3000/tcp
     restart: unless-stopped
+
+  # monitoring with glances  
+  glances:
+    container_name: glances
+    image: nicolargo/glances:latest-full
+    volumes:
+      - ./config/glances/glances.conf:/glances/conf/glances.con
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "GLANCES_OPT=-w"
+    ports:
+      - 61208-61209:61208-61209
+    restart: unless-stopped

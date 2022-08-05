@@ -10,18 +10,21 @@ homeassistant:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-# hacs icons package
-simpleicons:
 # panel:
 panel_iframe:
   router:
     title: "Node-Red"
     url: "http://10.13.89.90:1880"
-    icon: si:node-red
+    icon: si:nodered
   zigbee2mqtt:
     title: "Zigbee2MQTT"
     url: "http://10.13.89.90:8099"
     icon: si:zigbee
+
+  glances:
+    title: "glances"
+    url: "http://10.13.89.90:61208"
+    icon: mdi:docker
 
 # add themes folder
 frontend:

@@ -55,7 +55,7 @@ Dracula:
   state-home-color: var(--dracula-green)
   state-not_home-color: var(--dracula-red)
   state-unknown-color: var(--unknown-color)
-  state-icon-active-color: var(--primary-text-color)
+  state-icon-active-color: var(--dracula-yellow)
   state-icon-color: var(--light-primary-color)
   state-icon-unavailable-color: var(--dracula-selection)
   # Slider Colours

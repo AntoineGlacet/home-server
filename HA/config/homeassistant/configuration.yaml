@@ -20,11 +20,18 @@ panel_iframe:
     title: "Zigbee2MQTT"
     url: "http://10.13.89.90:8099"
     icon: si:zigbee
-
   glances:
     title: "glances"
     url: "http://10.13.89.90:61208"
     icon: mdi:docker
+  vscode:
+    title: "vscode"
+    url: "http://10.13.89.90:8443"
+    icon: si:visualstudiocode
+  portainer:
+    title: "portainer"
+    url: "http://10.13.89.90:9000"
+    icon: si:portainer
 
 # add themes folder
 frontend:

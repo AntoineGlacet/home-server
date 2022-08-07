@@ -118,5 +118,22 @@ services:
       - ./config/portainer:/data
     ports:
       - 8000:8000 # Agent
-      - 9443:9443 # Web UI  
+      - 9443:9443 # https Web UI  
+      - 9000:9000 # http WebUI
+    restart: unless-stopped
+
+  # backup
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/duplicati:/config
+      - ${BACKUP}:/backups
+      - ${HOMESERVER}:/source
+    ports:
+      - 8200:8200
     restart: unless-stopped

@@ -1,6 +1,9 @@
 # automations.yaml
 
-# wake up routine
+###########
+# WAKE UP #
+###########
+
 - alias: Wake up alarm routine
   description: play spotify in bedroom and ramp up volume at phone alarm
 
@@ -44,3 +47,22 @@
         delay: "20000" # in milliseconds
 
   mode: restart
+
+#############
+#  BACKUPS  #
+#############
+
+- alias: "Backup Home Assistant every first Saturday at 5am"
+  trigger:
+    platform: calendar
+    event: start
+    entity_id: calendar.scheduler
+  condition:
+    - condition: template
+      alias: "Home Assistant backup calendar event"
+      value_template: "{{ 'Home Assistant backup' in trigger.calendar_event.summary }}"  
+  action:
+    alias: "Create backup now"
+    service: backup.create
+
+  mode: queued

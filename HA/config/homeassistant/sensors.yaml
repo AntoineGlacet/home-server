@@ -13,3 +13,15 @@
       availability_template: "{{ not is_state('sensor.redmi_note_8_pro_next_alarm','unavailable') }}"
       attribute_templates:
         time: "{{ state_attr('sensor.redmi_note_8_pro_next_alarm','Local Time') }}"
+
+# Example configuration.yaml entry
+- platform: time_date
+  display_options:
+    - 'time'
+    - 'date'
+    - 'date_time'
+    - 'date_time_utc'
+    - 'date_time_iso'
+    - 'time_date'
+    - 'time_utc'
+    - 'beat'

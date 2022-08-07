@@ -16,6 +16,7 @@ services:
       - 51413:51413/udp
       - 9091:9091 # transmission
       - 9696:9696 # prowlarr
+    restart: unless-stopped
 
   # Torrent client
   transmission:
@@ -33,6 +34,7 @@ services:
     network_mode: service:nordlynx
     depends_on:
       - nordlynx
+    restart: unless-stopped
 
   # Indexer aggregator
   prowlarr:

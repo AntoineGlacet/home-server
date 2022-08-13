@@ -86,9 +86,9 @@ Dracula:
   paper-orange-400: var(--dracula-orange)
   paper-spinner-color: var(--tertiary-background-color)
   # Switch Colours
-  switch-checked-button-color: var(--primary-text-color)
-  switch-checked-color: var(--primary-text-color)
-  switch-checked-track-color: var(--primary-text-color)
+  switch-checked-button-color: var(--dracula-yellow)
+  switch-checked-color: var(--dracula-yellow)
+  switch-checked-track-color: var(--dracula-yellow)
   switch-unchecked-button-color: var(--light-primary-color)
   switch-unchecked-track-color: var(--light-primary-color)
   # Toggle Colours

@@ -90,6 +90,22 @@ services:
       - transmission
     restart: unless-stopped
 
+  # Subtitles downloader
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/bazarr:/config
+      - ${MOVIES}:/movies #optional
+      - ${TV}:/tv #optional
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
   # Media server, stream content
   plex:
     image: lscr.io/linuxserver/plex

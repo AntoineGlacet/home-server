@@ -1,3 +1,0 @@
-# crontab file to schedule jobs
-# update containers weekjy, Tuesday at 3am
-0 5 * * 2  /home/ubuntu/home-server/update-all.sh |& tee -a /tmp/logtest2

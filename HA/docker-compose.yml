@@ -3,7 +3,7 @@ services:
   # The core of my smart-home automations
   home-assistant:
     container_name: home-assistant
-    image: homeassistant/${HOME_ASSISTANT_IMAGE}
+    image: homeassistant/raspberrypi4-homeassistant:2022.8.3
     volumes:
       - ./config/homeassistant:/config
       - ${MEDIA}:/media

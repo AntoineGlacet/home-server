@@ -33,7 +33,8 @@ services:
       - ${WATCH}:/watch
     network_mode: service:nordlynx
     depends_on:
-      - nordlynx
+      nordlynx:
+        condition: service_healthy
     restart: unless-stopped
 
   # Indexer aggregator
@@ -48,7 +49,8 @@ services:
       - ./config/prowlarr:/config
     network_mode: service:nordlynx
     depends_on:
-      - nordlynx
+      nordlynx:
+        condition: service_healthy
     restart: unless-stopped
 
   # TV show library manager

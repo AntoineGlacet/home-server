@@ -40,8 +40,8 @@ services:
     volumes:
       - ${DATA}:/data
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      - USERID=${PUID}
+      - GROUPID=${PGID}
       - TZ=${TZ}
     ports:
       - "137:137/udp"

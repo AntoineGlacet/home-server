@@ -43,7 +43,7 @@
     - service: script.ramp_up_volume
       data:
         media_target: media_player.linkplay_c5
-        volume_target: 0.5
+        volume_target: 0.4
         delay: "20000" # in milliseconds
 
   mode: restart

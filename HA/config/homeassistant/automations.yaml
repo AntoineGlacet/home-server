@@ -52,17 +52,17 @@
 #  BACKUPS  #
 #############
 
-- alias: "Backup Home Assistant every first Saturday at 5am"
-  trigger:
-    platform: calendar
-    event: start
-    entity_id: calendar.scheduler
-  condition:
-    - condition: template
-      alias: "Home Assistant backup calendar event"
-      value_template: "{{ 'Home Assistant backup' in trigger.calendar_event.summary }}"  
-  action:
-    alias: "Create backup now"
-    service: backup.create
+# - alias: "Backup Home Assistant every first Saturday at 5am"
+#   trigger:
+#     platform: calendar
+#     event: start
+#     entity_id: calendar.scheduler
+#   condition:
+#     - condition: template
+#       alias: "Home Assistant backup calendar event"
+#       value_template: "{{ 'Home Assistant backup' in trigger.calendar_event.summary }}"  
+#   action:
+#     alias: "Create backup now"
+#     service: backup.create
 
-  mode: queued
+#   mode: queued

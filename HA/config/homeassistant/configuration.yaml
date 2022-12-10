@@ -2,6 +2,8 @@
 # base conf
 homeassistant:
   time_zone: "Asia/Tokyo"
+  country: JP
+  currency: JPY
   latitude: !secret latitude
   longitude: !secret longitude
   unit_system: metric
@@ -73,6 +75,6 @@ camera:
     token: !secret xiaomi_vacuum_token
     username: !secret xiaomi_cloud_username
     password: !secret xiaomi_cloud_password
-    draw: ['all']
+    draw: ["all"]
     attributes:
       - calibration_points

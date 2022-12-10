@@ -44,12 +44,16 @@ ramp_up_volume:
 ramp_up_brightness_ikea_1:
   alias: Ramp up brightness lightbulb_ikea_1
   sequence:
-    - service: light.turn_on
+    - alias: "delay 30s"
+      delay: 30
+    - alias: "turn on bedroom light"
+      service: light.turn_on
       target:
         entity_id: light.bedroom_1
       data:
         brightness_pct: 1
-    - service: light.turn_on
+    - alias: "ramp up brightness"
+      service: light.turn_on
       target:
         entity_id: light.bedroom_1
       data:

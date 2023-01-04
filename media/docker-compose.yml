@@ -45,6 +45,8 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:prowlarr
+      - TP_THEME=overseerr
     volumes:
       - ./config/prowlarr:/config
     network_mode: service:nordlynx
@@ -61,6 +63,8 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+      - TP_THEME=overseerr
     volumes:
       - ./config/sonarr:/config
       - ${TV}:/tv
@@ -81,6 +85,8 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
+      - TP_THEME=overseerr
     volumes:
       - ./config/radarr:/config
       - ${MOVIES}:/movies
@@ -100,6 +106,8 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:bazarr
+      - TP_THEME=overseerr
     volumes:
       - ./config/bazarr:/config
       - ${MOVIES}:/movies #optional
@@ -118,6 +126,8 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - version=docker
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:plex
+      - TP_THEME=overseerr
     volumes:
       - ./config/plex:/config
       - ${MEDIA}:/media

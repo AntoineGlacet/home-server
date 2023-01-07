@@ -9,30 +9,38 @@ homeassistant:
   unit_system: metric
   media_dirs:
     media: /media
+
+# configure trusted proxy for swag
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.13.89.90
+    - 10.12.12.12
+
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
 # panel:
 panel_iframe:
-  router:
-    title: "Node-Red"
-    url: "http://10.13.89.90:1880"
-    icon: si:nodered
+  # router:
+  #   title: "Node-Red"
+  #   url: "https://10.13.89.90:1880"
+  #   icon: si:nodered
   zigbee2mqtt:
     title: "Zigbee2MQTT"
-    url: "http://10.13.89.90:8099"
+    url: "https://zigbee2mqtt.antoineglacet.com"
     icon: si:zigbee
   glances:
     title: "glances"
-    url: "http://10.13.89.90:61208"
+    url: "https://glances.antoineglacet.com"
     icon: mdi:docker
   vscode:
     title: "vscode"
-    url: "http://10.13.89.90:8443"
+    url: "https://vscode.antoineglacet.com"
     icon: si:visualstudiocode
   portainer:
     title: "portainer"
-    url: "http://10.13.89.90:9000"
+    url: "https://portainer.antoineglacet.com"
     icon: si:portainer
 
 # add themes folder

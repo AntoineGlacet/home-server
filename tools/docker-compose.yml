@@ -137,3 +137,56 @@ services:
     ports:
       - 8200:8200
     restart: unless-stopped
+  swag:
+    image: lscr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tokyo
+      - URL=antoineglacet.com
+      - >
+        SUBDOMAINS=
+          www, 
+          home,
+          dashboard,
+          router,
+          radarr, 
+          adguard, 
+          plex, 
+          homeassistant, 
+          overseerr, 
+          bazarr, 
+          sonarr, 
+          prowlarr, 
+          transmission, 
+          calibre, 
+          duplicati, 
+          cockpit, 
+          portainer, 
+          zigbee2mqtt, 
+          glances, 
+          portainer, 
+          vscode
+      - VALIDATION=http
+      - DOCKER_MODS=linuxserver/mods:swag-auto-reload|linuxserver/mods:swag-dashboard
+    volumes:
+      - ./config/swag:/config
+    ports:
+      - 443:443
+      - 80:80
+      - 81:81
+    restart: unless-stopped
+    networks:
+      swag:
+        ipv4_address: 10.12.12.12
+
+networks:
+  swag:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.12.0.0/16
+          gateway: 10.12.12.1

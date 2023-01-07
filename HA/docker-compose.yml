@@ -47,20 +47,20 @@ services:
       - ./config/zigbee2mqtt:/app/data
     devices:
       - /dev/ttyACM0
-    privileged: true
-    network_mode: host
-
-  node-red:
-    container_name: node-red
-    image: nodered/node-red:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/node-red:/data
     ports:
-      - "1880:1880"
-    restart: unless-stopped
-    depends_on:
-      - home-assistant
+      # frontend, in zigbee's configuration.yaml
+      - "8099:8099"
+  # node-red:
+  #   container_name: node-red
+  #   image: nodered/node-red:latest
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/node-red:/data
+  #   ports:
+  #     - "1880:1880"
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - home-assistant

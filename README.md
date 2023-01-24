@@ -11,12 +11,10 @@ To run a smart home and automation. This includes home asssistant mosquitto and 
 
 - **media (media server)**
 To manage video media library (including downloads) and streaming it.
-This includes prowlar, plex, radarr, sonarr, overseerr, transmission and nordlynx (VPN).
-Also includes Calibre for ebook server
+Routing traffic of download client (transmission and prowlarr) through VPN (Nordlynx)
 
 - **Tools**
-some supervision and file sharing tools.
-This includes adguard, heimdall, samba and wireguard
+Supervision tools, fileshare, reverse proxy, landing page, etc...
 
 Each stack has its own docker-compose.yml file with the configuration and a folder 'config' where each container store its persistent config infos.
 
@@ -38,12 +36,14 @@ home-server
 |       |   ├── automations.yaml
 |       |   ├── configuraton.yaml
 |       |   └── scripts.yaml
+|       ├── node-red                  <- automation progamming (not used currently)
 |       ├── mosquitto                 <- message broker
 |       └── zigbee2mqtt               <- for zigbee devices
 |
 ├── media
 |   ├── docker-compose.yml
 │   └── config            
+│       ├── bazarr                    <- subtitles manager
 │       ├── calibre                   <- ebook server
 │       ├── overseerr                 <- media discovery and request
 |       ├── plex                      <- media server (video)
@@ -55,7 +55,12 @@ home-server
 |   ├── docker-compose.yml
 │   └── config            
 │       ├── adguard                   <- network-wide ad blocking
+│       ├── authelia                  <- authentification
+│       ├── code-server               <- VScode
+│       ├── duplicati                 <- regular backups
+│       ├── glances                   <- process monitoring
 │       ├── heimdall                  <- web UI portal
 |       ├── portainer                 <- web UI for container management
+|       └── swag                      <- reverse proxy and ssl
 |       └── wireguard                 <- VPN server
 ```

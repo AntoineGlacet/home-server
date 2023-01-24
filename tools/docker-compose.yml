@@ -143,13 +143,14 @@ services:
     cap_add:
       - NET_ADMIN
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Tokyo
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - URL=antoineglacet.com
       - >
         SUBDOMAINS=
-          www, 
+          www,
+          auth, 
           home,
           dashboard,
           router,
@@ -182,7 +183,30 @@ services:
     networks:
       swag:
         ipv4_address: 10.12.12.12
+  authelia:
+    image: ghcr.io/authelia/authelia:latest
+    container_name: authelia
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/authelia:/config
+    restart: unless-stopped
+    networks:
+      - swag
+    ports:
+      - 9092:9091
 
+  autoheal:
+    image: willfarrell/autoheal
+    container_name: autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      # docker socket, be careful with this
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
 networks:
   swag:
     driver: bridge

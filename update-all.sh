@@ -2,7 +2,7 @@
 
 # list of all folders to consider
 # Declare an array of string with type
-declare -a StringArray=("HA" "media" "tools")
+declare -a StringArray=("tools" "media" "HA")
 
 # Loop over folders and reference the env-file
 # Iterate the string array using for loop

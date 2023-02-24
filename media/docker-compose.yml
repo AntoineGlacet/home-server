@@ -26,7 +26,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - TRANSMISSION_WEB_HOME=/flood-for-transmission/ #optional
+      # - TRANSMISSION_WEB_HOME=/flood-for-transmission/ #optional
     volumes:
       - ./config/transmission:/config
       - ${DOWNLOADS}:/downloads
@@ -36,6 +36,12 @@ services:
       nordlynx:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "ping", "-c", "1", "google.com" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # Indexer aggregator
   prowlarr:
@@ -54,6 +60,12 @@ services:
       nordlynx:
         condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "ping", "-c", "1", "google.com" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   # TV show library manager
   sonarr:
@@ -164,3 +176,11 @@ services:
       - 8080:8080/tcp # Calibre desktop gui.
       - 8081:8081/tcp # Calibre webserver gui.
     restart: unless-stopped
+networks:
+  default:
+    name: media
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.13.92.0/24"
+          gateway: "10.13.92.1" #optional

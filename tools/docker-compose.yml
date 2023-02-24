@@ -63,6 +63,7 @@ services:
     volumes:
       - ./config/adguard/work:/opt/adguardhome/work
       - ./config/adguard/conf:/opt/adguardhome/conf
+      - $CERT:/cert
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -74,6 +75,8 @@ services:
       - 853:853/tcp
       - 8380:80/tcp
       - 8300:3000/tcp
+      - 444:443/tcp
+      - 444:443/udp
     restart: unless-stopped
 
   # monitoring with glances  
@@ -182,7 +185,7 @@ services:
     restart: unless-stopped
     networks:
       swag:
-        ipv4_address: 10.12.12.12
+        ipv4_address: 10.13.88.88
   authelia:
     image: ghcr.io/authelia/authelia:latest
     container_name: authelia
@@ -208,9 +211,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 networks:
-  swag:
+  default:
+    name: tools
     driver: bridge
     ipam:
       config:
-        - subnet: 10.12.0.0/16
-          gateway: 10.12.12.1
+        - subnet: "10.13.91.0/24"
+          gateway: "10.13.91.1" #optional
+  swag:
+    name: swag
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.13.88.0/24
+          gateway: 10.13.88.1

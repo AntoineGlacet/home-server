@@ -14,8 +14,8 @@ homeassistant:
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 10.13.89.90
-    - 10.12.12.12
+    - 10.13.89.90 # host
+    - 10.13.88.88 # swag instance
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:

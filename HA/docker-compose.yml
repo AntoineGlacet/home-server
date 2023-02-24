@@ -64,3 +64,11 @@ services:
   #   restart: unless-stopped
   #   depends_on:
   #     - home-assistant
+networks:
+  default:
+    name: zigbeeHA
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.13.90.0/24"
+          gateway: "10.13.90.1" #optional

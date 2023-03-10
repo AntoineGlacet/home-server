@@ -3,12 +3,10 @@ services:
   # The core of my smart-home automations
   home-assistant:
     container_name: home-assistant
-    #:2022.8.3
-    image: homeassistant/raspberrypi4-homeassistant:stable
+    image: ghcr.io/home-assistant/home-assistant:stable
     volumes:
       - ./config/homeassistant:/config
       - ${MEDIA}:/media
-      - /etc/localtime:/etc/localtime:ro
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -46,7 +44,7 @@ services:
       - /run/udev:/run/udev:ro
       - ./config/zigbee2mqtt:/app/data
     devices:
-      - /dev/ttyACM0
+      - /dev/ttyUSB0:/dev/ttyUSB0
     ports:
       # frontend, in zigbee's configuration.yaml
       - "8099:8099"

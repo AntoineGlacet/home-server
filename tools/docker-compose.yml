@@ -13,26 +13,26 @@ services:
     ports:
       - 8002:80
   # fast, modern VPN server
-  wireguard:
-    image: lscr.io/linuxserver/wireguard:latest
-    container_name: wireguard
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - PEERS=KapPC,Phone #optional
-      - PEERDNS=adguard # config with adguard needs work.
-    volumes:
-      - ./config/wireguard:/config
-      - /lib/modules:/lib/modules
-    ports:
-      - 51820:51820/udp
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
-    restart: unless-stopped
+  # wireguard:
+  #   image: lscr.io/linuxserver/wireguard:latest
+  #   container_name: wireguard
+  #   cap_add:
+  #     - NET_ADMIN
+  #     - SYS_MODULE
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #     - PEERS=KapPC,Phone #optional
+  #     - PEERDNS=adguard # config with adguard needs work.
+  #   volumes:
+  #     - ./config/wireguard:/config
+  #     - /lib/modules:/lib/modules
+  #   ports:
+  #     - 51820:51820/udp
+  #   sysctls:
+  #     - net.ipv4.conf.all.src_valid_mark=1
+  #   restart: unless-stopped
   # share files with Windows
   samba:
     container_name: samba
@@ -63,7 +63,7 @@ services:
     volumes:
       - ./config/adguard/work:/opt/adguardhome/work
       - ./config/adguard/conf:/opt/adguardhome/conf
-      - $CERT:/cert
+      - ${CERT}:/cert
     environment:
       - PUID=${PUID}
       - PGID=${PGID}

@@ -77,6 +77,8 @@ services:
       - 8300:3000/tcp
       - 444:443/tcp
       - 444:443/udp
+    depends_on:
+      - swag
     restart: unless-stopped
 
   # monitoring with glances  
@@ -150,38 +152,14 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - URL=antoineglacet.com
-      - >
-        SUBDOMAINS=
-          www,
-          auth, 
-          home,
-          dashboard,
-          router,
-          radarr, 
-          adguard, 
-          plex, 
-          homeassistant, 
-          overseerr, 
-          bazarr, 
-          sonarr, 
-          prowlarr, 
-          transmission, 
-          calibre, 
-          duplicati, 
-          cockpit, 
-          portainer, 
-          zigbee2mqtt, 
-          glances, 
-          portainer, 
-          vscode
-      - VALIDATION=http
-      - DOCKER_MODS=linuxserver/mods:swag-auto-reload|linuxserver/mods:swag-dashboard
+      - SUBDOMAINS=wildcard
+      - VALIDATION=dns
+      - DNSPLUGIN=cloudflare
     volumes:
       - ./config/swag:/config
     ports:
       - 443:443
-      - 80:80
-      - 81:81
+      # - 80:80 for http validation only
     restart: unless-stopped
     networks:
       swag:

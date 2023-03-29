@@ -48,6 +48,15 @@
 
   mode: restart
 
+- alias: System - Set Custom Theme at Startup
+  initial_state: true
+  trigger:
+    platform: homeassistant
+    event: start
+  action:
+    service: frontend.set_theme
+    data:
+      name: dracula
 #############
 #  BACKUPS  #
 #############
@@ -60,7 +69,7 @@
 #   condition:
 #     - condition: template
 #       alias: "Home Assistant backup calendar event"
-#       value_template: "{{ 'Home Assistant backup' in trigger.calendar_event.summary }}"  
+#       value_template: "{{ 'Home Assistant backup' in trigger.calendar_event.summary }}"
 #   action:
 #     alias: "Create backup now"
 #     service: backup.create

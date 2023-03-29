@@ -1,54 +1,31 @@
-# automations.yaml
-
-###########
-# WAKE UP #
-###########
-
-- alias: Wake up alarm routine
+- id: wake_up_alarm_routine
+  alias: Wake up alarm routine
   description: play spotify in bedroom and ramp up volume at phone alarm
-
   trigger:
-    - below: "11"
-      entity_id: sensor.minutes_next_alarm_antoine
-      platform: numeric_state
-
-  #condition:
-  #- after: '6:30'
-  #  before: '10:00'
-  #  condition: time
-
-  # we first use spotcast to play on the speaker
-  # then use linkplay to adjust volume
-  # why can't I play spotify as a media...
+  - below: '11'
+    entity_id: sensor.minutes_next_alarm_antoine
+    platform: numeric_state
   action:
-    # script to turn on light and ramp up brightness
-    # executed in parallel
-    - service: script.turn_on
-      target:
-        entity_id: script.ramp_up_brightness_ikea_1
-
-    # make sure volume is low
-    # redundant with next step
-    # but catches exceptions (?)
-    - service: media_player.volume_set
-      data:
-        volume_level: 0.05
-      target:
-        entity_id: media_player.linkplay_c5
-
-    # script to play a playlist in bedroom audipro
-    - service: script.play_spotify_bedroom
-      data:
-        start_volume: 0.1
-    - service: script.ramp_up_volume
-      data:
-        media_target: media_player.linkplay_c5
-        volume_target: 0.4
-        delay: "20000" # in milliseconds
-
+  - service: script.turn_on
+    target:
+      entity_id: script.ramp_up_brightness_ikea_1
+    data: {}
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.05
+    target:
+      entity_id: media_player.linkplay_c5
+  - service: script.play_spotify_bedroom
+    data:
+      start_volume: 0.1
+  - service: script.ramp_up_volume
+    data:
+      media_target: media_player.linkplay_c5
+      volume_target: 0.25
+      delay: '20000'
   mode: restart
-
 - alias: System - Set Custom Theme at Startup
+  id: startup_theme_setup
   initial_state: true
   trigger:
     platform: homeassistant
@@ -57,21 +34,3 @@
     service: frontend.set_theme
     data:
       name: dracula
-#############
-#  BACKUPS  #
-#############
-
-# - alias: "Backup Home Assistant every first Saturday at 5am"
-#   trigger:
-#     platform: calendar
-#     event: start
-#     entity_id: calendar.scheduler
-#   condition:
-#     - condition: template
-#       alias: "Home Assistant backup calendar event"
-#       value_template: "{{ 'Home Assistant backup' in trigger.calendar_event.summary }}"
-#   action:
-#     alias: "Create backup now"
-#     service: backup.create
-
-#   mode: queued

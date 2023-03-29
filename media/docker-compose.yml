@@ -161,9 +161,7 @@ services:
 
   # Ebooks library manager and webserver
   calibre:
-    # refer to bug described below for version tag
-    # https://discourse.linuxserver.io/t/calibre-docker-compose-on-rpi4-no-autostart-gui/4259/3
-    image: lscr.io/linuxserver/calibre:arm64v8-arch-version-02a2ceb8
+    image: lscr.io/linuxserver/calibre:latest
     container_name: calibre
     environment:
       - PUID=${PUID}

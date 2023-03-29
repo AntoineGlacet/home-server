@@ -176,6 +176,22 @@ services:
       - 8080:8080/tcp # Calibre desktop gui.
       - 8081:8081/tcp # Calibre webserver gui.
     restart: unless-stopped
+  # Front end for Calibre and sync with Kobo e-reader
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      # - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - ./config/calibre-web:/config
+      - ${LIBRARY}:/data
+    ports:
+      - 8083:8083
+    restart: unless-stopped
 networks:
   default:
     name: media

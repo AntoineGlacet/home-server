@@ -7,9 +7,8 @@ play_spotify_bedroom:
   sequence:
     - service: spotcast.start
       data:
-        spotify_device_id: !secret spotify_BedroomC5_id
-        start_volume: "{{ start_volume }}"
-        uri: spotify:playlist:37i9dQZF1DXdQvOLqzNHSW
+        device_name: "BedroomC5"
+        uri: "spotify:playlist:37i9dQZF1DXdQvOLqzNHSW"
         random_song: true
         shuffle: true
   mode: single

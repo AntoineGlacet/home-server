@@ -33,6 +33,19 @@ services:
   #   sysctls:
   #     - net.ipv4.conf.all.src_valid_mark=1
   #   restart: unless-stopped
+
+  # refresh dynamic IP to cloudflare DNS
+  ddclient:
+    image: lscr.io/linuxserver/ddclient:latest
+    container_name: ddclient
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/ddclient:/config
+    restart: unless-stopped
+
   # share files with Windows
   samba:
     container_name: samba

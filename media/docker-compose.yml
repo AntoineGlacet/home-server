@@ -190,6 +190,22 @@ services:
     ports:
       - 8083:8083
     restart: unless-stopped
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/readarr:/config
+      - ${LIBRARY}:/books #optional
+      - ${DOWNLOADS}:/downloads #optional
+    ports:
+      - 8787:8787
+    restart: unless-stopped
+
 networks:
   default:
     name: media

@@ -9,19 +9,19 @@
       unit_of_measurement: "m"
       value_template: >-
         {% set dummy = states("sensor.time") %}
-        {{((states('sensor.redmi_note_8_pro_next_alarm')|as_timestamp|int - now()|as_timestamp|int)/60)|int}}
-      availability_template: "{{ not is_state('sensor.redmi_note_8_pro_next_alarm','unavailable') }}"
+        {{((states('sensor.pixel_7a_next_alarm')|as_timestamp|int - now()|as_timestamp|int)/60)|int}}
+      availability_template: "{{ not is_state('sensor.pixel_7a_next_alarm','unavailable') }}"
       attribute_templates:
-        time: "{{ state_attr('sensor.redmi_note_8_pro_next_alarm','Local Time') }}"
+        time: "{{ state_attr('sensor.pixel_7a_next_alarm','Local Time') }}"
 
 # Example configuration.yaml entry
 - platform: time_date
   display_options:
-    - 'time'
-    - 'date'
-    - 'date_time'
-    - 'date_time_utc'
-    - 'date_time_iso'
-    - 'time_date'
-    - 'time_utc'
-    - 'beat'
+    - "time"
+    - "date"
+    - "date_time"
+    - "date_time_utc"
+    - "date_time_iso"
+    - "time_date"
+    - "time_utc"
+    - "beat"

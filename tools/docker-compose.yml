@@ -108,20 +108,20 @@ services:
     restart: unless-stopped
 
   # code-server for webUI
-  code-server:
-    image: lscr.io/linuxserver/code-server:latest
-    container_name: code-server
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - /workspace=/mnt/home-server # important to have ha extension working
-    volumes:
-      - ./config/code-server:/config
-      - ${HOME_ASSISTANT_IMAGE_CONF}:/mnt/home-server
-    ports:
-      - 8443:8443
-    restart: unless-stopped
+  # code-server:
+  #   image: lscr.io/linuxserver/code-server:latest
+  #   container_name: code-server
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #     - /workspace=/mnt/home-server # important to have ha extension working
+  #   volumes:
+  #     - ./config/code-server:/config
+  #     - ${HOME_ASSISTANT_IMAGE_CONF}:/mnt/home-server
+  #   ports:
+  #     - 8443:8443
+  #   restart: unless-stopped
 
   # Contaiers management UI
   portainer-ce:

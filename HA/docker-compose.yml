@@ -3,7 +3,7 @@ services:
   # The core of my smart-home automations
   home-assistant:
     container_name: home-assistant
-    image: ghcr.io/home-assistant/home-assistant:stable
+    image: lscr.io/linuxserver/homeassistant:latest
     volumes:
       - ./config/homeassistant:/config
       - ${MEDIA}:/media
@@ -44,7 +44,7 @@ services:
       - /run/udev:/run/udev:ro
       - ./config/zigbee2mqtt:/app/data
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      - ${ZIGBEE_ADAPTOR_PATH}:/dev/ttyUSB0
     ports:
       # frontend, in zigbee's configuration.yaml
       - "8099:8099"

@@ -45,7 +45,7 @@ services:
 
   # Indexer aggregator
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:develop
+    image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
       - PUID=${PUID}

@@ -159,21 +159,6 @@ services:
       - 5055:5055
     restart: unless-stopped
 
-  # Ebooks library manager and webserver
-  # calibre:
-  #   image: lscr.io/linuxserver/calibre:latest
-  #   container_name: calibre
-  #   environment:
-  #     - PUID=${PUID}
-  #     - PGID=${PGID}
-  #     - TZ=${TZ}
-  #   volumes:
-  #     - ./config/calibre:/config
-  #     - ${DATA}:/data
-  #   ports:
-  #     - 8080:8080/tcp # Calibre desktop gui.
-  #     - 8081:8081/tcp # Calibre webserver gui.
-  #   restart: unless-stopped
   # Front end for Calibre and sync with Kobo e-reader
   calibre-web:
     image: lscr.io/linuxserver/calibre-web:latest

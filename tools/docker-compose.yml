@@ -12,27 +12,6 @@ services:
       - TZ=${TZ}
     ports:
       - 8002:80
-  # fast, modern VPN server
-  # wireguard:
-  #   image: lscr.io/linuxserver/wireguard:latest
-  #   container_name: wireguard
-  #   cap_add:
-  #     - NET_ADMIN
-  #     - SYS_MODULE
-  #   environment:
-  #     - PUID=${PUID}
-  #     - PGID=${PGID}
-  #     - TZ=${TZ}
-  #     - PEERS=KapPC,Phone #optional
-  #     - PEERDNS=adguard # config with adguard needs work.
-  #   volumes:
-  #     - ./config/wireguard:/config
-  #     - /lib/modules:/lib/modules
-  #   ports:
-  #     - 51820:51820/udp
-  #   sysctls:
-  #     - net.ipv4.conf.all.src_valid_mark=1
-  #   restart: unless-stopped
 
   # refresh dynamic IP to cloudflare DNS
   ddclient:
@@ -94,35 +73,6 @@ services:
       - swag
     restart: unless-stopped
 
-  # monitoring with glances  
-  glances:
-    container_name: glances
-    image: nicolargo/glances:latest-full
-    volumes:
-      - ./config/glances/glances.conf:/glances/conf/glances.con
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - "GLANCES_OPT=-w"
-    ports:
-      - 61208-61209:61208-61209
-    restart: unless-stopped
-
-  # code-server for webUI
-  # code-server:
-  #   image: lscr.io/linuxserver/code-server:latest
-  #   container_name: code-server
-  #   environment:
-  #     - PUID=${PUID}
-  #     - PGID=${PGID}
-  #     - TZ=${TZ}
-  #     - /workspace=/mnt/home-server # important to have ha extension working
-  #   volumes:
-  #     - ./config/code-server:/config
-  #     - ${HOME_ASSISTANT_IMAGE_CONF}:/mnt/home-server
-  #   ports:
-  #     - 8443:8443
-  #   restart: unless-stopped
-
   # Contaiers management UI
   portainer-ce:
     container_name: portainer
@@ -155,6 +105,8 @@ services:
     ports:
       - 8200:8200
     restart: unless-stopped
+
+  # Reverse DNS, nginx & certificates 
   swag:
     image: lscr.io/linuxserver/swag
     container_name: swag
@@ -168,6 +120,7 @@ services:
       - SUBDOMAINS=wildcard
       - VALIDATION=dns
       - DNSPLUGIN=cloudflare
+      - EXTRA_DOMAINS=handbook.kanku.dev
     volumes:
       - ./config/swag:/config
     ports:
@@ -177,6 +130,8 @@ services:
     networks:
       swag:
         ipv4_address: 10.13.88.88
+
+  # Authentification
   authelia:
     image: ghcr.io/authelia/authelia:latest
     container_name: authelia
@@ -192,6 +147,7 @@ services:
     ports:
       - 9092:9091
 
+  # Restart containers based on health
   autoheal:
     image: willfarrell/autoheal
     container_name: autoheal
@@ -201,6 +157,28 @@ services:
       # docker socket, be careful with this
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
+  # fast, modern VPN server
+  # wireguard:
+  #   image: lscr.io/linuxserver/wireguard:latest
+  #   container_name: wireguard
+  #   cap_add:
+  #     - NET_ADMIN
+  #     - SYS_MODULE
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #     - PEERS=KapPC,Phone #optional
+  #     - PEERDNS=adguard # config with adguard needs work.
+  #   volumes:
+  #     - ./config/wireguard:/config
+  #     - /lib/modules:/lib/modules
+  #   ports:
+  #     - 51820:51820/udp
+  #   sysctls:
+  #     - net.ipv4.conf.all.src_valid_mark=1
+  #   restart: unless-stopped
+
 networks:
   default:
     name: tools

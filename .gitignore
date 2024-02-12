@@ -23,3 +23,6 @@ __pycache__
 # test directory
 test
 
+# data directories
+*/data
+

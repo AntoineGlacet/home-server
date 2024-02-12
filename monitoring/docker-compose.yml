@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data/uptime-kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    user: "1000"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tokyo
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    volumes:
+      - ./config/prometheus:/etc/prometheus
+      - ./data/prometheus:/prometheus
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    user: "1000"
+    ports:
+      - "3000:3000"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Tokyo
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=Asia/Tokyo
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    command:
+      - '-housekeeping_interval=30s'
+      - '-docker_only=true'
+      - '-store_container_labels=false'
+      - '-disable_metrics=percpu,process,sched,tcp,udp,diskIO,disk,network'
+    privileged: true
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped

@@ -1,0 +1,85 @@
+- overview:
+    - Homepage:
+        icon: mdi-home
+        href: https://home.antoineglacet.com
+        description: Central dashboard for the stack
+    - Home Assistant:
+        icon: home-assistant
+        href: https://homeassistant.antoineglacet.com
+        description: Automations and smart devices
+    - AdGuard Home:
+        icon: adguard
+        href: https://adguard.antoineglacet.com
+        description: Network-wide DNS filtering
+    - Zigbee2MQTT:
+        icon: zigbee2mqtt
+        href: https://zigbee2mqtt.antoineglacet.com
+        description: Zigbee coordinator management
+
+- media:
+    - Plex:
+        icon: plex
+        href: https://plex.antoineglacet.com
+        description: Stream your media library
+    - Overseerr:
+        icon: overseerr
+        href: https://overseerr.antoineglacet.com
+        description: Discover and request new titles
+    - Sonarr:
+        icon: sonarr
+        href: https://sonarr.antoineglacet.com
+        description: Manage TV library
+    - Radarr:
+        icon: radarr
+        href: https://radarr.antoineglacet.com
+        description: Manage movie library
+    - Bazarr:
+        icon: bazarr
+        href: https://bazarr.antoineglacet.com
+        description: Subtitle management
+    - Prowlarr:
+        icon: prowlarr
+        href: https://prowlarr.antoineglacet.com
+        description: Indexer aggregator
+    - Transmission:
+        icon: transmission
+        href: https://transmission.antoineglacet.com
+        description: BitTorrent client
+    - Calibre-Web:
+        icon: calibre
+        href: https://calibre-web.antoineglacet.com
+        description: Browse e-book collection
+
+- infrastructure:
+    - Portainer:
+        icon: portainer
+        href: https://portainer.antoineglacet.com
+        description: Container management UI
+    - Authelia:
+        icon: authelia
+        href: https://auth.antoineglacet.com
+        description: Single sign-on gateway
+    - Duplicati:
+        icon: duplicati
+        href: https://duplicati.antoineglacet.com
+        description: Encrypted backups
+    - Glances:
+        icon: glances
+        href: https://glances.antoineglacet.com
+        description: System monitoring
+    - Grafana:
+        icon: grafana
+        href: https://grafana.antoineglacet.com
+        description: Metrics dashboards
+    - Uptime Kuma:
+        icon: uptime-kuma
+        href: https://uptime-kuma.antoineglacet.com
+        description: Availability monitoring
+    - Syncthing:
+        icon: syncthing
+        href: https://syncthing.antoineglacet.com
+        description: File synchronisation
+    - VS Code:
+        icon: vscode
+        href: https://vscode.antoineglacet.com
+        description: Web-based editor

@@ -1,0 +1,41 @@
+homeassistant:
+  enabled: true
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://172.17.0.1:1888
+  user: hass
+  password: chevalierblanc
+serial:
+  port: /dev/ttyUSB0
+frontend:
+  enabled: true
+  port: 8099
+advanced:
+  log_level: debug
+devices:
+  '0x6c5cb1fffe6853ec':
+    friendly_name: bulb_Living_TV
+  '0x6c5cb1fffe618e9d':
+    friendly_name: bulb_Living_dining
+  '0x0c4314fffeb0d697':
+    friendly_name: bulb_standing_lamp
+    homeassistant: {}
+    optimistic: true
+  '0x00be44fffeaa1c4b':
+    friendly_name: plug_computer
+  '0x00be44fffeaaceaf':
+    friendly_name: plug_toilets
+  '0x00be44fffeaa2666':
+    friendly_name: plug_couch
+  '0x94a081fffe580381':
+    friendly_name: plug_bedroom
+  '0x5cc7c1fffe8e4d9f':
+    friendly_name: bulb_bedroom_ceiling
+  '0xb4e3f9fffe5a748d':
+    friendly_name: '0xb4e3f9fffe5a748d'
+  '0x0c4314fffea396df':
+    friendly_name: '0x0c4314fffea396df'
+groups:
+  '1':
+    friendly_name: Living_room_ceiling_lights
+version: 4

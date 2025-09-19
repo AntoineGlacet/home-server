@@ -11,4 +11,5 @@
 !config/homeassistant/configuration.yaml
 !config/homeassistant/sensors.yaml
 !config/homeassistant/themes/*
-
+!config/mosquitto/mosquitto.conf
+!config/zigbee2mqtt/configuration.yaml

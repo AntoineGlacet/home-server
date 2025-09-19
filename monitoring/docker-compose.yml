@@ -72,3 +72,17 @@ services:
     devices:
       - /dev/kmsg
     restart: unless-stopped
+
+  glances:
+    image: nicolargo/glances:latest-full
+    container_name: glances
+    restart: unless-stopped
+    pid: host
+    network_mode: host
+    environment:
+      GLANCES_OPT: "-w --disable-check-update --fs-path /host --fs-path /mnt/media"
+      TZ: ${TZ}
+    volumes:
+      - /:/host:ro
+      - /mnt/media:/mnt/media:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro

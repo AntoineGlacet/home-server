@@ -8,7 +8,7 @@
         href: https://homeassistant.antoineglacet.com
         description: Automations and smart devices
     - AdGuard Home:
-        icon: adguard
+        icon: adguard-home
         href: https://adguard.antoineglacet.com
         description: Network-wide DNS filtering
     - Zigbee2MQTT:
@@ -45,6 +45,9 @@
         icon: transmission
         href: https://transmission.antoineglacet.com
         description: BitTorrent client
+        widget:
+            type: transmission
+            url: https://transmission.antoineglacet.com
     - Calibre-Web:
         icon: calibre
         href: https://calibre-web.antoineglacet.com

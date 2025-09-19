@@ -22,6 +22,11 @@ config/authelia/*
 config/ddclient/*
 !config/ddclient/ddclient.conf
 
+# Homepage dashboard configuration
+!config/homepage/
+config/homepage/*
+!config/homepage/*.yaml
+
 # SWAG nginx configuration
 !config/swag/
 config/swag/*

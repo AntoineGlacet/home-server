@@ -1,0 +1,15 @@
+title: Home Server
+subtitle: Antoine's self-hosted services
+logo: https://raw.githubusercontent.com/gethomepage/homepage/main/public/logo.svg
+icon: mdi-home-analytics
+color: gray
+background:
+  image: https://raw.githubusercontent.com/Jas-SinghFSU/homepage-catppuccin/main/wallpaper.png
+  blur: md
+  opacity: 70
+language: en
+useEqualHeights: true
+layout:
+  - overview
+  - media
+  - infrastructure

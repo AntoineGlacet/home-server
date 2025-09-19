@@ -1,0 +1,9 @@
+# Copy to users_database.yml and replace placeholders with real accounts.
+users:
+  example:
+    password: "$argon2id$v=19$m=65536,t=2,p=4$examplehash..."
+    displayname: Example User
+    email: user@example.com
+    groups:
+      - admins
+    disabled: false

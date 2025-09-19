@@ -21,6 +21,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - DDCLIENT_CLOUDFLARE_TOKEN=${DDCLIENT_CLOUDFLARE_TOKEN}
     volumes:
       - ./config/ddclient:/config
     restart: unless-stopped
@@ -139,6 +140,10 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET}
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_ENCRYPTION_KEY}
+      - AUTHELIA_SMTP_PASSWORD=${AUTHELIA_SMTP_PASSWORD}
     volumes:
       - ./config/authelia:/config
     restart: unless-stopped

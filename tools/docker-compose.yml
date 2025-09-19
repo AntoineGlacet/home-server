@@ -1,17 +1,18 @@
 services:
   # portal to access all other web UI
-  heimdall:
-    container_name: heimdall
+  homepage:
+    container_name: homepage
     restart: unless-stopped
-    image: linuxserver/heimdall:latest
+    image: ghcr.io/gethomepage/homepage:latest
     volumes:
-      - ./config/heimdall:/config
+      - ./config/homepage:/app/config
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - HOMEPAGE_ALLOWED_HOSTS=home.antoineglacet.com
     ports:
-      - 8002:80
+      - 8002:3000
 
   # refresh dynamic IP to cloudflare DNS
   ddclient:

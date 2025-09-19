@@ -160,19 +160,36 @@ services:
     restart: unless-stopped
 
   # Front end for Calibre and sync with Kobo e-reader
-  calibre-web:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
+  # calibre-web:
+  #   image: lscr.io/linuxserver/calibre-web:latest
+  #   container_name: calibre-web
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #     - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+  #     # - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+  #   volumes:
+  #     - ./config/calibre-web:/config
+  #     - ${LIBRARY}:/data
+  #   ports:
+  #     - 8083:8083
+  #   restart: unless-stopped
+  calibre-web-automated:
+    image: crocodilestick/calibre-web-automated:latest
+    container_name: calibre-web-automated
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
-      # - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
       - ./config/calibre-web:/config
-      - ${LIBRARY}:/data
+      - ${LIBRARY}:/calibre-library
+      # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
+      - ${BOOK_INGEST}:/cwa-book-ingest
+
     ports:
+      # Change the first number to change the port you want to access the Web UI, not the second
       - 8083:8083
     restart: unless-stopped
 
@@ -190,6 +207,39 @@ services:
     ports:
       - 8787:8787
     restart: unless-stopped
+
+  syncthing:
+    image: syncthing/syncthing
+    container_name: syncthing
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - "8384:8384"      # Web UI
+      - "22000:22000/tcp"  # Sync traffic
+      - "22000:22000/udp"
+      - "21027:21027/udp"  # Discovery
+    volumes:
+      - ./config/syncthing:/var/syncthing/config
+      - ${SAVES}:/var/syncthing/data  # Change this to your media storage path
+
+
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - "8191:8191"
+    restart: unless-stopped 
 
 networks:
   default:

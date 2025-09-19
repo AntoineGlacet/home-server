@@ -120,7 +120,7 @@ services:
       - SUBDOMAINS=wildcard
       - VALIDATION=dns
       - DNSPLUGIN=cloudflare
-      - EXTRA_DOMAINS=handbook.kanku.dev
+      # - EXTRA_DOMAINS=handbook.kanku.dev
     volumes:
       - ./config/swag:/config
     ports:
@@ -156,6 +156,22 @@ services:
     volumes:
       # docker socket, be careful with this
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+  fail2ban:
+    image: lscr.io/linuxserver/fail2ban:latest
+    container_name: fail2ban
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    network_mode: host
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/fail2ban:/config
+      - /var/log:/var/log:ro
     restart: unless-stopped
   # fast, modern VPN server
   # wireguard:

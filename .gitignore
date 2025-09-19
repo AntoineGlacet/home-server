@@ -1,15 +1,52 @@
 # .gitignore
 # git ignore is read from top to bottom
 # start by excluding the large folders we do not track
-# then include (!) the tree structures and files  we want to keep
+# then include (!) the tree structures and files we want to keep
 # finally, ignore generic and secret files
 
 # Specific keeps
 !.gitkeep
 
+# SWAG generated content
+tools/config/swag/*
+!tools/config/swag/nginx
+tools/config/swag/nginx/*
+!tools/config/swag/nginx/site-confs
+!tools/config/swag/nginx/snippets
+tools/config/swag/nginx/site-confs/*
+!tools/config/swag/nginx/site-confs/default.conf
+tools/config/swag/nginx/snippets/*
+!tools/config/swag/nginx/snippets/authelia
+tools/config/swag/nginx/snippets/authelia/*
+!tools/config/swag/nginx/snippets/authelia/authrequest.conf
+!tools/config/swag/nginx/snippets/authelia/location.conf
+tools/config/swag/nginx/proxy-confs/*
+!tools/config/swag/nginx/proxy-confs/_all.subdomain.conf
+tools/config/swag/nginx/.htpasswd
+tools/config/swag/nginx/*.pem
+tools/config/swag/nginx/*.key
+tools/config/swag/nginx/*.crt
+tools/config/swag/nginx/dhparams.pem
+
+# Authelia runtime files
+tools/config/authelia/authelia.log
+tools/config/authelia/db.sqlite3
+
+# Duplicati state
+tools/config/duplicati/
+
+# Fail2ban runtime
+tools/config/fail2ban/log/
+tools/config/fail2ban/fail2ban/fail2ban.sqlite3
+
+# Portainer state
+tools/config/portainer/portainer.db
+tools/config/portainer/portainer.key
+tools/config/portainer/portainer.pub
+tools/config/portainer/backups/
+
 # Generic ignores
 *.log*
-*.conf
 *.db*
 *.pyc
 ._*
@@ -25,4 +62,3 @@ test
 
 # data directories
 */data
-

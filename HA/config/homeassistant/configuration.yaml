@@ -15,7 +15,7 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 10.13.89.90 # host
-    - 10.13.88.88 # swag instance
+    - 172.16.0.0/12 # docker bridge networks (incl. homelab_proxy)
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:

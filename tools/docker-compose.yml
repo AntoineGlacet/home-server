@@ -151,8 +151,6 @@ services:
     restart: unless-stopped
     networks:
       - swag
-    ports:
-      - 9092:9091
 
   # Restart containers based on health
   autoheal:

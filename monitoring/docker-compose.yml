@@ -80,7 +80,7 @@ services:
     pid: host
     network_mode: host
     environment:
-      GLANCES_OPT: "-w --disable-check-update --fs-path /host --fs-path /mnt/media"
+      GLANCES_OPT: "-w --disable-check-update"
       TZ: ${TZ}
     volumes:
       - /:/host:ro

@@ -62,6 +62,113 @@ home-server
 - Host-mode workloads (`home-assistant`, `plex`, `fail2ban`, `node_exporter`) need raw LAN access for device discovery and firewalling.
 - Internal DNS (`adguard`) and DHCP let the Pi act as the network edge, while `ddclient` updates the public hostname.
 
+## Network Architecture
+
+```mermaid
+flowchart LR
+    classDef host fill:#fde2e4,stroke:#b56576,color:#111;
+    classDef vpn fill:#ffe066,stroke:#f3722c,color:#111;
+    classDef monitor fill:#dbe7ff,stroke:#3a0ca3,color:#111;
+    classDef edge fill:#d8f3dc,stroke:#2d6a4f,color:#111;
+
+    wan((Internet))
+    lan((Home LAN clients))
+
+    subgraph HostLAN["Host LAN / Docker Engine"]
+        docker[Docker Engine]
+        homeassistant["home-assistant"]
+        plex["plex"]
+        fail2ban["fail2ban"]
+        nodeexporter["node_exporter"]
+        glances["glances"]
+    end
+    class homeassistant,plex,fail2ban,nodeexporter,glances host;
+
+    subgraph Zigbee["zigbeeHA<br/>10.13.90.0/24"]
+        mqtt["mqtt"]
+        zigbee2mqtt["zigbee2mqtt"]
+    end
+
+    subgraph Media["media<br/>10.13.92.0/24"]
+        nordlynx["nordlynx<br/>(VPN tunnel)"]
+        transmission["transmission"]
+        prowlarr["prowlarr"]
+        sonarr["sonarr"]
+        radarr["radarr"]
+        overseerr["overseerr"]
+        bazarr["bazarr"]
+        readarr["readarr"]
+        syncthing["syncthing"]
+        calibre["calibre-web-automated"]
+    end
+    class nordlynx vpn;
+
+    subgraph Tools["tools<br/>10.13.91.0/24"]
+        homepage["homepage"]
+        adguard["adguard"]
+        portainer["portainer"]
+        duplicati["duplicati"]
+        ddclient["ddclient"]
+        samba["samba"]
+        autoheal["autoheal"]
+    end
+    class homepage,adguard,portainer,duplicati,ddclient,samba,autoheal edge;
+
+    subgraph SwagNet["swag<br/>10.13.88.0/24"]
+        swag["swag<br/>(10.13.88.88)"]
+        authelia["authelia"]
+    end
+
+    subgraph Monitoring["monitoring_default<br/>10.13.93.0/24"]
+        uptime["uptime-kuma"]
+        prometheus["prometheus"]
+        grafana["grafana"]
+        cadvisor["cadvisor"]
+    end
+    class uptime,prometheus,grafana,cadvisor monitor;
+
+    wan --> swag
+    lan --> adguard
+    swag --> authelia
+    authelia --> homepage
+    authelia --> portainer
+    authelia --> grafana
+
+    homepage --> lan
+    portainer --> docker
+    autoheal --> docker
+    duplicati --> backup[(Backup target)]
+    ddclient --> dns[(Cloudflare DNS)]
+    samba --> lan
+
+    homeassistant -- automations --> mqtt
+    zigbee2mqtt -- publishes --> mqtt
+    zigbee2mqtt -. "USB Zigbee stick" .- homeassistant
+
+    docker --> homeassistant
+    docker --> plex
+    docker --> fail2ban
+
+    prometheus --> nodeexporter
+    prometheus --> cadvisor
+    grafana --> prometheus
+    uptime -. monitors .- swag
+    uptime -. monitors .- plex
+
+    nordlynx --> vpnexit((NordVPN POP))
+    transmission -. shares namespace .- nordlynx
+    prowlarr -. shares namespace .- nordlynx
+    sonarr --> transmission
+    radarr --> transmission
+    overseerr --> sonarr
+    overseerr --> radarr
+    bazarr --> sonarr
+    readarr --> transmission
+
+    plex --> lan
+    syncthing --> lan
+```
+
 ### Monitoring & Self-Healing
 
 - Prometheus scrapes `node_exporter` (host metrics) and `cadvisor` (container metrics); Grafana dashboards visualize both.

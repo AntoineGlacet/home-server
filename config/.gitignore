@@ -1,0 +1,2 @@
+# Patterns for config/ are defined in the repository root .gitignore
+# This file is intentionally empty so local overrides do not mask tracked files.

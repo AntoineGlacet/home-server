@@ -1,6 +1,0 @@
-# next 5 lines to ignore all but .gitkeep and .gitignore in all subdirectories
-*
-*/
-!.gitkeep
-!.gitignore
-!*/

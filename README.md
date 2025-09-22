@@ -4,12 +4,12 @@
 
 ## Stack Landscape
 
-| Stack | Network | Why it exists | Key services |
+| Stack | Network usage | Why it exists | Key services |
 | --- | --- | --- | --- |
-| `HA` | `host` & `zigbeeHA` (10.13.90.0/24) | Smart-home automations via Home Assistant with Zigbee over MQTT. | `home-assistant`, `mqtt`, `zigbee2mqtt` |
-| `media` | `media` (10.13.92.0/24) | Media acquisition, library curation, and streaming with a NordVPN egress. | `nordlynx`, `transmission`, `prowlarr`, `sonarr`, `radarr`, `plex`, `overseerr`, `readarr`, `syncthing`, `calibre` |
-| `monitoring` | `monitoring_default` (10.13.93.0/24) | Platform observability and alerting. | `uptime-kuma`, `prometheus`, `grafana`, `cadvisor`, `node_exporter` |
-| `tools` | `tools` (10.13.91.0/24) | Edge services, SSO, backups, DNS, and portal. | `swag`, `authelia`, `homepage`, `adguard`, `portainer`, `duplicati`, `ddclient`, `samba`, `autoheal`, `fail2ban` |
+| `HA` | Host LAN for discovery + stack default (Docker-managed) | Smart-home automations via Home Assistant with Zigbee over MQTT. | `home-assistant`, `mqtt`, `zigbee2mqtt` |
+| `media` | Stack default + `homelab_proxy` for HTTP ingress | Media acquisition, library curation, and streaming with a NordVPN egress. | `nordlynx`, `transmission`, `prowlarr`, `sonarr`, `radarr`, `plex`, `overseerr`, `readarr`, `syncthing`, `calibre` |
+| `monitoring` | Stack default + `homelab_proxy` for dashboards | Platform observability and alerting. | `uptime-kuma`, `prometheus`, `grafana`, `cadvisor`, `node_exporter` |
+| `tools` | `homelab_proxy` for ingress + host for `fail2ban` | Edge services, SSO, backups, DNS, and portal. | `swag`, `authelia`, `homepage`, `adguard`, `portainer`, `duplicati`, `ddclient`, `samba`, `autoheal`, `fail2ban` |
 
 ## Repo Layout
 
@@ -57,7 +57,8 @@ home-server
 
 ### Networking Notes
 
-- `swag` (reverse proxy) owns `10.13.88.88` and handles TLS via Cloudflare DNS-01, then forwards through `authelia` for SSO.
+- `homelab_proxy` is the only shared bridge network. `swag`, `authelia`, and any HTTP services exposed through the reverse proxy join it across stacks. It is created automatically when the `tools` stack starts (or manually via `docker network create homelab_proxy`).
+- Each stack otherwise relies on the Docker-managed default network, keeping isolation without hard-coding subnets.
 - NordVPN egress is enforced by `network_mode: service:nordlynx` for Transmission and Prowlarr to keep metadata private.
 - Host-mode workloads (`home-assistant`, `plex`, `fail2ban`, `node_exporter`) need raw LAN access for device discovery and firewalling.
 - Internal DNS (`adguard`) and DHCP let the Pi act as the network edge, while `ddclient` updates the public hostname.
@@ -70,9 +71,11 @@ flowchart LR
     classDef vpn fill:#ffe066,stroke:#f3722c,color:#111;
     classDef monitor fill:#dbe7ff,stroke:#3a0ca3,color:#111;
     classDef edge fill:#d8f3dc,stroke:#2d6a4f,color:#111;
+    classDef proxy fill:#f6f6f6,stroke:#495057,color:#111;
 
     wan((Internet))
     lan((Home LAN clients))
+    proxyNet((homelab_proxy))
 
     subgraph HostLAN["Host LAN / Docker Engine"]
         docker[Docker Engine]
@@ -80,17 +83,16 @@ flowchart LR
         plex["plex"]
         fail2ban["fail2ban"]
         nodeexporter["node_exporter"]
-        glances["glances"]
     end
-    class homeassistant,plex,fail2ban,nodeexporter,glances host;
+    class homeassistant,plex,fail2ban,nodeexporter host;
 
-    subgraph Zigbee["zigbeeHA<br/>10.13.90.0/24"]
+    subgraph Zigbee["HA stack (Docker default)"]
         mqtt["mqtt"]
         zigbee2mqtt["zigbee2mqtt"]
     end
 
-    subgraph Media["media<br/>10.13.92.0/24"]
-        nordlynx["nordlynx<br/>(VPN tunnel)"]
+    subgraph Media["Media stack (Docker default)"]
+        nordlynx["nordlynx (VPN tunnel)"]
         transmission["transmission"]
         prowlarr["prowlarr"]
         sonarr["sonarr"]
@@ -103,7 +105,7 @@ flowchart LR
     end
     class nordlynx vpn;
 
-    subgraph Tools["tools<br/>10.13.91.0/24"]
+    subgraph Tools["Tools stack (Docker default)"]
         homepage["homepage"]
         adguard["adguard"]
         portainer["portainer"]
@@ -111,21 +113,39 @@ flowchart LR
         ddclient["ddclient"]
         samba["samba"]
         autoheal["autoheal"]
-    end
-    class homepage,adguard,portainer,duplicati,ddclient,samba,autoheal edge;
-
-    subgraph SwagNet["swag<br/>10.13.88.0/24"]
-        swag["swag<br/>(10.13.88.88)"]
+        swag["swag"]
         authelia["authelia"]
     end
+    class homepage,adguard,portainer,duplicati,ddclient,samba,autoheal edge;
+    class swag,authelia proxy;
 
-    subgraph Monitoring["monitoring_default<br/>10.13.93.0/24"]
+    subgraph Monitoring["Monitoring stack (Docker default)"]
         uptime["uptime-kuma"]
         prometheus["prometheus"]
         grafana["grafana"]
         cadvisor["cadvisor"]
+        glances["glances"]
     end
-    class uptime,prometheus,grafana,cadvisor monitor;
+    class uptime,prometheus,grafana,cadvisor,glances monitor;
+
+    proxyNet --- swag
+    proxyNet --- authelia
+    proxyNet --- homepage
+    proxyNet --- adguard
+    proxyNet --- portainer
+    proxyNet --- duplicati
+    proxyNet --- grafana
+    proxyNet --- uptime
+    proxyNet --- glances
+    proxyNet --- overseerr
+    proxyNet --- sonarr
+    proxyNet --- radarr
+    proxyNet --- bazarr
+    proxyNet --- readarr
+    proxyNet --- syncthing
+    proxyNet --- calibre
+    proxyNet --- zigbee2mqtt
+    proxyNet --- nordlynx
 
     wan --> swag
     lan --> adguard

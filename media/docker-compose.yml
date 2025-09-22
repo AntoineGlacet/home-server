@@ -14,9 +14,10 @@ services:
     ports:
       - 51413:51413
       - 51413:51413/udp
-      - 9091:9091 # transmission
-      - 9696:9696 # prowlarr
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # Torrent client
   transmission:
@@ -81,12 +82,13 @@ services:
       - ./config/sonarr:/config
       - ${TV}:/tv
       - ${DOWNLOADS}:/downloads
-    ports:
-      - 8989:8989
     depends_on:
       - prowlarr
       - transmission
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # Movie library manager
   radaar:
@@ -103,12 +105,13 @@ services:
       - ./config/radarr:/config
       - ${MOVIES}:/movies
       - ${DOWNLOADS}:/downloads
-    ports:
-      - 7878:7878
     depends_on:
       - prowlarr
       - transmission
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # Subtitles downloader
   bazarr:
@@ -124,9 +127,10 @@ services:
       - ./config/bazarr:/config
       - ${MOVIES}:/movies #optional
       - ${TV}:/tv #optional
-    ports:
-      - 6767:6767
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # Media server, stream content
   plex:
@@ -155,9 +159,10 @@ services:
       - TZ=${TZ}
     volumes:
       - ./config/overseer:/config
-    ports:
-      - 5055:5055
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # Front end for Calibre and sync with Kobo e-reader
   # calibre-web:
@@ -187,10 +192,9 @@ services:
       - ${LIBRARY}:/calibre-library
       # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
       - ${BOOK_INGEST}:/cwa-book-ingest
-
-    ports:
-      # Change the first number to change the port you want to access the Web UI, not the second
-      - 8083:8083
+    networks:
+      - default
+      - swag
     restart: unless-stopped
 
   readarr:
@@ -204,9 +208,10 @@ services:
       - ./config/readarr:/config
       - ${LIBRARY}:/books #optional
       - ${DOWNLOADS}:/downloads #optional
-    ports:
-      - 8787:8787
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   syncthing:
     image: syncthing/syncthing
@@ -217,13 +222,15 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     ports:
-      - "8384:8384"      # Web UI
       - "22000:22000/tcp"  # Sync traffic
       - "22000:22000/udp"
       - "21027:21027/udp"  # Discovery
     volumes:
       - ./config/syncthing:/var/syncthing/config
       - ${SAVES}:/var/syncthing/data  # Change this to your media storage path
+    networks:
+      - default
+      - swag
 
 
   flaresolverr:
@@ -249,3 +256,6 @@ networks:
       config:
         - subnet: "10.13.92.0/24"
           gateway: "10.13.92.1" #optional
+  swag:
+    external: true
+    name: swag

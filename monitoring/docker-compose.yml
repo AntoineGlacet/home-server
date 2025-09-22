@@ -2,12 +2,13 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma
     container_name: uptime-kuma
-    ports:
-      - "3001:3001"
     volumes:
       - ./data/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
+    networks:
+      - default
+      - swag
 
   prometheus:
     image: prom/prometheus
@@ -39,8 +40,6 @@ services:
     image: grafana/grafana
     container_name: grafana
     user: "1000"
-    ports:
-      - "3000:3000"
     environment:
       - PUID=1000
       - PGID=1000
@@ -49,6 +48,9 @@ services:
     volumes:
       - ./data/grafana:/var/lib/grafana
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor
@@ -78,7 +80,9 @@ services:
     container_name: glances
     restart: unless-stopped
     pid: host
-    network_mode: host
+    networks:
+      - default
+      - swag
     environment:
       GLANCES_OPT: "-w --disable-check-update"
       TZ: ${TZ}
@@ -86,3 +90,10 @@ services:
       - /:/host:ro
       - /mnt/media:/mnt/media:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+  default:
+    name: monitoring_default
+  swag:
+    external: true
+    name: swag

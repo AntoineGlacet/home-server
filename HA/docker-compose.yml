@@ -45,9 +45,9 @@ services:
       - ./config/zigbee2mqtt:/app/data
     devices:
       - ${ZIGBEE_ADAPTOR_PATH}:/dev/ttyUSB0
-    ports:
-      # frontend, in zigbee's configuration.yaml
-      - "8099:8099"
+    networks:
+      - default
+      - swag
   # node-red:
   #   container_name: node-red
   #   image: nodered/node-red:latest
@@ -70,3 +70,6 @@ networks:
       config:
         - subnet: "10.13.90.0/24"
           gateway: "10.13.90.1" #optional
+  swag:
+    external: true
+    name: swag

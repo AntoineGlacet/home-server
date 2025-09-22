@@ -132,6 +132,7 @@ services:
     networks:
       swag:
         ipv4_address: 10.13.88.88
+      productivity:
 
   # Authentification
   authelia:
@@ -216,3 +217,6 @@ networks:
       config:
         - subnet: 10.13.88.0/24
           gateway: 10.13.88.1
+  productivity:
+    external: true
+    name: productivity_default

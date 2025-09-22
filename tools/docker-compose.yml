@@ -11,8 +11,9 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - HOMEPAGE_ALLOWED_HOSTS=home.antoineglacet.com
-    ports:
-      - 8002:3000
+    networks:
+      - default
+      - swag
 
   # refresh dynamic IP to cloudflare DNS
   ddclient:
@@ -67,13 +68,12 @@ services:
       - 53:53/udp
       - 67:67/udp
       - 853:853/tcp
-      - 8380:80/tcp
-      - 8300:3000/tcp
-      - 444:443/tcp
-      - 444:443/udp
     depends_on:
       - swag
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # Contaiers management UI
   portainer-ce:
@@ -88,9 +88,10 @@ services:
       - ./config/portainer:/data
     ports:
       - 8000:8000 # Agent
-      - 9443:9443 # https Web UI  
-      - 9000:9000 # http WebUI
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # backup
   duplicati:
@@ -104,9 +105,10 @@ services:
       - ./config/duplicati:/config
       - ${BACKUP}:/backups
       - ${HOMESERVER}:/source
-    ports:
-      - 8200:8200
     restart: unless-stopped
+    networks:
+      - default
+      - swag
 
   # Reverse DNS, nginx & certificates 
   swag:
@@ -125,6 +127,9 @@ services:
       # - EXTRA_DOMAINS=handbook.kanku.dev
     volumes:
       - ./config/swag:/config
+    extra_hosts:
+      - "home-assistant:host-gateway"
+      - "plex:host-gateway"
     ports:
       - 443:443
       # - 80:80 for http validation only
@@ -133,6 +138,7 @@ services:
       swag:
         ipv4_address: 10.13.88.88
       productivity:
+      default:
 
   # Authentification
   authelia:
@@ -151,8 +157,6 @@ services:
     restart: unless-stopped
     networks:
       - swag
-    ports:
-      - 9092:9091
 
   # Restart containers based on health
   autoheal:

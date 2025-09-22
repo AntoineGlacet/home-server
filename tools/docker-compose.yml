@@ -12,8 +12,7 @@ services:
       - TZ=${TZ}
       - HOMEPAGE_ALLOWED_HOSTS=home.antoineglacet.com
     networks:
-      - default
-      - swag
+      - proxy
 
   # refresh dynamic IP to cloudflare DNS
   ddclient:
@@ -72,8 +71,7 @@ services:
       - swag
     restart: unless-stopped
     networks:
-      - default
-      - swag
+      - proxy
 
   # Contaiers management UI
   portainer-ce:
@@ -90,8 +88,7 @@ services:
       - 8000:8000 # Agent
     restart: unless-stopped
     networks:
-      - default
-      - swag
+      - proxy
 
   # backup
   duplicati:
@@ -107,8 +104,7 @@ services:
       - ${HOMESERVER}:/source
     restart: unless-stopped
     networks:
-      - default
-      - swag
+      - proxy
 
   # Reverse DNS, nginx & certificates 
   swag:
@@ -135,10 +131,7 @@ services:
       # - 80:80 for http validation only
     restart: unless-stopped
     networks:
-      swag:
-        ipv4_address: 10.13.88.88
-      productivity:
-      default:
+      - proxy
 
   # Authentification
   authelia:
@@ -156,7 +149,7 @@ services:
       - ./config/authelia:/config
     restart: unless-stopped
     networks:
-      - swag
+      - proxy
 
   # Restart containers based on health
   autoheal:
@@ -207,20 +200,5 @@ services:
   #   restart: unless-stopped
 
 networks:
-  default:
-    name: tools
-    driver: bridge
-    ipam:
-      config:
-        - subnet: "10.13.91.0/24"
-          gateway: "10.13.91.1" #optional
-  swag:
-    name: swag
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.13.88.0/24
-          gateway: 10.13.88.1
-  productivity:
-    external: true
-    name: productivity_default
+  proxy:
+    name: homelab_proxy

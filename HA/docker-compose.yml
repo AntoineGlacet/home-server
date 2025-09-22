@@ -47,7 +47,7 @@ services:
       - ${ZIGBEE_ADAPTOR_PATH}:/dev/ttyUSB0
     networks:
       - default
-      - swag
+      - proxy
   # node-red:
   #   container_name: node-red
   #   image: nodered/node-red:latest
@@ -63,13 +63,6 @@ services:
   #   depends_on:
   #     - home-assistant
 networks:
-  default:
-    name: zigbeeHA
-    driver: bridge
-    ipam:
-      config:
-        - subnet: "10.13.90.0/24"
-          gateway: "10.13.90.1" #optional
-  swag:
+  proxy:
     external: true
-    name: swag
+    name: homelab_proxy

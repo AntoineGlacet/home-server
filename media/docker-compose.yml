@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - swag
+      - proxy
 
   # Torrent client
   transmission:
@@ -88,7 +88,7 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - swag
+      - proxy
 
   # Movie library manager
   radaar:
@@ -111,7 +111,7 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - swag
+      - proxy
 
   # Subtitles downloader
   bazarr:
@@ -130,7 +130,7 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - swag
+      - proxy
 
   # Media server, stream content
   plex:
@@ -162,7 +162,7 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - swag
+      - proxy
 
   # Front end for Calibre and sync with Kobo e-reader
   # calibre-web:
@@ -194,7 +194,7 @@ services:
       - ${BOOK_INGEST}:/cwa-book-ingest
     networks:
       - default
-      - swag
+      - proxy
     restart: unless-stopped
 
   readarr:
@@ -211,7 +211,7 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - swag
+      - proxy
 
   syncthing:
     image: syncthing/syncthing
@@ -230,7 +230,7 @@ services:
       - ${SAVES}:/var/syncthing/data  # Change this to your media storage path
     networks:
       - default
-      - swag
+      - proxy
 
 
   flaresolverr:
@@ -249,13 +249,6 @@ services:
     restart: unless-stopped 
 
 networks:
-  default:
-    name: media
-    driver: bridge
-    ipam:
-      config:
-        - subnet: "10.13.92.0/24"
-          gateway: "10.13.92.1" #optional
-  swag:
+  proxy:
     external: true
-    name: swag
+    name: homelab_proxy

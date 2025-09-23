@@ -2,8 +2,9 @@ homeassistant:
   enabled: true
 mqtt:
   base_topic: zigbee2mqtt
-  # Connection details (server, user, password) are supplied via
-  # environment variables (see docker-compose.yml) or !secret entries.
+  server: mqtt://172.17.0.1:1888
+  user: hass
+  password: chevalierblanc
 serial:
   port: /dev/ttyUSB0
 frontend:

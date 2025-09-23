@@ -77,3 +77,7 @@ config/traefik/certs/*.key
 !config/mosquitto/mosquitto.conf
 !config/zigbee2mqtt/configuration.yaml
 config/zigbee2mqtt/secrets.yaml
+
+!config/appflowy/
+config/appflowy/ssl/*
+!config/appflowy/nginx/nginx.conf

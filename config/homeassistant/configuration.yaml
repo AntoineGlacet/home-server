@@ -20,29 +20,6 @@ http:
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-# panel:
-panel_iframe:
-  # router:
-  #   title: "Node-Red"
-  #   url: "https://10.13.89.90:1880"
-  #   icon: si:nodered
-  zigbee2mqtt:
-    title: "Zigbee2MQTT"
-    url: "https://zigbee2mqtt.antoineglacet.com"
-    icon: si:zigbee
-  glances:
-    title: "glances"
-    url: "https://glances.antoineglacet.com"
-    icon: mdi:docker
-  vscode:
-    title: "vscode"
-    url: "https://vscode.antoineglacet.com"
-    icon: si:visualstudiocode
-  portainer:
-    title: "portainer"
-    url: "https://portainer.antoineglacet.com"
-    icon: si:portainer
-
 # add themes folder
 frontend:
   themes: !include_dir_merge_named themes

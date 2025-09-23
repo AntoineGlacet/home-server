@@ -32,7 +32,8 @@ services:
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.tls.certresolver=cloudflare"
       - "traefik.http.routers.homeassistant.middlewares=authelia@docker"
-      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+      - "traefik.http.services.homeassistant.loadbalancer.server.url=http://host.docker.internal:8123"
+      
 
   mqtt:
     image: eclipse-mosquitto:latest
@@ -394,8 +395,9 @@ services:
       - "traefik.http.routers.plex.rule=Host(`plex.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.plex.entrypoints=websecure"
       - "traefik.http.routers.plex.tls.certresolver=cloudflare"
-      - "traefik.http.routers.plex.middlewares=authelia@docker"
-      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+      # ⚠️ Strongly recommend NO Authelia in front of Plex (breaks many clients) 
+      # - "traefik.http.routers.plex.middlewares=authelia@docker"
+      - "traefik.http.services.plex.loadbalancer.server.url=http://host.docker.internal:32400"
 
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
@@ -537,7 +539,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=homelab_proxy"
-      - "traefik.http.routers.homepage.rule=Host(`home.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.homepage.rule=Host(`homepage.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.homepage.entrypoints=websecure"
       - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
       - "traefik.http.routers.homepage.middlewares=authelia@docker"
@@ -703,8 +705,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./config/traefik/letsencrypt:/letsencrypt
     extra_hosts:
-      - "home-assistant:host-gateway"
-      - "plex:host-gateway"
+      - "host.docker.internal:host-gateway" # this is for containers running in network_mode: host
     networks:
       - homelab
       - homelab_proxy

@@ -1,12 +1,7 @@
-version: "3.9"
-
-# Common networks:
-# - homelab: primary shared network for most services
-# - homelab_proxy: external reverse-proxy network (already created outside compose)
 networks:
-  homelab:
+  homelab:             # primary shared network for most services
     driver: bridge
-  homelab_proxy:
+  homelab_proxy:       # external reverse-proxy network
     driver: bridge
 
 services:
@@ -450,7 +445,7 @@ services:
       - "traefik.http.services.calibre-web.loadbalancer.server.port=8083"
 
   readarr:
-    image: lscr.io/linuxserver/readarr:develop
+    image: lscr.io/linuxserver/readarr:latest
     container_name: readarr
     environment:
       - PUID=${PUID}

@@ -6,8 +6,8 @@
 #       timeStyle: short
 - openmeteo:
     label: Osaka # optional
-    latitude: 50.449684
-    longitude: 30.525026
+    latitude: 34.6937
+    longitude: 135.5023
     units: metric # or imperial
     cache: 5 # Time in minutes to cache API responses, to stay within limits
     format: # optional, Intl.NumberFormat options

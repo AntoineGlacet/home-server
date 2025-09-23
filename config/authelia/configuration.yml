@@ -24,7 +24,7 @@ server:
     certificate: ""
 
 log:
-  level: debug
+  level: info
   format: json
   file_path: "/config/authelia.log"
   keep_stdout: true

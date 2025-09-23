@@ -200,3 +200,21 @@ flowchart LR
 - Media libraries mount from host paths defined in `.env` (`${MEDIA}`, `${MOVIES}`, `${TV}`, `${DOWNLOADS}`, etc.).
 - `duplicati` targets `${BACKUP}` for encrypted backups; customize retention and destinations in `config/duplicati`.
 - Samba exposes `${DATA}` to Windows clients for simple drag-and-drop access.
+
+### Authelia Logging
+
+- Authelia now defaults to the quieter `info` log level in `config/authelia/configuration.yml`, which is more appropriate for normal operations.
+- When deeper troubleshooting is required, create a short-lived override file to bump logging without touching the tracked configuration:
+
+  ```bash
+  cat <<'EOF' > authelia-debug.override.yml
+  services:
+    authelia:
+      environment:
+        AUTHELIA_LOG_LEVEL: debug
+  EOF
+
+  docker compose -f docker-compose.yml -f authelia-debug.override.yml up -d authelia
+  ```
+
+  Removing the override file and redeploying (`rm authelia-debug.override.yml && docker compose up -d authelia`) drops Authelia back to the baseline `info` level.

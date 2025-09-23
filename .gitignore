@@ -58,16 +58,15 @@ config/portainer/backups/
 # Homepage dashboard
 !config/homepage/*.yaml
 
-# SWAG nginx
-!config/swag/nginx/site-confs/default.conf
-!config/swag/nginx/snippets/authelia/authrequest.conf
-!config/swag/nginx/snippets/authelia/location.conf
-!config/swag/nginx/proxy-confs/_all.subdomain.conf
-config/swag/nginx/.htpasswd
-config/swag/nginx/*.pem
-config/swag/nginx/*.key
-config/swag/nginx/*.crt
-config/swag/nginx/dhparams.pem
+# Traefik
+!config/traefik/
+!config/traefik/**/*.yaml
+!config/traefik/**/*.yml
+!config/traefik/**/*.tmpl
+!config/traefik/**/.gitkeep
+config/traefik/letsencrypt/acme.json
+config/traefik/certs/*.pem
+config/traefik/certs/*.key
 
 # Home Assistant & integrations
 !config/homeassistant/automations.yaml

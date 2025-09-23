@@ -77,3 +77,4 @@ config/swag/nginx/dhparams.pem
 !config/homeassistant/themes/*
 !config/mosquitto/mosquitto.conf
 !config/zigbee2mqtt/configuration.yaml
+config/zigbee2mqtt/secrets.yaml

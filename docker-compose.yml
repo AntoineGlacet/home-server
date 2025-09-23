@@ -681,12 +681,18 @@ services:
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
       - --entrypoints.web.http.redirections.entryPoint.permanent=true
       - --entrypoints.websecure.address=:443
-      - --log.level=DEBUG
+
+      # 👇 Tell Traefik to request one cert for root + wildcard on websecure
+      - --entrypoints.websecure.http.tls.domains[0].main=antoineglacet.com
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.antoineglacet.com
+
+      # ACME (DNS-01 via Cloudflare)
       - --certificatesresolvers.cloudflare.acme.email=${TRAEFIK_ACME_EMAIL}
       - --certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=20
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=10
       - --certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53
+      - --log.level=DEBUG
     environment:
       - CLOUDFLARE_DNS_API_TOKEN=${TRAEFIK_CLOUDFLARE_TOKEN}
       - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}

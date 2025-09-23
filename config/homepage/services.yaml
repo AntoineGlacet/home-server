@@ -50,6 +50,10 @@
         description: Browse e-book collection
 
 - infrastructure:
+    - Traefik:
+        icon: traefik
+        href: https://traefik.antoineglacet.com
+        description: Reverse proxy dashboard
     - Portainer:
         icon: portainer
         href: https://portainer.antoineglacet.com

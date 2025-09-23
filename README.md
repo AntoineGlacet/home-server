@@ -11,7 +11,7 @@ All services now live in one `docker-compose.yml`. Logical groupings still help 
 | Smart home & Zigbee | Host LAN for discovery, `homelab` for MQTT, `homelab_proxy` for Zigbee UI | Automations, device telemetry, and Zigbee radio access. | `home-assistant`, `mqtt`, `zigbee2mqtt` |
 | Media acquisition & library | `homelab` for internal traffic, `homelab_proxy` for UIs, host for Plex | VPN-protected downloads, request management, and playback. | `nordlynx`, `transmission`, `prowlarr`, `sonarr`, `radarr`, `bazarr`, `readarr`, `plex`, `overseerr`, `calibre-web-automated` |
 | Monitoring & observability | `homelab` for metrics, `homelab_proxy` for dashboards, host exporters | Metrics, uptime checks, and capacity visibility. | `prometheus`, `grafana`, `uptime-kuma`, `cadvisor`, `glances`, `node_exporter` |
-| Edge & utilities | `homelab` + `homelab_proxy` | Reverse proxy, SSO, DNS, backups, syncing, and helper tools. | `swag`, `authelia`, `homepage`, `adguard`, `portainer`, `duplicati`, `ddclient`, `samba`, `syncthing`, `flaresolverr`, `autoheal` |
+| Edge & utilities | `homelab` + `homelab_proxy` | Reverse proxy, SSO, DNS, backups, syncing, and helper tools. | `traefik`, `authelia`, `homepage`, `adguard`, `portainer`, `duplicati`, `ddclient`, `samba`, `syncthing`, `flaresolverr`, `autoheal` |
 
 ## Repo Layout
 
@@ -26,7 +26,7 @@ home-server
 │   ├── homeassistant/     # Home Assistant state & automations
 │   ├── homepage/          # Dashboard definition
 │   ├── mosquitto/         # MQTT broker settings
-│   ├── swag/              # Reverse proxy templates & snippets
+│   ├── traefik/           # Reverse proxy configuration & cert dumps
 │   └── zigbee2mqtt/       # Zigbee bridge configuration
 ├── pull-all.sh            # legacy helper (multi-stack version, kept for ref)
 ├── start-all.sh           # legacy helper (update pending)
@@ -59,7 +59,7 @@ Helper scripts in the repo still reference the old multi-stack layout. Update or
 ### Networking Notes
 
 - `homelab` is the default bridge shared by most containers. Host networking is used only where broadcast discovery or raw sockets are required (`home-assistant`, `plex`, `node_exporter`).
-- `homelab_proxy` carries any HTTP(S) endpoint exposed through SWAG/Authelia. Create it once (`docker network create homelab_proxy`) so services in other compose projects can join.
+- `homelab_proxy` carries any HTTP(S) endpoint exposed through Traefik/Authelia. Create it once (`docker network create homelab_proxy`) so services in other compose projects can join.
 - NordVPN egress is enforced by `network_mode: service:nordlynx` for Transmission and Prowlarr, keeping traffic inside the tunnel while still exposing their web UIs via published ports on the VPN container.
 - Internal DNS (`adguard`) and DHCP let the Pi act as the network edge, while `ddclient` updates the public hostname.
 
@@ -82,14 +82,14 @@ flowchart LR
         end
 
         subgraph ProxyNet["homelab_proxy bridge"]
-            swag["SWAG"]
+            traefik["Traefik"]
             authelia["Authelia"]
             portals["Grafana / Overseerr / Homepage / Kuma"]
         end
     end
 
-    internet((Internet)) --> swag
-    swag --> authelia --> portals
+    internet((Internet)) --> traefik
+    traefik --> authelia --> portals
     lan((LAN clients)) --> adguard["AdGuard"]
     lan --> plex
 

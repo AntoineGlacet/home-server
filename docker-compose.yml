@@ -26,6 +26,13 @@ services:
       - TZ=${TZ}
     restart: unless-stopped
     network_mode: host   # needs host networking for discovery/integrations
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.homeassistant.entrypoints=websecure"
+      - "traefik.http.routers.homeassistant.tls.certresolver=cloudflare"
+      - "traefik.http.routers.homeassistant.middlewares=authelia@docker"
+      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
 
   mqtt:
     image: eclipse-mosquitto:latest
@@ -59,6 +66,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.zigbee2mqtt.rule=Host(`zigbee2mqtt.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.zigbee2mqtt.entrypoints=websecure"
+      - "traefik.http.routers.zigbee2mqtt.tls.certresolver=cloudflare"
+      - "traefik.http.routers.zigbee2mqtt.middlewares=authelia@docker"
+      - "traefik.http.services.zigbee2mqtt.loadbalancer.server.port=8099"
 
   # ----------------------------
   # MONITORING & METRICS
@@ -74,6 +89,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime-kuma.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare"
+      - "traefik.http.routers.uptime-kuma.middlewares=authelia@docker"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
 
   prometheus:
     image: prom/prometheus
@@ -144,6 +167,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=cloudflare"
+      - "traefik.http.routers.grafana.middlewares=authelia@docker"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   glances:
     image: nicolargo/glances:latest-full
@@ -160,6 +191,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.glances.rule=Host(`glances.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.glances.entrypoints=websecure"
+      - "traefik.http.routers.glances.tls.certresolver=cloudflare"
+      - "traefik.http.routers.glances.middlewares=authelia@docker"
+      - "traefik.http.services.glances.loadbalancer.server.port=61208"
 
   # ----------------------------
   # VPN (NORDLYNX) + MEDIA DOWNLOADS VIA VPN
@@ -183,6 +222,19 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.transmission.rule=Host(`transmission.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.transmission.entrypoints=websecure"
+      - "traefik.http.routers.transmission.tls.certresolver=cloudflare"
+      - "traefik.http.routers.transmission.middlewares=authelia@docker"
+      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
+      - "traefik.http.routers.prowlarr.middlewares=authelia@docker"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
 
   transmission:
     image: lscr.io/linuxserver/transmission:latest
@@ -251,6 +303,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
+      - "traefik.http.routers.sonarr.middlewares=authelia@docker"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
 
   radarr:
     image: lscr.io/linuxserver/radarr
@@ -273,6 +333,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
+      - "traefik.http.routers.radarr.middlewares=authelia@docker"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
 
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -291,6 +359,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
+      - "traefik.http.routers.bazarr.middlewares=authelia@docker"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
 
   # ----------------------------
   # MEDIA SERVING & DISCOVERY
@@ -311,6 +387,13 @@ services:
       - ./config/plex:/config
       - ${MEDIA}:/media
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plex.rule=Host(`plex.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.plex.entrypoints=websecure"
+      - "traefik.http.routers.plex.tls.certresolver=cloudflare"
+      - "traefik.http.routers.plex.middlewares=authelia@docker"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
 
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
@@ -325,6 +408,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.overseerr.rule=Host(`overseerr.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.overseerr.entrypoints=websecure"
+      - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
+      - "traefik.http.routers.overseerr.middlewares=authelia@docker"
+      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
 
   # ----------------------------
   # BOOKS / LIBRARY
@@ -345,6 +436,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.calibre-web.rule=Host(`calibre-web.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.calibre-web.entrypoints=websecure"
+      - "traefik.http.routers.calibre-web.tls.certresolver=cloudflare"
+      - "traefik.http.routers.calibre-web.middlewares=authelia@docker"
+      - "traefik.http.services.calibre-web.loadbalancer.server.port=8083"
 
   readarr:
     image: lscr.io/linuxserver/readarr:develop
@@ -386,6 +485,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.syncthing.rule=Host(`syncthing.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.syncthing.entrypoints=websecure"
+      - "traefik.http.routers.syncthing.tls.certresolver=cloudflare"
+      - "traefik.http.routers.syncthing.middlewares=authelia@docker"
+      - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
 
   # ----------------------------
   # UTILS
@@ -425,6 +532,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.homepage.rule=Host(`home.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.homepage.entrypoints=websecure"
+      - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
+      - "traefik.http.routers.homepage.middlewares=authelia@docker"
+      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
 
   # refresh dynamic IP to cloudflare DNS
   ddclient:
@@ -483,11 +598,20 @@ services:
       - 67:67/udp
       - 853:853/tcp
     depends_on:
-      - swag
+      - traefik
+      - traefik-certs-dumper
     restart: unless-stopped
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.adguard.rule=Host(`adguard.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.adguard.entrypoints=websecure"
+      - "traefik.http.routers.adguard.tls.certresolver=cloudflare"
+      - "traefik.http.routers.adguard.middlewares=authelia@docker"
+      - "traefik.http.services.adguard.loadbalancer.server.port=80"
 
   # Contaiers management UI
   portainer-ce:
@@ -506,6 +630,14 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
+      - "traefik.http.routers.portainer.middlewares=authelia@docker"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
   # backup
   duplicati:
@@ -523,34 +655,76 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.duplicati.rule=Host(`duplicati.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.duplicati.entrypoints=websecure"
+      - "traefik.http.routers.duplicati.tls.certresolver=cloudflare"
+      - "traefik.http.routers.duplicati.middlewares=authelia@docker"
+      - "traefik.http.services.duplicati.loadbalancer.server.port=8200"
 
-  # Reverse DNS, nginx & certificates 
-  swag:
-    image: lscr.io/linuxserver/swag
-    container_name: swag
-    cap_add:
-      - NET_ADMIN
+  # Reverse proxy, dashboard & certificates
+  traefik:
+    image: traefik:v2.11
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - --api.dashboard=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=homelab_proxy
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entryPoint.permanent=true
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.cloudflare.acme.email=${TRAEFIK_ACME_EMAIL}
+      - --certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=0
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.disablepropagationcheck=true
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - URL=antoineglacet.com
-      - SUBDOMAINS=wildcard
-      - VALIDATION=dns
-      - DNSPLUGIN=cloudflare
-      # - EXTRA_DOMAINS=handbook.kanku.dev
+      - CF_DNS_API_TOKEN=${TRAEFIK_CLOUDFLARE_TOKEN}
+      - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
+    ports:
+      - 80:80
+      - 443:443
     volumes:
-      - ./config/swag:/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/traefik/letsencrypt:/letsencrypt
     extra_hosts:
       - "home-assistant:host-gateway"
       - "plex:host-gateway"
-    ports:
-      - 443:443
-      # - 80:80 for http validation only
-    restart: unless-stopped
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik.middlewares=authelia@docker"
+      - "traefik.http.routers.traefik.service=api@internal"
+
+  traefik-certs-dumper:
+    image: ldez/traefik-certs-dumper:v2.9.1
+    container_name: traefik-certs-dumper
+    command:
+      - file
+      - --source
+      - /letsencrypt/acme.json
+      - --dest
+      - /output
+      - --domain-subdir=true
+      - --watch
+    restart: unless-stopped
+    depends_on:
+      - traefik
+    volumes:
+      - ./config/traefik/letsencrypt:/letsencrypt
+      - ./config/traefik/certs:/output
 
   # Authentification
   authelia:
@@ -570,6 +744,16 @@ services:
     networks:
       - homelab
       - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.authelia.rule=Host(`auth.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.routers.authelia.tls.certresolver=cloudflare"
+      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.${TRAEFIK_DOMAIN}/"
+      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
 
   # Restart containers based on health
   autoheal:

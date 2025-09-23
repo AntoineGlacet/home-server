@@ -10,7 +10,7 @@ homeassistant:
   media_dirs:
     media: /media
 
-# configure trusted proxy for swag
+# configure trusted proxy for traefik
 http:
   use_x_forwarded_for: true
   trusted_proxies:

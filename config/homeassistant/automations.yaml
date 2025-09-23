@@ -61,18 +61,7 @@
       - media_content_type: music
         media_content_id: media-source://radio_browser/popular
   mode: single
-- id: '1693923794058'
-  alias: Tag Test_2 is scanned
-  description: ''
-  trigger:
-  - platform: tag
-    tag_id: 037cf6da-4893-4925-a90e-9321065f562d
-  condition: []
-  action:
-  - service: script.play_spotify_bedroom
-    data: {}
-  mode: single
-- id: '1693923921315'
+- id: tag_test_2_scanned
   alias: Tag Test_2 is scanned
   description: ''
   trigger:

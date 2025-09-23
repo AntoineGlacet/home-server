@@ -1,8 +1,4 @@
 - overview:
-    - Homepage:
-        icon: mdi-home
-        href: https://home.antoineglacet.com
-        description: Central dashboard for the stack
     - Home Assistant:
         icon: home-assistant
         href: https://homeassistant.antoineglacet.com
@@ -82,7 +78,3 @@
         icon: syncthing
         href: https://syncthing.antoineglacet.com
         description: File synchronisation
-    - VS Code:
-        icon: vscode
-        href: https://vscode.antoineglacet.com
-        description: Web-based editor

@@ -421,7 +421,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - HOMEPAGE_ALLOWED_HOSTS=home.antoineglacet.com
+      - HOMEPAGE_ALLOWED_HOSTS=homepage.antoineglacet.com
     networks:
       - homelab
       - homelab_proxy

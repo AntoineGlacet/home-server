@@ -1,9 +1,9 @@
-- search:
-    provider: duckduckgo
-# - datetime:
-#     text_size: xl
-#     format:
-#       timeStyle: short
+- datetime:
+    text_size: md
+    format:
+        locale: jp
+        dateStyle: long
+        timeStyle: short
 - openmeteo:
     label: Osaka # optional
     latitude: 34.6937
@@ -12,7 +12,8 @@
     cache: 5 # Time in minutes to cache API responses, to stay within limits
     format: # optional, Intl.NumberFormat options
       maximumFractionDigits: 1
-- resources:
-    label: System
-    cpu: true
-    memory: true
+- glances:
+    url: https://glances.antoineglacet.com
+    disk:
+        - /host/media/data
+

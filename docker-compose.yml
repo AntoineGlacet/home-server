@@ -227,11 +227,13 @@ services:
       - "traefik.docker.network=homelab_proxy"
       - "traefik.http.routers.transmission.rule=Host(`transmission.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.transmission.entrypoints=websecure"
+      - "traefik.http.routers.transmission.service=transmission"
       - "traefik.http.routers.transmission.tls.certresolver=cloudflare"
       - "traefik.http.routers.transmission.middlewares=authelia@docker"
       - "traefik.http.services.transmission.loadbalancer.server.port=9091"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.service=prowlarr"
       - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
       - "traefik.http.routers.prowlarr.middlewares=authelia@docker"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
@@ -666,7 +668,7 @@ services:
 
   # Reverse proxy, dashboard & certificates
   traefik:
-    image: traefik:v2.11
+    image: traefik:latest
     container_name: traefik
     restart: unless-stopped
     command:
@@ -679,13 +681,14 @@ services:
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
       - --entrypoints.web.http.redirections.entryPoint.permanent=true
       - --entrypoints.websecure.address=:443
+      - --log.level=DEBUG
       - --certificatesresolvers.cloudflare.acme.email=${TRAEFIK_ACME_EMAIL}
       - --certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=0
-      - --certificatesresolvers.cloudflare.acme.dnschallenge.disablepropagationcheck=true
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=20
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53
     environment:
-      - CF_DNS_API_TOKEN=${TRAEFIK_CLOUDFLARE_TOKEN}
+      - CLOUDFLARE_DNS_API_TOKEN=${TRAEFIK_CLOUDFLARE_TOKEN}
       - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
     ports:
       - 80:80

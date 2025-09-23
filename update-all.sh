@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# list of all folders to consider
-# Declare an array of string with type
-declare -a StringArray=("tools" "media" "HA" "monitoring")
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
+ENV_FILE="${ROOT_DIR}/.env"
 
-# Loop over folders and reference the env-file
-# Iterate the string array using for loop
-for val in "${StringArray[@]}"; do
-   docker compose --file "$val"/docker-compose.yml --env-file .env pull
-   docker compose --file "$val"/docker-compose.yml --env-file .env up -d
-done
+# shellcheck source=lib/compose.sh
+source "${ROOT_DIR}/lib/compose.sh"
 
-# prune
-docker system prune -f
+require_compose_stack "${COMPOSE_FILE}" "${ENV_FILE}"
+ensure_compose_command
+
+"${COMPOSE[@]}" --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" pull
+"${COMPOSE[@]}" --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" up -d --remove-orphans
+
+if command -v docker >/dev/null 2>&1; then
+  docker system prune -f
+fi

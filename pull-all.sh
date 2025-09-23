@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# list of all folders to consider
-# Declare an array of string with type
-declare -a StringArray=("HA" "media" "tools")
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
+ENV_FILE="${ROOT_DIR}/.env"
 
-# Loop over folders and reference the env-file
-# Iterate the string array using for loop
-for val in "${StringArray[@]}"; do
-   docker compose --file "$val"/docker-compose.yml --env-file .env pull
-done
+# shellcheck source=lib/compose.sh
+source "${ROOT_DIR}/lib/compose.sh"
+
+require_compose_stack "${COMPOSE_FILE}" "${ENV_FILE}"
+ensure_compose_command
+
+"${COMPOSE[@]}" --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" pull

@@ -1,12 +1,12 @@
 - overview:
+    - App flowy:
+        icon: appflowy
+        href: https://appflowy.antoineglacet.com
+        description: notes & productivity
     - Home Assistant:
         icon: home-assistant
         href: https://homeassistant.antoineglacet.com
         description: Automations and smart devices
-    - AdGuard Home:
-        icon: adguard-home
-        href: https://adguard.antoineglacet.com
-        description: Network-wide DNS filtering
     - Zigbee2MQTT:
         icon: zigbee2mqtt
         href: https://zigbee2mqtt.antoineglacet.com
@@ -17,10 +17,17 @@
         icon: plex
         href: https://plex.antoineglacet.com
         description: Stream your media library
-    - Overseerr:
-        icon: overseerr
-        href: https://overseerr.antoineglacet.com
-        description: Discover and request new titles
+    - Calibre-Web:
+        icon: calibre
+        href: https://calibre-web.antoineglacet.com
+        description: Browse e-book collection
+    - Transmission:
+        icon: transmission
+        href: https://transmission.antoineglacet.com
+        description: BitTorrent client
+        widget:
+            type: transmission
+            url: https://transmission.antoineglacet.com
     - Sonarr:
         icon: sonarr
         href: https://sonarr.antoineglacet.com
@@ -29,27 +36,24 @@
         icon: radarr
         href: https://radarr.antoineglacet.com
         description: Manage movie library
-    - Bazarr:
-        icon: bazarr
-        href: https://bazarr.antoineglacet.com
-        description: Subtitle management
     - Prowlarr:
         icon: prowlarr
         href: https://prowlarr.antoineglacet.com
         description: Indexer aggregator
-    - Transmission:
-        icon: transmission
-        href: https://transmission.antoineglacet.com
-        description: BitTorrent client
-        widget:
-            type: transmission
-            url: https://transmission.antoineglacet.com
-    - Calibre-Web:
-        icon: calibre
-        href: https://calibre-web.antoineglacet.com
-        description: Browse e-book collection
+    - Overseerr:
+        icon: overseerr
+        href: https://overseerr.antoineglacet.com
+        description: Discover and request new titles
+    - Bazarr:
+        icon: bazarr
+        href: https://bazarr.antoineglacet.com
+        description: Subtitle management
 
 - infrastructure:
+    - AdGuard Home:
+        icon: adguard-home
+        href: https://adguard.antoineglacet.com
+        description: Network-wide DNS filtering
     - Traefik:
         icon: traefik
         href: https://traefik.antoineglacet.com
@@ -58,10 +62,14 @@
         icon: portainer
         href: https://portainer.antoineglacet.com
         description: Container management UI
-    - Authelia:
-        icon: authelia
-        href: https://auth.antoineglacet.com
-        description: Single sign-on gateway
+    - Grafana:
+        icon: grafana
+        href: https://grafana.antoineglacet.com
+        description: Metrics dashboards
+    - Syncthing:
+        icon: syncthing
+        href: https://syncthing.antoineglacet.com
+        description: File synchronisation
     - Duplicati:
         icon: duplicati
         href: https://duplicati.antoineglacet.com
@@ -70,15 +78,7 @@
         icon: glances
         href: https://glances.antoineglacet.com
         description: System monitoring
-    - Grafana:
-        icon: grafana
-        href: https://grafana.antoineglacet.com
-        description: Metrics dashboards
     - Uptime Kuma:
         icon: uptime-kuma
         href: https://uptime-kuma.antoineglacet.com
         description: Availability monitoring
-    - Syncthing:
-        icon: syncthing
-        href: https://syncthing.antoineglacet.com
-        description: File synchronisation

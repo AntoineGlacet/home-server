@@ -38,7 +38,7 @@ services:
       - ./config/mosquitto/data:/mosquitto/data
       - ./config/mosquitto/log:/mosquitto/log
       - ./config/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-    networks:
+    networks: 
       - homelab
 
   zigbee2mqtt:
@@ -656,40 +656,40 @@ services:
     networks:
       - homelab
 
-  ai:
-    restart: on-failure
-    image: appflowyinc/appflowy_ai:${APPFLOWY_AI_VERSION:-latest}
-    environment:
-      - AI_SERVER_PORT=${AI_SERVER_PORT}
-      - OPENAI_API_KEY=${AI_OPENAI_API_KEY}
-      - DEFAULT_AI_MODEL=gpt-4.1-mini # Make sure the model is available in your OpenAI account
-      - DEFAULT_AI_COMPLETION_MODEL=gpt-4.1-mini # Make sure the model is available in your OpenAI account
-      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
-      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
-      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
-      - APPFLOWY_S3_ACCESS_KEY=${APPFLOWY_S3_ACCESS_KEY}
-      - APPFLOWY_S3_SECRET_KEY=${APPFLOWY_S3_SECRET_KEY}
-      - APPFLOWY_S3_BUCKET=${APPFLOWY_S3_BUCKET}
-      - APPFLOWY_S3_REGION=${APPFLOWY_S3_REGION}
-      - AI_DATABASE_URL=${APPFLOWY_DATABASE_URL}
-      - AI_REDIS_URL=${APPFLOWY_REDIS_URI}
-      - AI_USE_MINIO=${APPFLOWY_S3_USE_MINIO}
-      - AI_MINIO_URL=${APPFLOWY_S3_MINIO_URL}
-      - AI_APPFLOWY_HOST=${APPFLOWY_BASE_URL}
-      - APPFLOWY_GOTRUE_JWT_SECRET=${GOTRUE_JWT_SECRET}
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:5001/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    depends_on:
-      postgres:
-        condition: service_healthy
-      appflowy_cloud:
-        condition: service_started
-    networks:
-      - homelab
+  # ai:
+  #   restart: on-failure
+  #   image: appflowyinc/appflowy_ai:${APPFLOWY_AI_VERSION:-latest}
+  #   environment:
+  #     - AI_SERVER_PORT=${AI_SERVER_PORT}
+  #     - OPENAI_API_KEY=${AI_OPENAI_API_KEY}
+  #     - DEFAULT_AI_MODEL=gpt-4.1-mini # Make sure the model is available in your OpenAI account
+  #     - DEFAULT_AI_COMPLETION_MODEL=gpt-4.1-mini # Make sure the model is available in your OpenAI account
+  #     - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+  #     - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+  #     - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
+  #     - APPFLOWY_S3_ACCESS_KEY=${APPFLOWY_S3_ACCESS_KEY}
+  #     - APPFLOWY_S3_SECRET_KEY=${APPFLOWY_S3_SECRET_KEY}
+  #     - APPFLOWY_S3_BUCKET=${APPFLOWY_S3_BUCKET}
+  #     - APPFLOWY_S3_REGION=${APPFLOWY_S3_REGION}
+  #     - AI_DATABASE_URL=${APPFLOWY_DATABASE_URL}
+  #     - AI_REDIS_URL=${APPFLOWY_REDIS_URI}
+  #     - AI_USE_MINIO=${APPFLOWY_S3_USE_MINIO}
+  #     - AI_MINIO_URL=${APPFLOWY_S3_MINIO_URL}
+  #     - AI_APPFLOWY_HOST=${APPFLOWY_BASE_URL}
+  #     - APPFLOWY_GOTRUE_JWT_SECRET=${GOTRUE_JWT_SECRET}
+  #   healthcheck:
+  #     test: [ "CMD", "curl", "-f", "http://localhost:5001/health" ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     appflowy_cloud:
+  #       condition: service_started
+  #   networks:
+  #     - homelab
 
   appflowy_worker:
     restart: on-failure
@@ -731,6 +731,18 @@ services:
       - APPFLOWY_WS_BASE_URL=${APPFLOWY_WEBSOCKET_BASE_URL}
     networks:
       - homelab
+
+  # pgadmin:
+  #   restart: on-failure
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+  #     - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+  #   volumes:
+  #     - ./config/appflowy/pgadmin/servers.json:/pgadmin4/servers.json
+  #   networks:
+  #     - homelab
+    
 
   # ----------------------------
   # UTILITIES

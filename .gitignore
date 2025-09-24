@@ -81,3 +81,4 @@ config/zigbee2mqtt/secrets.yaml
 !config/appflowy/
 config/appflowy/ssl/*
 !config/appflowy/nginx/nginx.conf
+config/zigbee2mqtt/configuration.yaml

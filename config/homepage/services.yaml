@@ -74,10 +74,6 @@
         icon: grafana
         href: https://grafana.antoineglacet.com
         description: Metrics dashboards
-    - Grafana Loki:
-        icon: grafana
-        href: https://loki.antoineglacet.com
-        description: Centralised log aggregation
     - Syncthing:
         icon: syncthing
         href: https://syncthing.antoineglacet.com

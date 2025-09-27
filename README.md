@@ -11,7 +11,7 @@ All services now live in one `docker-compose.yml`. Logical groupings still help 
 | Smart home & Zigbee | Host LAN for discovery, `homelab` for MQTT, `homelab_proxy` for Zigbee UI | Automations, device telemetry, and Zigbee radio access. | `home-assistant`, `mqtt`, `zigbee2mqtt` |
 | Media acquisition & library | `homelab` for internal traffic, `homelab_proxy` for UIs, host for Plex | VPN-protected downloads, request management, and playback. | `nordlynx`, `transmission`, `prowlarr`, `sonarr`, `radarr`, `bazarr`, `readarr`, `plex`, `overseerr`, `calibre-web-automated` |
 | Monitoring & observability | `homelab` for metrics, `homelab_proxy` for dashboards, host exporters | Metrics, uptime checks, and capacity visibility. | `prometheus`, `grafana`, `uptime-kuma`, `cadvisor`, `glances`, `node_exporter` |
-| Edge & utilities | `homelab` + `homelab_proxy` | Reverse proxy, SSO, DNS, backups, syncing, and helper tools. | `traefik`, `authelia`, `homepage`, `adguard`, `portainer`, `duplicati`, `ddclient`, `samba`, `syncthing`, `flaresolverr`, `autoheal` |
+| Edge & utilities | `homelab` + `homelab_proxy` | Reverse proxy, SSO, DNS, backups, syncing, and helper tools. | `traefik`, `authelia`, `authentik`, `homepage`, `adguard`, `portainer`, `duplicati`, `ddclient`, `samba`, `syncthing`, `flaresolverr`, `autoheal` |
 
 ## Repo Layout
 
@@ -22,6 +22,7 @@ home-server
 ├── LICENSE
 ├── config/
 │   ├── authelia/          # Authelia policies and user template
+│   ├── authentik/         # Authentik persistent configuration & media
 │   ├── ddclient/          # Dynamic DNS updater config
 │   ├── homeassistant/     # Home Assistant state & automations
 │   ├── homepage/          # Dashboard definition
@@ -52,7 +53,7 @@ Helper scripts in the repo still reference the old multi-stack layout. Update or
 
 ### Environment & Secrets
 
-- Maintain a `.env` next to `docker-compose.yml` with UID/GID, timezone, storage paths, VPN keys, Cloudflare token, MQTT credentials, Authelia secrets, and Zigbee adaptor path. (Check the compose file for the full list of expected variables.)
+- Maintain a `.env` next to `docker-compose.yml` with UID/GID, timezone, storage paths, VPN keys, Cloudflare token, MQTT credentials, Authelia/Authentik secrets, and Zigbee adaptor path. (Check the compose file for the full list of expected variables.)
 - Run Compose commands from the repo root so the relative `config/` mounts resolve correctly.
 - Per-service configuration lives under `config/` and is bind-mounted back into containers.
 
@@ -84,6 +85,7 @@ flowchart LR
         subgraph ProxyNet["homelab_proxy bridge"]
             traefik["Traefik"]
             authelia["Authelia"]
+            authentik["Authentik"]
             portals["Grafana / Overseerr / Homepage / Kuma"]
         end
     end

@@ -518,12 +518,12 @@ services:
     restart: on-failure
     image: pgvector/pgvector:pg16
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_USER_APPFLOWY=${POSTGRES_USER_APPFLOWY:-postgres}
+      - POSTGRES_DB_APPFLOWY=${POSTGRES_DB_APPFLOWY:-postgres}
+      - POSTGRES_PASSWORD_APPFLOWY=${POSTGRES_PASSWORD_APPFLOWY:-password}
       - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}" ]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER_APPFLOWY}", "-d", "${POSTGRES_DB_APPFLOWY}" ]
       interval: 5s
       timeout: 5s
       retries: 12
@@ -730,19 +730,7 @@ services:
       - APPFLOWY_GOTRUE_BASE_URL=${APPFLOWY_BASE_URL}/gotrue
       - APPFLOWY_WS_BASE_URL=${APPFLOWY_WEBSOCKET_BASE_URL}
     networks:
-      - homelab
-
-  # pgadmin:
-  #   restart: on-failure
-  #   image: dpage/pgadmin4
-  #   environment:
-  #     - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-  #     - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-  #   volumes:
-  #     - ./config/appflowy/pgadmin/servers.json:/pgadmin4/servers.json
-  #   networks:
-  #     - homelab
-    
+      - homelab    
 
   # ----------------------------
   # UTILITIES
@@ -926,7 +914,7 @@ services:
   authentik-redis:
     image: redis:7-alpine
     container_name: authentik-redis
-    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning", "--requirepass", "${AUTHENTIK_REDIS_PASSWORD:?AUTHENTIK_REDIS_PASSWORD must be set}"]
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning", "--requirepass", "${AUTHENTIK_REDIS__PASSWORD}"]
     restart: unless-stopped
     volumes:
       - authentik_redis_data:/data
@@ -944,15 +932,15 @@ services:
       authentik-redis:
         condition: service_started
     environment:
-      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY must be set}
-      - AUTHENTIK_REDIS__HOST=authentik-redis
-      - AUTHENTIK_REDIS__PORT=6379
-      - AUTHENTIK_REDIS__PASSWORD=${AUTHENTIK_REDIS_PASSWORD:?AUTHENTIK_REDIS_PASSWORD must be set}
-      - AUTHENTIK_POSTGRESQL__HOST=postgres
-      - AUTHENTIK_POSTGRESQL__PORT=5432
-      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER}
-      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD}
-      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRESQL_NAME:-authentik}
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
+      - AUTHENTIK_REDIS__HOST=${AUTHENTIK_REDIS__HOST}
+      - AUTHENTIK_REDIS__PORT=${AUTHENTIK_REDIS__PORT}
+      - AUTHENTIK_REDIS__PASSWORD=${AUTHENTIK_REDIS__PASSWORD}
+      - AUTHENTIK_POSTGRESQL__HOST=${AUTHENTIK_POSTGRESQL__HOST}
+      - AUTHENTIK_POSTGRESQL__PORT=${AUTHENTIK_POSTGRESQL__PORT}
+      - AUTHENTIK_POSTGRESQL__USER=${AUTHENTIK_POSTGRESQL__USER}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${AUTHENTIK_POSTGRESQL__PASSWORD}
+      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRESQL__NAME}
       - AUTHENTIK_LOG_LEVEL=info
     volumes:
       - ./config/authentik/media:/media
@@ -979,15 +967,15 @@ services:
       authentik-redis:
         condition: service_started
     environment:
-      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY must be set}
-      - AUTHENTIK_REDIS__HOST=authentik-redis
-      - AUTHENTIK_REDIS__PORT=6379
-      - AUTHENTIK_REDIS__PASSWORD=${AUTHENTIK_REDIS_PASSWORD:?AUTHENTIK_REDIS_PASSWORD must be set}
-      - AUTHENTIK_POSTGRESQL__HOST=postgres
-      - AUTHENTIK_POSTGRESQL__PORT=5432
-      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER}
-      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD}
-      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRESQL_NAME:-authentik}
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
+      - AUTHENTIK_REDIS__HOST=${AUTHENTIK_REDIS__HOST}
+      - AUTHENTIK_REDIS__PORT=${AUTHENTIK_REDIS__PORT}
+      - AUTHENTIK_REDIS__PASSWORD=${AUTHENTIK_REDIS__PASSWORD}
+      - AUTHENTIK_POSTGRESQL__HOST=${AUTHENTIK_POSTGRESQL__HOST}
+      - AUTHENTIK_POSTGRESQL__PORT=${AUTHENTIK_POSTGRESQL__PORT}
+      - AUTHENTIK_POSTGRESQL__USER=${AUTHENTIK_POSTGRESQL__USER}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${AUTHENTIK_POSTGRESQL__PASSWORD}
+      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRESQL__NAME}
       - AUTHENTIK_LOG_LEVEL=info
     volumes:
       - ./config/authentik/media:/media

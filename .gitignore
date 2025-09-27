@@ -58,6 +58,14 @@ config/portainer/backups/
 # Homepage dashboard
 !config/homepage/*.yaml
 
+# Loki & log aggregation configs
+!config/loki/
+!config/loki/**/*.yaml
+!config/loki/**/*.yml
+!config/promtail/
+!config/promtail/**/*.yaml
+!config/promtail/**/*.yml
+
 # Traefik
 !config/traefik/
 !config/traefik/**/*.yaml

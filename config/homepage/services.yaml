@@ -66,6 +66,10 @@
         icon: portainer
         href: https://portainer.antoineglacet.com
         description: Container management UI
+    - pgAdmin:
+        icon: pgadmin
+        href: https://pgadmin.antoineglacet.com
+        description: PostgreSQL administration
     - Grafana:
         icon: grafana
         href: https://grafana.antoineglacet.com

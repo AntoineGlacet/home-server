@@ -923,6 +923,78 @@ services:
   # INGRESS & SECURITY
   # ----------------------------
 
+  authentik-redis:
+    image: redis:7-alpine
+    container_name: authentik-redis
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning", "--requirepass", "${AUTHENTIK_REDIS_PASSWORD:?AUTHENTIK_REDIS_PASSWORD must be set}"]
+    restart: unless-stopped
+    volumes:
+      - authentik_redis_data:/data
+    networks:
+      - homelab
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2024.6.3
+    container_name: authentik-server
+    command: server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_started
+    environment:
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY must be set}
+      - AUTHENTIK_REDIS__HOST=authentik-redis
+      - AUTHENTIK_REDIS__PORT=6379
+      - AUTHENTIK_REDIS__PASSWORD=${AUTHENTIK_REDIS_PASSWORD:?AUTHENTIK_REDIS_PASSWORD must be set}
+      - AUTHENTIK_POSTGRESQL__HOST=postgres
+      - AUTHENTIK_POSTGRESQL__PORT=5432
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD}
+      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRESQL_NAME:-authentik}
+      - AUTHENTIK_LOG_LEVEL=info
+    volumes:
+      - ./config/authentik/media:/media
+      - ./config/authentik:/config
+    networks:
+      - homelab
+      - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.authentik.rule=Host(`authentik.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.authentik.entrypoints=websecure"
+      - "traefik.http.routers.authentik.tls.certresolver=cloudflare"
+      - "traefik.http.services.authentik.loadbalancer.server.port=9000"
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2024.6.3
+    container_name: authentik-worker
+    command: worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_started
+    environment:
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY:?AUTHENTIK_SECRET_KEY must be set}
+      - AUTHENTIK_REDIS__HOST=authentik-redis
+      - AUTHENTIK_REDIS__PORT=6379
+      - AUTHENTIK_REDIS__PASSWORD=${AUTHENTIK_REDIS_PASSWORD:?AUTHENTIK_REDIS_PASSWORD must be set}
+      - AUTHENTIK_POSTGRESQL__HOST=postgres
+      - AUTHENTIK_POSTGRESQL__PORT=5432
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD}
+      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRESQL_NAME:-authentik}
+      - AUTHENTIK_LOG_LEVEL=info
+    volumes:
+      - ./config/authentik/media:/media
+      - ./config/authentik:/config
+    networks:
+      - homelab
+
   # Reverse proxy, dashboard & certificates
   traefik:
     image: traefik:latest
@@ -1035,3 +1107,4 @@ services:
 volumes:
   postgres_data:
   minio_data:
+  authentik_redis_data:

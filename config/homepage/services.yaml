@@ -54,6 +54,10 @@
         icon: adguard-home
         href: https://adguard.antoineglacet.com
         description: Network-wide DNS filtering
+    - Authentik:
+        icon: authentik
+        href: https://authentik.antoineglacet.com
+        description: Identity provider & SSO
     - Traefik:
         icon: traefik
         href: https://traefik.antoineglacet.com

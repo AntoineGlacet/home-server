@@ -1,7 +1,7 @@
 - overview:
-    - App flowy:
-        icon: appflowy
-        href: https://appflowy.antoineglacet.com
+    - Siyuan:
+        icon: siyuan
+        href: https://siyuan.antoineglacet.com
         description: notes & productivity
     - Home Assistant:
         icon: home-assistant
@@ -11,7 +11,6 @@
         icon: zigbee2mqtt
         href: https://zigbee2mqtt.antoineglacet.com
         description: Zigbee coordinator management
-
 - media:
     - Plex:
         icon: plex
@@ -27,7 +26,7 @@
         description: BitTorrent client
         widget:
             type: transmission
-            url: https://transmission.antoineglacet.com
+            url: http://nordlynx:9091
     - Sonarr:
         icon: sonarr
         href: https://sonarr.antoineglacet.com
@@ -90,3 +89,7 @@
         icon: uptime-kuma
         href: https://uptime-kuma.antoineglacet.com
         description: Availability monitoring
+    - Home Router:
+        icon: asus-router
+        href: http://http://10.13.1.1/
+        description: Asus router (only from LAN)

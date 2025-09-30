@@ -1,8 +1,8 @@
 - datetime:
     text_size: md
     format:
-        locale: jp
-        dateStyle: long
+        locale: en-GB
+        dateStyle: short
         timeStyle: short
 - openmeteo:
     label: Osaka # optional
@@ -13,7 +13,7 @@
     format: # optional, Intl.NumberFormat options
       maximumFractionDigits: 1
 - glances:
-    url: https://glances.antoineglacet.com
+    url: http://glances:61208
     version: 4  
     disk:
         - /host/media/data

@@ -17,49 +17,20 @@ http:
     - 10.13.89.90 # host
     - 172.16.0.0/12 # docker bridge networks (incl. homelab_proxy)
 
-# Configure a default setup of Home Assistant (frontend, api, etc)
-default_config:
+# custom oidc integration from HACS (https://github.com/christiaangoossens/hass-oidc-auth)
+auth_oidc:
+  client_id: !secret client_id
+  client_secret: !secret client_secret
+  discovery_url: !secret discovery_url
+
 
 # add themes folder
 frontend:
   themes: !include_dir_merge_named themes
 
 # includes
-group: !include groups.yaml
-automation: !include automations.yaml
-script: !include scripts.yaml
-scene: !include scenes.yaml
-sensor: !include sensors.yaml
-
-# Text to speech
-tts:
-  - platform: google_translate
-
-# spotify
-spotify:
-  client_id: !secret spotify_client_id
-  client_secret: !secret spotify_client_secret
-
-# spotcast
-spotcast:
-  sp_dc: !secret sp_dc
-  sp_key: !secret sp_key
-
-# linkplay audiopro
-media_player:
-  - platform: linkplay
-    host: 10.13.89.162
-    name: linkplay_c5
-  - platform: linkplay
-    host: 10.13.89.64
-    name: linkplay_c10
-
-camera:
-  - platform: xiaomi_cloud_map_extractor
-    host: !secret xiaomi_vacuum_host
-    token: !secret xiaomi_vacuum_token
-    username: !secret xiaomi_cloud_username
-    password: !secret xiaomi_cloud_password
-    draw: ["all"]
-    attributes:
-      - calibration_points
+# group: !include groups.yaml
+# automation: !include automations.yaml
+# script: !include scripts.yaml
+# scene: !include scenes.yaml
+# sensor: !include sensors.yaml

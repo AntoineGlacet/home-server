@@ -14,15 +14,14 @@ services:
   # ----------------------------
 
   home-assistant:
-    image: lscr.io/linuxserver/homeassistant:latest
+    image: homeassistant/home-assistant:2025.10
     container_name: home-assistant
+    user: "1000:1000"
     volumes:
       - ./config/homeassistant:/config
       - ${MEDIA}:/media
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
     restart: unless-stopped
     network_mode: host # needs host networking for discovery/integrations
     labels:
@@ -30,7 +29,6 @@ services:
       - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.tls.certresolver=cloudflare"
-      - "traefik.http.routers.homeassistant.middlewares=authelia@docker"
       - "traefik.http.services.homeassistant.loadbalancer.server.url=http://host.docker.internal:8123"
 
   mqtt:
@@ -41,6 +39,8 @@ services:
       - ./config/mosquitto/data:/mosquitto/data
       - ./config/mosquitto/log:/mosquitto/log
       - ./config/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1883:1883"
     networks:
       - homelab
 
@@ -154,10 +154,25 @@ services:
     container_name: grafana
     user: "1000"
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Tokyo
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      # Oauth2
+      - GF_AUTH_GENERIC_OAUTH_ENABLED=${GF_AUTH_GENERIC_OAUTH_ENABLED}
+      - GF_AUTH_GENERIC_OAUTH_NAME=${GF_AUTH_GENERIC_OAUTH_NAME}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
+      - GF_AUTH_GENERIC_OAUTH_SCOPES=${GF_AUTH_GENERIC_OAUTH_SCOPES}
+      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=${GF_AUTH_GENERIC_OAUTH_AUTH_URL}
+      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=${GF_AUTH_GENERIC_OAUTH_TOKEN_URL}
+      - GF_AUTH_GENERIC_OAUTH_API_URL=${GF_AUTH_GENERIC_OAUTH_API_URL}
+      - GF_AUTH_SIGNOUT_REDIRECT_URL=${GF_AUTH_SIGNOUT_REDIRECT_URL}
+      # Optionally enable auto-login (bypasses Grafana login screen)
+      - GF_AUTH_OAUTH_AUTO_LOGIN=${GF_AUTH_OAUTH_AUTO_LOGIN}
+      # Optionally map user groups to Grafana roles
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=${GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH}
+      # Required if Grafana is running behind a reverse proxy
+      - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL}
     volumes:
       - ./data/grafana:/var/lib/grafana
     restart: unless-stopped
@@ -559,25 +574,6 @@ services:
     networks:
       - homelab
 
-  pgadmin:
-    restart: unless-stopped
-    image: dpage/pgadmin4:latest
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    networks:
-      - homelab
-      - homelab_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=homelab_proxy"
-      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.pgadmin.entrypoints=websecure"
-      - "traefik.http.routers.pgadmin.tls.certresolver=cloudflare"
-      - "traefik.http.routers.pgadmin.middlewares=authentik@docker"
-      - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
   flaresolverr:
     # DockerHub mirror flaresolverr/flaresolverr:latest
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -695,32 +691,6 @@ services:
       - "traefik.http.routers.adguard.tls.certresolver=cloudflare"
       - "traefik.http.routers.adguard.middlewares=authentik@docker"
       - "traefik.http.services.adguard.loadbalancer.server.port=80"
-
-  # Contaiers management UI
-  portainer-ce:
-    container_name: portainer
-    image: portainer/portainer-ce
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/portainer:/data
-    ports:
-      - 8000:8000 # Agent
-    restart: unless-stopped
-    networks:
-      - homelab
-      - homelab_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=homelab_proxy"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls.certresolver=cloudflare"
-      - "traefik.http.routers.portainer.middlewares=authentik@docker"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
   # ----------------------------
   # BACKUP & RECOVERY
@@ -899,35 +869,6 @@ services:
     volumes:
       - ./config/traefik/letsencrypt:/letsencrypt
       - ./config/traefik/certs:/output
-
-  # Authentication
-  authelia:
-    image: ghcr.io/authelia/authelia:latest
-    container_name: authelia
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET}
-      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET}
-      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_ENCRYPTION_KEY}
-      - AUTHELIA_SMTP_PASSWORD=${AUTHELIA_SMTP_PASSWORD}
-    volumes:
-      - ./config/authelia:/config
-    restart: unless-stopped
-    networks:
-      - homelab
-      - homelab_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=homelab_proxy"
-      - "traefik.http.routers.authelia.rule=Host(`auth.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.authelia.entrypoints=websecure"
-      - "traefik.http.routers.authelia.tls.certresolver=cloudflare"
-      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
-      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.${TRAEFIK_DOMAIN}/"
-      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
-      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
 
   # Restart containers based on health
   autoheal:

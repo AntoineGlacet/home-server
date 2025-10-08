@@ -140,7 +140,7 @@ services:
     command:
       - '-housekeeping_interval=30s'
       - '-docker_only=true'
-      - '-store_container_labels=false'
+      - '-store_container_labels=true'
       - '-disable_metrics=percpu,process,sched,tcp,udp,diskIO,disk,network'
     privileged: true
     devices:

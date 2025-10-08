@@ -33,12 +33,6 @@ test
 !config/**/*.gitignore
 !config/**/*.gitkeep
 
-# Authelia
-!config/authelia/configuration.yml
-!config/authelia/users_database.yml.template
-config/authelia/authelia.log
-config/authelia/db.sqlite3
-
 # Duplicati state
 config/duplicati/
 
@@ -57,6 +51,10 @@ config/portainer/backups/
 
 # Homepage dashboard
 !config/homepage/*.yaml
+
+# Prometheus
+!config/prometheus/
+!config/prometheus/**/*.yml
 
 # Loki & log aggregation configs
 !config/loki/

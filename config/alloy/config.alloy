@@ -1,0 +1,63 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+
+  batch {
+    size = 1048576
+    wait = "1s"
+  }
+}
+
+loki.source.docker "docker" {
+  host               = "unix:///var/run/docker.sock"
+  refresh_interval   = "5s"
+  positions_directory = "/var/lib/alloy/positions"
+  labels = {
+    job = "docker"
+  }
+
+  relabel {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+
+  relabel {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "compose_service"
+  }
+
+  relabel {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    target_label  = "compose_project"
+  }
+
+  relabel {
+    source_labels = ["__meta_docker_container_label_traefik_http_routers"]
+    target_label  = "traefik_router"
+  }
+
+  relabel {
+    source_labels = ["__meta_docker_container_log_stream"]
+    target_label  = "log_stream"
+  }
+
+  relabel {
+    source_labels = ["__meta_docker_container_label_org_label_schema_group"]
+    target_label  = "stack"
+  }
+
+  forward_to = [loki.process "docker_pipeline".receiver]
+}
+
+loki.process "docker_pipeline" {
+  stage.docker {}
+
+  forward_to = [loki.write "default".receiver]
+}

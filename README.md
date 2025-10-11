@@ -10,7 +10,7 @@ All services now live in one `docker-compose.yml`. Logical groupings still help 
 | --- | --- | --- | --- |
 | Smart home & Zigbee | Host LAN for discovery, `homelab` for MQTT, `homelab_proxy` for Zigbee UI | Automations, device telemetry, and Zigbee radio access. | `home-assistant`, `mqtt`, `zigbee2mqtt` |
 | Media acquisition & library | `homelab` for internal traffic, `homelab_proxy` for UIs, host for Plex | VPN-protected downloads, request management, and playback. | `nordlynx`, `transmission`, `prowlarr`, `sonarr`, `radarr`, `bazarr`, `readarr`, `plex`, `overseerr`, `calibre-web-automated` |
-| Monitoring & observability | `homelab` for metrics, `homelab_proxy` for dashboards, host exporters | Metrics, uptime checks, and capacity visibility. | `prometheus`, `grafana`, `loki`, `promtail`, `uptime-kuma`, `cadvisor`, `glances`, `node_exporter` |
+| Monitoring & observability | `homelab` for metrics, `homelab_proxy` for dashboards, host exporters | Metrics, uptime checks, and capacity visibility. | `prometheus`, `grafana`, `loki`, `grafana-alloy`, `uptime-kuma`, `cadvisor`, `glances`, `node_exporter` |
 | Edge & utilities | `homelab` + `homelab_proxy` | Reverse proxy, SSO, DNS, backups, syncing, and helper tools. | `traefik`, `authelia`, `authentik`, `homepage`, `adguard`, `portainer`, `pgadmin`, `duplicati`, `ddclient`, `samba`, `syncthing`, `flaresolverr`, `autoheal` |
 
 ## Repo Layout
@@ -28,7 +28,7 @@ home-server
 │   ├── homepage/          # Dashboard definition
 │   ├── loki/              # Loki index & retention settings
 │   ├── mosquitto/         # MQTT broker settings
-│   ├── promtail/          # Promtail scrape targets and pipelines
+│   ├── alloy/             # Grafana Alloy flow config for Loki log ingestion
 │   ├── traefik/           # Reverse proxy configuration & cert dumps
 │   └── zigbee2mqtt/       # Zigbee bridge configuration
 ├── pull-all.sh            # legacy helper (multi-stack version, kept for ref)
@@ -107,7 +107,7 @@ flowchart LR
 ### Monitoring & Self-Healing
 
 - Prometheus scrapes `node_exporter` (host metrics) and `cadvisor` (container metrics); Grafana dashboards visualize both.
-- Grafana Loki ingests container logs with Promtail tailing the Docker socket, so every service shares a centralised log history.
+- Grafana Loki ingests container logs with Grafana Alloy tailing the Docker socket, so every service shares a centralised log history.
 - `uptime-kuma` keeps an eye on web UIs and external endpoints.
 - `autoheal` watches healthchecks and restarts unhealthy containers automatically.
 

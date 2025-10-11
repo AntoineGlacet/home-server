@@ -200,13 +200,13 @@ services:
     networks:
       - homelab
 
-  promtail:
-    image: grafana/promtail:2.9.4
-    container_name: promtail
-    command: -config.file=/etc/promtail/config.yaml
+  grafana-alloy:
+    image: grafana/alloy:latest
+    container_name: grafana-alloy
+    command: ["run", "--config.file=/etc/alloy/config.alloy"]
     volumes:
-      - ./config/promtail:/etc/promtail
-      - ./data/promtail:/tmp
+      - ./config/alloy:/etc/alloy
+      - ./data/alloy:/var/lib/alloy
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped

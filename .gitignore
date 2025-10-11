@@ -60,9 +60,9 @@ config/portainer/backups/
 !config/loki/
 !config/loki/**/*.yaml
 !config/loki/**/*.yml
-!config/promtail/
-!config/promtail/**/*.yaml
-!config/promtail/**/*.yml
+!config/alloy/
+!config/alloy/**/*.alloy
+!config/alloy/**/*.hcl
 
 # Traefik
 !config/traefik/

@@ -175,6 +175,8 @@ services:
       - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL}
     volumes:
       - ./data/grafana:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+      - ./config/grafana/dashboards:/etc/grafana/dashboards
     restart: unless-stopped
     networks:
       - homelab

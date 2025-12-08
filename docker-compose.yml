@@ -559,7 +559,7 @@ services:
   # ----------------------------
 
   postgres:
-    restart: on-failure
+    restart: unless-stopped
     image: pgvector/pgvector:pg16
     environment:
       - POSTGRES_SUPERUSER=${POSTGRES_SUPERUSER:-postgres}
@@ -571,10 +571,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 12
+      start_period: 15s
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - homelab
+    labels:
+      - "autoheal=true"
 
   flaresolverr:
     # DockerHub mirror flaresolverr/flaresolverr:latest

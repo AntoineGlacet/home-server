@@ -200,66 +200,46 @@ Fix any issues reported.
 
 ---
 
-## 🔍 Priority 8: Configure Alertmanager Webhook
+## 🔍 Priority 8: Discord Alerts Configuration ✅
 
-Create Alertmanager configuration:
+**Status:** Already configured! Discord alerts are now working via alertmanager-discord bridge.
 
+The setup includes:
+- ✅ Alertmanager service running
+- ✅ alertmanager-discord bridge deployed
+- ✅ Configuration using `DISCORD_WEBHOOK_URL` from .env
+- ✅ 20+ alert rules active
+
+**Verify Discord alerts are working:**
 ```bash
-# Create config directory
-mkdir -p config/alertmanager
-
-# Create configuration file
-cat > config/alertmanager/alertmanager.yml <<'EOF'
-global:
-  resolve_timeout: 5m
-
-route:
-  group_by: ['alertname', 'cluster', 'service']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 12h
-  receiver: 'webhook'
-
-receivers:
-  - name: 'webhook'
-    webhook_configs:
-      - url: 'YOUR_WEBHOOK_URL_HERE'
-        send_resolved: true
-
-# Example for Discord:
-# - name: 'discord'
-#   webhook_configs:
-#     - url: 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_TOKEN/slack'
-#       send_resolved: true
-
-# Example for Slack:
-# - name: 'slack'
-#   slack_configs:
-#     - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
-#       channel: '#alerts'
-#       title: 'Home Server Alert'
+# Send test alert (v2 API)
+cat << 'EOF' | curl -X POST -H "Content-Type: application/json" -d @- http://localhost:9093/api/v2/alerts
+[
+  {
+    "labels": {
+      "alertname": "TestAlert",
+      "severity": "info",
+      "instance": "home-server"
+    },
+    "annotations": {
+      "summary": "Test Alert from Home Server",
+      "description": "If you see this in Discord, alerts are working!"
+    }
+  }
+]
 EOF
 
-# Add Alertmanager to docker-compose.yml (if not already done)
-# See docker-compose.yml for the alertmanager service definition
-
-# Start Alertmanager
-docker compose up -d alertmanager
+# Check Alertmanager logs
+docker compose logs alertmanager-discord --tail=10
 ```
 
-Test alerts:
-```bash
-# Trigger a test alert
-curl -X POST http://localhost:9093/api/v1/alerts -d '[{
-  "labels": {
-    "alertname": "TestAlert",
-    "severity": "info"
-  },
-  "annotations": {
-    "summary": "Test alert from home server"
-  }
-}]'
+**Architecture:**
 ```
+Prometheus → Alertmanager → alertmanager-discord bridge → Discord
+            (port 9093)         (port 9094)
+```
+
+**View active alerts:** http://localhost:9093 or https://alertmanager.your-domain.com
 
 ---
 

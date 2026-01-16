@@ -32,7 +32,7 @@ services:
       - "traefik.http.services.homeassistant.loadbalancer.server.url=http://host.docker.internal:8123"
 
   mqtt:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:2.0.21
     container_name: mqtt
     restart: unless-stopped
     volumes:
@@ -45,7 +45,7 @@ services:
       - homelab
 
   zigbee2mqtt:
-    image: koenkk/zigbee2mqtt
+    image: koenkk/zigbee2mqtt:1.42.0
     container_name: zigbee2mqtt
     restart: unless-stopped
     environment:
@@ -77,7 +77,7 @@ services:
   # ----------------------------
 
   uptime-kuma:
-    image: louislam/uptime-kuma
+    image: louislam/uptime-kuma:1.23.15
     container_name: uptime-kuma
     volumes:
       - ./data/uptime-kuma:/app/data
@@ -96,7 +96,7 @@ services:
       - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v2.55.1
     container_name: prometheus
     user: "1000"
     environment:
@@ -114,7 +114,7 @@ services:
       - homelab_proxy
 
   node_exporter:
-    image: quay.io/prometheus/node-exporter:latest
+    image: quay.io/prometheus/node-exporter:v1.8.2
     container_name: node_exporter
     command:
       - '--path.rootfs=/host'
@@ -125,7 +125,7 @@ services:
       - '/:/host:ro,rslave'
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     ports:
       - "8080:8080"
@@ -150,7 +150,7 @@ services:
       - homelab
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:11.4.0
     container_name: grafana
     user: "1000"
     environment:
@@ -218,7 +218,7 @@ services:
       - homelab
 
   glances:
-    image: nicolargo/glances:latest-full
+    image: nicolargo/glances:4.3.0-full
     container_name: glances
     restart: unless-stopped
     pid: host
@@ -246,7 +246,7 @@ services:
   # ----------------------------
 
   nordlynx:
-    image: ghcr.io/bubuntux/nordlynx
+    image: ghcr.io/bubuntux/nordlynx:latest
     container_name: nordlynx
     cap_add:
       - NET_ADMIN
@@ -327,7 +327,7 @@ services:
       start_period: 10s
 
   sonarr:
-    image: lscr.io/linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
       - PUID=${PUID}
@@ -343,6 +343,12 @@ services:
       - prowlarr
       - transmission
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
     networks:
       - homelab
       - homelab_proxy
@@ -356,7 +362,7 @@ services:
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
 
   radarr:
-    image: lscr.io/linuxserver/radarr
+    image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     hostname: radarr
     environment:
@@ -373,6 +379,12 @@ services:
       - prowlarr
       - transmission
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     networks:
       - homelab
       - homelab_proxy
@@ -399,6 +411,12 @@ services:
       - ${MOVIES}:/movies
       - ${TV}:/tv
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     networks:
       - homelab
       - homelab_proxy
@@ -416,7 +434,7 @@ services:
   # ----------------------------
 
   plex:
-    image: lscr.io/linuxserver/plex
+    image: lscr.io/linuxserver/plex:latest
     container_name: plex
     network_mode: host # best for DLNA, HW accel, discovery
     environment:
@@ -494,7 +512,7 @@ services:
   # ----------------------------
 
   syncthing:
-    image: syncthing/syncthing
+    image: syncthing/syncthing:1.28
     container_name: syncthing
     restart: unless-stopped
     environment:
@@ -526,7 +544,7 @@ services:
   # ----------------------------
 
   siyuan:
-    image: b3log/siyuan
+    image: b3log/siyuan:v3.1.17
     container_name: siyuan
     command:
       - '--workspace=/siyuan/workspace/'
@@ -593,6 +611,12 @@ services:
     ports:
       - "8191:8191"
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     networks:
       - homelab
       - homelab_proxy
@@ -643,7 +667,7 @@ services:
   # SMB file sharing for Windows clients
   samba:
     container_name: samba
-    image: dperson/samba
+    image: dperson/samba:latest
     volumes:
       - ${DATA}:/data
     environment:
@@ -667,7 +691,7 @@ services:
   # Ad-blocking DNS server
   adguard:
     container_name: adguard
-    image: adguard/adguardhome
+    image: adguard/adguardhome:v0.107.54
     volumes:
       - ./config/adguard/work:/opt/adguardhome/work
       - ./config/adguard/conf:/opt/adguardhome/conf
@@ -762,6 +786,12 @@ services:
     volumes:
       - ./config/authentik/media:/media
       - ./config/authentik:/config
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 384M
     networks:
       - homelab
       - homelab_proxy
@@ -809,7 +839,7 @@ services:
 
   # Reverse proxy, dashboard & certificates
   traefik:
-    image: traefik:latest
+    image: traefik:v3.2
     container_name: traefik
     restart: unless-stopped
     command:
@@ -834,6 +864,12 @@ services:
       - --certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=10
       - --certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53
       - --log.level=INFO
+      
+      # Metrics endpoint for Prometheus
+      - --metrics.prometheus=true
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addServicesLabels=true
+      - --entryPoints.metrics.address=:8082
     environment:
       - CLOUDFLARE_DNS_API_TOKEN=${TRAEFIK_CLOUDFLARE_TOKEN}
       - TRAEFIK_DOMAIN=${TRAEFIK_DOMAIN}
@@ -856,6 +892,22 @@ services:
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
       - "traefik.http.routers.traefik.middlewares=authentik@docker"
       - "traefik.http.routers.traefik.service=api@internal"
+      
+      # Security headers middleware
+      - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.sslRedirect=true"
+      - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.X-Robots-Tag=none"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Server="
+      - "traefik.http.middlewares.security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+      
+      # Rate limiting middleware
+      - "traefik.http.middlewares.rate-limit.ratelimit.average=100"
+      - "traefik.http.middlewares.rate-limit.ratelimit.burst=50"
+      - "traefik.http.middlewares.rate-limit.ratelimit.period=1s"
 
   traefik-certs-dumper:
     image: ldez/traefik-certs-dumper:v2.9.1
@@ -877,7 +929,7 @@ services:
 
   # Restart containers based on health
   autoheal:
-    image: willfarrell/autoheal
+    image: willfarrell/autoheal:latest
     container_name: autoheal
     environment:
       - AUTOHEAL_CONTAINER_LABEL=all
@@ -885,6 +937,36 @@ services:
       # docker socket, be careful with this
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
+
+  # ----------------------------
+  # ALERTMANAGER
+  # ----------------------------
+  
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: alertmanager
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    environment:
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+    volumes:
+      - ./config/alertmanager:/etc/alertmanager
+      - ./data/alertmanager:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - homelab
+      - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.alertmanager.entrypoints=websecure"
+      - "traefik.http.routers.alertmanager.tls.certresolver=cloudflare"
+      - "traefik.http.routers.alertmanager.middlewares=authentik@docker,security-headers"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
 
 # not sure why we only use this for appflowy stuff  
 volumes:

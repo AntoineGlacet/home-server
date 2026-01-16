@@ -1,0 +1,230 @@
+groups:
+  - name: system_alerts
+    interval: 30s
+    rules:
+      # Memory pressure alert
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) > 6442450944
+        for: 5m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 6GB ({{ $value | humanize1024 }}B used). Available: {{ query \"node_memory_MemAvailable_bytes\" | first | value | humanize1024 }}B"
+
+      # Critical memory alert
+      - alert: CriticalMemoryUsage
+        expr: node_memory_MemAvailable_bytes < 536870912
+        for: 2m
+        labels:
+          severity: critical
+          category: system
+        annotations:
+          summary: "Critical memory shortage on {{ $labels.instance }}"
+          description: "Less than 512MB RAM available ({{ $value | humanize1024 }}B free). System may start OOM killing processes."
+
+      # Swap usage alert
+      - alert: HighSwapUsage
+        expr: (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) > 2147483648
+        for: 10m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "High swap usage on {{ $labels.instance }}"
+          description: "Swap usage is above 2GB ({{ $value | humanize1024 }}B used). This may indicate memory pressure or incorrect swappiness setting."
+
+      # Disk space alerts - Root filesystem
+      - alert: RootDiskSpaceWarning
+        expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) < 0.20
+        for: 5m
+        labels:
+          severity: warning
+          category: disk
+        annotations:
+          summary: "Root filesystem running low on space"
+          description: "Root filesystem has less than 20% free space ({{ $value | humanizePercentage }} available)"
+
+      - alert: RootDiskSpaceCritical
+        expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) < 0.10
+        for: 2m
+        labels:
+          severity: critical
+          category: disk
+        annotations:
+          summary: "Root filesystem critically low on space"
+          description: "Root filesystem has less than 10% free space ({{ $value | humanizePercentage }} available). Immediate action required!"
+
+      # Disk space alerts - Data drive
+      - alert: DataDiskSpaceWarning
+        expr: (node_filesystem_avail_bytes{mountpoint="/media/data"} / node_filesystem_size_bytes{mountpoint="/media/data"}) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+          category: disk
+        annotations:
+          summary: "Data drive running low on space"
+          description: "Data drive (/media/data) has less than 15% free space ({{ $value | humanizePercentage }} available, {{ query \"node_filesystem_avail_bytes{mountpoint='/media/data'}\" | first | value | humanize1024 }}B free)"
+
+      - alert: DataDiskSpaceCritical
+        expr: (node_filesystem_avail_bytes{mountpoint="/media/data"} / node_filesystem_size_bytes{mountpoint="/media/data"}) < 0.05
+        for: 2m
+        labels:
+          severity: critical
+          category: disk
+        annotations:
+          summary: "Data drive critically low on space"
+          description: "Data drive has less than 5% free space! Downloads and media acquisition will fail."
+
+  - name: container_alerts
+    interval: 30s
+    rules:
+      # Container restart alert
+      - alert: ContainerRestarting
+        expr: rate(container_last_seen{name!=""}[5m]) > 0 and (time() - container_start_time_seconds{name!=""}) < 300
+        for: 5m
+        labels:
+          severity: warning
+          category: container
+        annotations:
+          summary: "Container {{ $labels.name }} is restarting frequently"
+          description: "Container {{ $labels.name }} has restarted multiple times in the last 5 minutes"
+
+      # Container down alert
+      - alert: ContainerDown
+        expr: time() - container_last_seen{name!=""} > 60
+        for: 2m
+        labels:
+          severity: critical
+          category: container
+        annotations:
+          summary: "Container {{ $labels.name }} is down"
+          description: "Container {{ $labels.name }} has not been seen for more than 60 seconds"
+
+      # High CPU usage per container
+      - alert: ContainerHighCPU
+        expr: sum(rate(container_cpu_usage_seconds_total{name!=""}[5m])) by (name) > 3
+        for: 10m
+        labels:
+          severity: warning
+          category: container
+        annotations:
+          summary: "Container {{ $labels.name }} using excessive CPU"
+          description: "Container {{ $labels.name }} is using more than 3 CPU cores ({{ $value | humanize }} cores)"
+
+      # High memory usage per container
+      - alert: ContainerHighMemory
+        expr: container_memory_usage_bytes{name!=""} > 1073741824
+        for: 10m
+        labels:
+          severity: warning
+          category: container
+        annotations:
+          summary: "Container {{ $labels.name }} using excessive memory"
+          description: "Container {{ $labels.name }} is using more than 1GB RAM ({{ $value | humanize1024 }}B)"
+
+  - name: service_alerts
+    interval: 30s
+    rules:
+      # Prometheus scrape failures
+      - alert: PrometheusScrapeFailure
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: warning
+          category: monitoring
+        annotations:
+          summary: "Prometheus cannot scrape {{ $labels.job }}"
+          description: "Prometheus has failed to scrape {{ $labels.job }} for more than 5 minutes. Target may be down."
+
+      # Traefik backend down
+      - alert: TraefikBackendDown
+        expr: traefik_backend_server_up == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: proxy
+        annotations:
+          summary: "Traefik backend {{ $labels.backend }} is down"
+          description: "Traefik reports backend {{ $labels.backend }} is unreachable"
+
+      # High HTTP error rate
+      - alert: HighHTTPErrorRate
+        expr: sum(rate(traefik_backend_requests_total{code=~"5.."}[5m])) by (backend) / sum(rate(traefik_backend_requests_total[5m])) by (backend) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          category: proxy
+        annotations:
+          summary: "High HTTP 5xx error rate for {{ $labels.backend }}"
+          description: "Backend {{ $labels.backend }} is returning >5% HTTP 5xx errors ({{ $value | humanizePercentage }})"
+
+  - name: infrastructure_alerts
+    interval: 60s
+    rules:
+      # System load alert
+      - alert: HighSystemLoad
+        expr: node_load15 / count(node_cpu_seconds_total{mode="system"}) without (cpu, mode) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "High system load on {{ $labels.instance }}"
+          description: "15-minute load average is at {{ $value | humanizePercentage }} of CPU capacity"
+
+      # Critical system load
+      - alert: CriticalSystemLoad
+        expr: node_load5 / count(node_cpu_seconds_total{mode="system"}) without (cpu, mode) > 1.5
+        for: 5m
+        labels:
+          severity: critical
+          category: system
+        annotations:
+          summary: "Critical system load on {{ $labels.instance }}"
+          description: "5-minute load average is 150% of CPU capacity. System is severely overloaded."
+
+      # Node exporter down
+      - alert: NodeExporterDown
+        expr: up{job="node_exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: monitoring
+        annotations:
+          summary: "Node Exporter is down"
+          description: "Node Exporter has been down for more than 2 minutes. System metrics are unavailable."
+
+      # Loki down
+      - alert: LokiDown
+        expr: up{job="loki"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          category: monitoring
+        annotations:
+          summary: "Loki is down"
+          description: "Loki has been down for more than 5 minutes. Log aggregation is unavailable."
+
+      # Disk I/O wait high
+      - alert: HighDiskIOWait
+        expr: rate(node_cpu_seconds_total{mode="iowait"}[5m]) > 0.20
+        for: 10m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "High disk I/O wait time"
+          description: "CPU is spending {{ $value | humanizePercentage }} time waiting for disk I/O. May indicate swap thrashing or slow disk."
+
+      # Filesystem read-only
+      - alert: FilesystemReadOnly
+        expr: node_filesystem_readonly{mountpoint=~"/|/media/data"} == 1
+        for: 1m
+        labels:
+          severity: critical
+          category: disk
+        annotations:
+          summary: "Filesystem {{ $labels.mountpoint }} is read-only"
+          description: "Filesystem {{ $labels.mountpoint }} has been remounted read-only. This usually indicates disk errors!"

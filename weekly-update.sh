@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # home server directory
-HOMESERVER="${HOMESERVER:-/home/ubuntu/home-server}"
+HOMESERVER="${HOMESERVER:-/home/antoine/home-server}"
 COMPOSE_FILE="${HOMESERVER}/docker-compose.yml"
 ENV_FILE="${HOMESERVER}/.env"
 HELPERS_FILE="${HOMESERVER}/lib/compose.sh"

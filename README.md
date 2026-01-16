@@ -1,6 +1,14 @@
 # 🛰️ Home Server on Docker
 
-> Infrastructure-as-code for my Raspberry Pi 4 home lab. Every service runs in Docker, networks are segmented, and a single `.env` file keeps secrets out of version control.
+> Infrastructure-as-code for my Dell OptiPlex 3050 home lab. Every service runs in Docker, networks are segmented, and a single `.env` file keeps secrets out of version control.
+
+## Hardware
+
+**Dell OptiPlex 3050**
+- CPU: Intel Core i5-7500T (4 cores @ 2.70GHz)
+- RAM: 8GB DDR4
+- Storage: 98GB system drive + 5.5TB data drive
+- OS: Ubuntu 24.04.3 LTS
 
 ## Stack Landscape
 
@@ -65,13 +73,13 @@ Helper scripts in the repo still reference the old multi-stack layout. Update or
 - `homelab` is the default bridge shared by most containers. Host networking is used only where broadcast discovery or raw sockets are required (`home-assistant`, `plex`, `node_exporter`).
 - `homelab_proxy` carries any HTTP(S) endpoint exposed through Traefik/Authelia. Create it once (`docker network create homelab_proxy`) so services in other compose projects can join.
 - NordVPN egress is enforced by `network_mode: service:nordlynx` for Transmission and Prowlarr, keeping traffic inside the tunnel while still exposing their web UIs via published ports on the VPN container.
-- Internal DNS (`adguard`) and DHCP let the Pi act as the network edge, while `ddclient` updates the public hostname.
+- Internal DNS (`adguard`) and DHCP let the OptiPlex act as the network edge, while `ddclient` updates the public hostname.
 
 ## Network Architecture
 
 ```mermaid
 flowchart LR
-    subgraph Host["Raspberry Pi / Docker host"]
+    subgraph Host["Dell OptiPlex 3050 / Docker host"]
         subgraph HostNet["Host network"]
             homeassistant["home-assistant"]
             plex["plex"]

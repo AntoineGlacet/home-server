@@ -1,0 +1,32 @@
+modules:
+  # ICMP probe for latency, jitter, and packet loss monitoring
+  icmp_ipv4:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: ip4
+      source_ip_address: ""
+
+  # HTTP probe for checking web connectivity
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: []  # Defaults to 2xx
+      method: GET
+      preferred_ip_protocol: ip4
+      follow_redirects: true
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+
+  # DNS probe for checking DNS resolution
+  dns_google:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "google.com"
+      query_type: "A"
+      preferred_ip_protocol: ip4
+      valid_rcodes:
+        - NOERROR

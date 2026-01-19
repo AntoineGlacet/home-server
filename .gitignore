@@ -52,17 +52,36 @@ config/portainer/backups/
 # Homepage dashboard
 !config/homepage/*.yaml
 
-# Prometheus
+# Monitoring & Observability Stack
+# Prometheus - metrics collection
 !config/prometheus/
 !config/prometheus/**/*.yml
 
-# Loki & log aggregation configs
+# Loki & Promtail - log aggregation
 !config/loki/
 !config/loki/**/*.yaml
 !config/loki/**/*.yml
 !config/promtail/
 !config/promtail/**/*.yaml
 !config/promtail/**/*.yml
+
+# Grafana - dashboards and provisioning
+!config/grafana/
+!config/grafana/**/
+!config/grafana/dashboards/*.json
+!config/grafana/provisioning/**/*.yml
+!config/grafana/provisioning/**/*.yaml
+
+# Alertmanager - alert routing and notifications
+!config/alertmanager/
+!config/alertmanager/*.yml
+!config/alertmanager/templates/
+!config/alertmanager/templates/*.tmpl
+
+# Blackbox Exporter - endpoint monitoring
+!config/blackbox-exporter/
+!config/blackbox-exporter/*.yml
+!config/blackbox-exporter/*.yaml
 
 # Traefik
 !config/traefik/

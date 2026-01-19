@@ -1,0 +1,15 @@
+{{ define "slack.title" -}}
+[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .GroupLabels.SortedPairs.Values | join " " }}
+{{- end }}
+
+{{ define "slack.text" -}}
+{{ range .Alerts }}
+{{- if .Annotations.summary }}*Summary:* {{ .Annotations.summary }}{{ end }}
+{{- if .Annotations.description }}
+*Description:* {{ .Annotations.description }}{{ end }}
+*Severity:* {{ .Labels.severity | toUpper }}
+*Details:*
+{{ range .Labels.SortedPairs }}  • {{ .Name }}: `{{ .Value }}`
+{{ end }}
+{{ end }}
+{{- end }}

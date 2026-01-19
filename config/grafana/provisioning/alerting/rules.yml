@@ -1,0 +1,1534 @@
+apiVersion: 1
+
+groups:
+  # ============================================================================
+  # SYSTEM PERFORMANCE & LATENCY ALERTS (NEW - from our conversation)
+  # ============================================================================
+  - orgId: 1
+    name: system_performance
+    folder: System
+    interval: 30s
+    rules:
+      # CPU Governor Not in Performance Mode
+      - uid: cpu-governor-not-performance
+        title: CPU Governor Not in Performance Mode
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: node_cpu_scaling_governor{governor!="performance"}
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "CPU {{ $labels.cpu }} not in performance mode"
+          description: "CPU governor is {{ $labels.governor }} instead of performance. This causes severe interactive latency! SSH and services will feel sluggish."
+        labels:
+          severity: critical
+          category: system
+      
+      # High Swap I/O Rate (the real memory thrashing indicator)
+      - uid: high-swap-io-rate
+        title: High Swap I/O Activity
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(node_vmstat_pswpin[5m]) + rate(node_vmstat_pswpout[5m])
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1000
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "High swap I/O activity detected"
+          description: "Swap I/O rate is {{ $value | humanize }} pages/sec. System may be thrashing. Check memory usage and swappiness settings."
+        labels:
+          severity: warning
+          category: system
+      
+      # Critical Swap Thrashing
+      - uid: critical-swap-thrashing
+        title: Critical Swap Thrashing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(node_vmstat_pswpin[5m]) + rate(node_vmstat_pswpout[5m])
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 5000
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "CRITICAL: System is swap thrashing"
+          description: "Severe swap thrashing ({{ $value | humanize }} pages/sec). System is likely unresponsive. Immediate action needed - add RAM or reduce containers."
+        labels:
+          severity: critical
+          category: system
+      
+      # Low Free Memory with High Inactive Pages
+      - uid: memory-pressure-with-inactive
+        title: Memory Pressure with High Inactive Pages
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                (node_memory_MemAvailable_bytes < 1073741824) 
+                and 
+                ((node_memory_Inactive_anon_bytes + node_memory_Inactive_file_bytes) > 2147483648)
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "Low free memory with high inactive pages"
+          description: "Available memory is low but there are {{ $value | humanize1024 }}B of inactive pages. Consider increasing vm.swappiness to proactively swap out inactive memory."
+        labels:
+          severity: warning
+          category: system
+      
+      # Sustained High I/O Wait (faster detection)
+      - uid: sustained-high-iowait
+        title: Sustained High I/O Wait
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(node_cpu_seconds_total{mode="iowait"}[5m])
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0.15
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 3m
+        annotations:
+          summary: "Sustained high I/O wait"
+          description: "CPU spending {{ $value | humanizePercentage }} time in I/O wait for 3+ minutes. May indicate swap thrashing or slow disk."
+        labels:
+          severity: warning
+          category: system
+      
+      # Sudden Load Spike (interactive latency proxy)
+      - uid: sudden-load-spike
+        title: Sudden Load Spike Detected
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: |
+                ((node_load1 - node_load5) / node_load5 > 0.5) 
+                and 
+                (node_load1 > 2)
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "Sudden load spike detected"
+          description: "1-min load is 50%+ higher than 5-min average. May indicate responsiveness issues or resource contention."
+        labels:
+          severity: warning
+          category: system
+
+  # ============================================================================
+  # MEMORY ALERTS (converted from Prometheus)
+  # ============================================================================
+  - orgId: 1
+    name: memory_alerts
+    folder: System
+    interval: 30s
+    rules:
+      # High Memory Usage
+      - uid: high-memory-usage
+        title: High Memory Usage
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) > 6442450944
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 6GB ({{ $value | humanize1024 }}B used)"
+        labels:
+          severity: warning
+          category: system
+      
+      # Critical Memory Usage (faster trigger - 1min instead of 2min)
+      - uid: critical-memory-usage
+        title: Critical Memory Shortage
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: node_memory_MemAvailable_bytes < 536870912
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "Critical memory shortage on {{ $labels.instance }}"
+          description: "Less than 512MB RAM available ({{ $value | humanize1024 }}B free). System may start OOM killing processes."
+        labels:
+          severity: critical
+          category: system
+      
+      # High Swap Usage
+      - uid: high-swap-usage
+        title: High Swap Usage
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) > 2147483648
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: "High swap usage on {{ $labels.instance }}"
+          description: "Swap usage is above 2GB ({{ $value | humanize1024 }}B used). Note: With swappiness=60, this is normal. Check swap I/O rate instead."
+        labels:
+          severity: warning
+          category: system
+
+  # ============================================================================
+  # DISK SPACE ALERTS (converted from Prometheus)
+  # ============================================================================
+  - orgId: 1
+    name: disk_alerts
+    folder: System
+    interval: 60s
+    rules:
+      # Root Disk Space Warning
+      - uid: root-disk-space-warning
+        title: Root Disk Space Warning
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) < 0.20
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "Root filesystem running low on space"
+          description: "Root filesystem has less than 20% free space ({{ $value | humanizePercentage }} available)"
+        labels:
+          severity: warning
+          category: disk
+      
+      # Root Disk Space Critical
+      - uid: root-disk-space-critical
+        title: Root Disk Space Critical
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) < 0.10
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "Root filesystem critically low on space"
+          description: "Root filesystem has less than 10% free space ({{ $value | humanizePercentage }} available). Immediate action required!"
+        labels:
+          severity: critical
+          category: disk
+      
+      # Data Disk Space Warning
+      - uid: data-disk-space-warning
+        title: Data Drive Space Warning
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (node_filesystem_avail_bytes{mountpoint="/media/data"} / node_filesystem_size_bytes{mountpoint="/media/data"}) < 0.15
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "Data drive running low on space"
+          description: "Data drive (/media/data) has less than 15% free space ({{ $value | humanizePercentage }} available)"
+        labels:
+          severity: warning
+          category: disk
+      
+      # Data Disk Space Critical
+      - uid: data-disk-space-critical
+        title: Data Drive Space Critical
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (node_filesystem_avail_bytes{mountpoint="/media/data"} / node_filesystem_size_bytes{mountpoint="/media/data"}) < 0.05
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "Data drive critically low on space"
+          description: "Data drive has less than 5% free space! Downloads and media acquisition will fail."
+        labels:
+          severity: critical
+          category: disk
+      
+      # Filesystem Read-Only
+      - uid: filesystem-readonly
+        title: Filesystem Mounted Read-Only
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: node_filesystem_readonly{mountpoint=~"/|/media/data"} == 1
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "Filesystem {{ $labels.mountpoint }} is read-only"
+          description: "Filesystem {{ $labels.mountpoint }} has been remounted read-only. This usually indicates disk errors!"
+        labels:
+          severity: critical
+          category: disk
+
+  # ============================================================================
+  # CONTAINER ALERTS (converted from Prometheus)
+  # ============================================================================
+  - orgId: 1
+    name: container_alerts
+    folder: Containers
+    interval: 30s
+    rules:
+      # Container Down
+      - uid: container-down
+        title: Container Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: time() - container_last_seen{name!=""} > 60
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "Container {{ $labels.name }} is down"
+          description: "Container {{ $labels.name }} has not been seen for more than 60 seconds"
+        labels:
+          severity: critical
+          category: container
+      
+      # Container High CPU
+      - uid: container-high-cpu
+        title: Container High CPU Usage
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: sum(rate(container_cpu_usage_seconds_total{name!=""}[5m])) by (name) > 3
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: "Container {{ $labels.name }} using excessive CPU"
+          description: "Container {{ $labels.name }} is using more than 3 CPU cores ({{ $value | humanize }} cores)"
+        labels:
+          severity: warning
+          category: container
+      
+      # Container High Memory
+      - uid: container-high-memory
+        title: Container High Memory Usage
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: container_memory_usage_bytes{name!=""} > 1073741824
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: "Container {{ $labels.name }} using excessive memory"
+          description: "Container {{ $labels.name }} is using more than 1GB RAM ({{ $value | humanize1024 }}B)"
+        labels:
+          severity: warning
+          category: container
+
+  # ============================================================================
+  # INFRASTRUCTURE ALERTS (converted from Prometheus)
+  # ============================================================================
+  - orgId: 1
+    name: infrastructure_alerts
+    folder: System
+    interval: 60s
+    rules:
+      # High System Load
+      - uid: high-system-load
+        title: High System Load
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: node_load15 / count(node_cpu_seconds_total{mode="system"}) without (cpu, mode) > 0.9
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: "High system load on {{ $labels.instance }}"
+          description: "15-minute load average is at {{ $value | humanizePercentage }} of CPU capacity"
+        labels:
+          severity: warning
+          category: system
+      
+      # Critical System Load
+      - uid: critical-system-load
+        title: Critical System Load
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: node_load5 / count(node_cpu_seconds_total{mode="system"}) without (cpu, mode) > 1.5
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "Critical system load on {{ $labels.instance }}"
+          description: "5-minute load average is 150% of CPU capacity. System is severely overloaded."
+        labels:
+          severity: critical
+          category: system
+      
+      # High Disk I/O Wait (updated from 10m to 5m)
+      - uid: high-disk-iowait
+        title: High Disk I/O Wait
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: rate(node_cpu_seconds_total{mode="iowait"}[5m]) > 0.20
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "High disk I/O wait time"
+          description: "CPU is spending {{ $value | humanizePercentage }} time waiting for disk I/O. May indicate swap thrashing or slow disk."
+        labels:
+          severity: warning
+          category: system
+
+  # ============================================================================
+  # SERVICE/MONITORING ALERTS (converted from Prometheus)
+  # ============================================================================
+  - orgId: 1
+    name: service_alerts
+    folder: Services
+    interval: 30s
+    rules:
+      # Prometheus Scrape Failure
+      - uid: prometheus-scrape-failure
+        title: Prometheus Scrape Failure
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "Prometheus cannot scrape {{ $labels.job }}"
+          description: "Prometheus has failed to scrape {{ $labels.job }} for more than 5 minutes. Target may be down."
+        labels:
+          severity: warning
+          category: monitoring
+      
+      # Node Exporter Down
+      - uid: node-exporter-down
+        title: Node Exporter Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job="node_exporter"} == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 120
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "Node Exporter is down"
+          description: "Node Exporter has been down for more than 2 minutes. System metrics are unavailable."
+        labels:
+          severity: critical
+          category: monitoring
+      
+      # Loki Down
+      - uid: loki-down
+        title: Loki Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: up{job="loki"} == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "Loki is down"
+          description: "Loki has been down for more than 5 minutes. Log aggregation is unavailable."
+        labels:
+          severity: warning
+          category: monitoring
+
+  # ============================================================================
+  # INTERNET CONNECTIVITY ALERTS
+  # ============================================================================
+  - orgId: 1
+    name: internet_connectivity
+    folder: Network
+    interval: 30s
+    rules:
+      # High Internet Latency (Warning)
+      - uid: high-internet-latency
+        title: High Internet Latency
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: avg(probe_duration_seconds{job="blackbox_icmp"}) > 0.1
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "High internet latency detected"
+          description: "Average internet latency is >100ms. Teams calls may experience degraded quality."
+        labels:
+          severity: warning
+          category: network
+
+      # Critical Internet Latency
+      - uid: critical-internet-latency
+        title: Critical Internet Latency
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: avg(probe_duration_seconds{job="blackbox_icmp"}) > 0.25
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "CRITICAL: Severe internet latency"
+          description: "Average internet latency is >250ms. Teams calls will be unusable."
+        labels:
+          severity: critical
+          category: network
+
+      # High Network Jitter
+      - uid: high-network-jitter
+        title: High Network Jitter
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: stddev_over_time(probe_duration_seconds{job="blackbox_icmp"}[5m]) > 0.03
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 3m
+        annotations:
+          summary: "High network jitter detected"
+          description: "Network jitter is >30ms. Teams calls may experience stuttering or audio dropouts."
+        labels:
+          severity: warning
+          category: network
+
+      # Packet Loss Warning
+      - uid: packet-loss-warning
+        title: Packet Loss Detected
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (1 - avg(probe_success{job="blackbox_icmp"})) * 100 > 1
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 2m
+        annotations:
+          summary: "Packet loss detected on internet connection"
+          description: "Packet loss is >1%. Teams calls may experience audio dropouts and video freezing."
+        labels:
+          severity: warning
+          category: network
+
+      # Critical Packet Loss
+      - uid: critical-packet-loss
+        title: Critical Packet Loss
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: (1 - avg(probe_success{job="blackbox_icmp"})) * 100 > 5
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "CRITICAL: Severe packet loss"
+          description: "Packet loss is >5%. Teams calls will be unusable. Check ISP connection."
+        labels:
+          severity: critical
+          category: network
+
+      # Internet Connection Down
+      - uid: internet-connection-down
+        title: Internet Connection Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: probe_success{job="blackbox_icmp", instance="8.8.8.8"} == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: Alerting
+        execErrState: Error
+        for: 30s
+        annotations:
+          summary: "CRITICAL: Internet connection down"
+          description: "Cannot reach external hosts (Google DNS 8.8.8.8). Complete internet outage detected."
+        labels:
+          severity: critical
+          category: network
+
+      # DNS Resolution Failure
+      - uid: dns-resolution-failure
+        title: DNS Resolution Failure
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: probe_success{job="blackbox_dns"} == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "DNS resolution failing"
+          description: "DNS queries are failing to {{ $labels.instance }}. Check AdGuard Home or upstream DNS servers."
+        labels:
+          severity: critical
+          category: network

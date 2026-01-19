@@ -1,0 +1,31 @@
+apiVersion: 1
+
+# Notification Templates
+templates:
+  - orgID: 1
+    name: discord_default
+    template: |
+      {{ define "discord.title" }}
+      {{ if eq .Status "firing" }}🚨 ALERT FIRING{{ else }}✅ ALERT RESOLVED{{ end }}
+      {{ end }}
+      
+      {{ define "discord.message" }}
+      {{ range .Alerts }}
+      **Alert:** {{ .Labels.alertname }}
+      **Severity:** {{ .Labels.severity | toUpper }}
+      {{ if .Labels.category }}**Category:** {{ .Labels.category }}{{ end }}
+      
+      {{ .Annotations.summary }}
+      {{ if .Annotations.description }}
+      {{ .Annotations.description }}
+      {{ end }}
+      
+      {{ if .Labels.instance }}**Instance:** `{{ .Labels.instance }}`{{ end }}
+      {{ if .Labels.job }}**Job:** `{{ .Labels.job }}`{{ end }}
+      
+      **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}
+      {{ if ne .EndsAt.Unix 0 }}**Ended:** {{ .EndsAt.Format "2006-01-02 15:04:05 MST" }}{{ end }}
+      {{ if .GeneratorURL }}**Source:** {{ .GeneratorURL }}{{ end }}
+      ---
+      {{ end }}
+      {{ end }}

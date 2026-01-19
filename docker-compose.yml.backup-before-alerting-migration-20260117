@@ -125,7 +125,7 @@ services:
       - '/:/host:ro,rslave'
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.51.0
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     ports:
       - "8080:8080"
@@ -137,26 +137,14 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
       - '-housekeeping_interval=30s'
       - '-docker_only=true'
       - '-store_container_labels=true'
-      - '-disable_metrics=percpu,process,sched,tcp,udp,diskIO,disk'
+      - '-disable_metrics=percpu,process,sched,tcp,udp,diskIO,disk,network'
     privileged: true
     devices:
       - /dev/kmsg
-    restart: unless-stopped
-    networks:
-      - homelab
-
-  blackbox-exporter:
-    image: prom/blackbox-exporter:v0.25.0
-    container_name: blackbox-exporter
-    command:
-      - '--config.file=/config/blackbox.yml'
-    volumes:
-      - ./config/blackbox-exporter:/config
     restart: unless-stopped
     networks:
       - homelab
@@ -185,10 +173,6 @@ services:
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=${GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH}
       # Required if Grafana is running behind a reverse proxy
       - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL}
-      # Enable unified alerting (default in Grafana 11.4+)
-      - GF_UNIFIED_ALERTING_ENABLED=true
-      # Discord webhook for contact point (passed from .env)
-      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
     volumes:
       - ./data/grafana:/var/lib/grafana
       - ./config/grafana/provisioning:/etc/grafana/provisioning
@@ -955,11 +939,46 @@ services:
     restart: unless-stopped
 
   # ----------------------------
-  # ALERTING - Handled by Grafana
+  # ALERTMANAGER
   # ----------------------------
-  # Alertmanager and alertmanager-discord removed - using Grafana Alerting instead
-  # All alerts are now configured in config/grafana/provisioning/alerting/
-  # Contact points, policies, and rules are all managed through Grafana
+  
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: alertmanager
+    restart: unless-stopped
+    user: "1000:1000"
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    volumes:
+      - ./config/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./config/alertmanager/templates:/etc/alertmanager/templates:ro
+      - ./data/alertmanager:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - homelab
+      - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.alertmanager.entrypoints=websecure"
+      - "traefik.http.routers.alertmanager.tls.certresolver=cloudflare"
+      - "traefik.http.routers.alertmanager.middlewares=authentik@docker,security-headers"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+
+  alertmanager-discord:
+    image: benjojo/alertmanager-discord:latest
+    container_name: alertmanager-discord
+    restart: unless-stopped
+    command:
+      - -webhook.url=${DISCORD_WEBHOOK_URL}
+      - -listen.address=0.0.0.0:9094
+    ports:
+      - "9094:9094"
+    networks:
+      - homelab
 
 # not sure why we only use this for appflowy stuff  
 volumes:

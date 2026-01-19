@@ -5,15 +5,13 @@ global:
     cluster: 'home-server'
     environment: 'production'
 
-# Alertmanager configuration
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets: ['alertmanager:9093']
+# Alerting is now handled by Grafana
+# Prometheus still scrapes metrics, but Grafana manages all alerts
+# Alert rules have been migrated to: config/grafana/provisioning/alerting/rules.yml
 
-# Load alerting rules
-rule_files:
-  - 'alerts.yml'
+# Legacy alert rules file (kept for reference, not actively used)
+# rule_files:
+#   - 'alerts.yml'
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -38,3 +36,56 @@ scrape_configs:
     static_configs:
       - targets: ['loki:3100']
     scrape_interval: 30s
+
+  # Blackbox Exporter - ICMP (ping) probes for internet connectivity monitoring
+  - job_name: 'blackbox_icmp'
+    metrics_path: /probe
+    params:
+      module: [icmp_ipv4]
+    static_configs:
+      - targets:
+          - 8.8.8.8           # Google DNS (primary baseline)
+          - 1.1.1.1           # Cloudflare DNS
+          - 52.113.194.132    # Microsoft Teams (North America relay)
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Blackbox Exporter - HTTP probes for web connectivity
+  - job_name: 'blackbox_http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://www.google.com
+          - https://teams.microsoft.com
+          - https://cloudflare.com
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Blackbox Exporter - DNS probes
+  - job_name: 'blackbox_dns'
+    metrics_path: /probe
+    params:
+      module: [dns_google]
+    static_configs:
+      - targets:
+          - 8.8.8.8           # Google DNS
+          - 1.1.1.1           # Cloudflare DNS
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

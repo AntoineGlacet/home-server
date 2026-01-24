@@ -1435,6 +1435,55 @@ groups:
           severity: critical
           category: network
 
+       # Gateway/Router Down
+      - uid: gateway-router-down
+        title: Gateway/Router Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: probe_success{job="blackbox_icmp", instance="10.13.1.1"} == 0
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        noDataState: Alerting
+        execErrState: Error
+        for: 30s
+        annotations:
+          summary: "CRITICAL: Gateway/Router is down"
+          description: "Cannot reach local gateway/router at 10.13.1.1. Network connectivity lost."
+        labels:
+          severity: critical
+          category: network
+
       # Internet Connection Down
       - uid: internet-connection-down
         title: Internet Connection Down

@@ -44,6 +44,7 @@ scrape_configs:
       module: [icmp_ipv4]
     static_configs:
       - targets:
+          - 10.13.1.1         # Gateway/Router (local network)
           - 8.8.8.8           # Google DNS (primary baseline)
           - 1.1.1.1           # Cloudflare DNS
           - 52.113.194.132    # Microsoft Teams (North America relay)

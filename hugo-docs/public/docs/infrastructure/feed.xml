@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Infrastructure on Home Server Documentation</title><link>https://docs.antoineglacet.com/docs/infrastructure/</link><description>Recent content in Infrastructure on Home Server Documentation</description><generator>Hugo</generator><language>en</language><atom:link href="https://docs.antoineglacet.com/docs/infrastructure/feed.xml" rel="self" type="application/rss+xml"/><item><title>Traefik - Reverse Proxy &amp; TLS</title><link>https://docs.antoineglacet.com/docs/infrastructure/traefik/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/infrastructure/traefik/</guid><description>&lt;p&gt;Traefik automatically routes external HTTPS traffic to internal services and manages Let&amp;rsquo;s Encrypt certificates.&lt;/p&gt;
+&lt;h2 id="table-of-contents"&gt;Table of Contents&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="#overview"&gt;Overview&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#how-it-works"&gt;How It Works&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#certificate-management"&gt;Certificate Management&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#exposing-services"&gt;Exposing Services&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#monitoring"&gt;Monitoring&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#troubleshooting"&gt;Troubleshooting&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="overview"&gt;Overview&lt;/h2&gt;
+&lt;h3 id="key-features"&gt;Key Features&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Automatic HTTPS&lt;/strong&gt;: All services get TLS certificates via Cloudflare DNS-01 challenge&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Wildcard certificate&lt;/strong&gt;: Single cert covers &lt;code&gt;antoineglacet.com&lt;/code&gt; and &lt;code&gt;*.antoineglacet.com&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Docker integration&lt;/strong&gt;: Services auto-discovered via Docker labels&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authentik integration&lt;/strong&gt;: Forward auth middleware protects sensitive services&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Metrics export&lt;/strong&gt;: Prometheus scrapes Traefik metrics on port 8082&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="access-points"&gt;Access Points&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Dashboard&lt;/strong&gt;: &lt;a href="https://traefik.antoineglacet.com"&gt;https://traefik.antoineglacet.com&lt;/a&gt; (protected by Authentik)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Metrics&lt;/strong&gt;: http://localhost:8082/metrics (Prometheus endpoint)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;API&lt;/strong&gt;: http://localhost:8080/api (if enabled)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="architecture"&gt;Architecture&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Internet → Port 443 → Traefik → Authentik (optional) → Service
+ ↓
+ Let&amp;#39;s Encrypt (DNS-01 challenge via Cloudflare)
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="how-it-works"&gt;How It Works&lt;/h2&gt;
+&lt;h3 id="entry-points"&gt;Entry Points&lt;/h3&gt;
+&lt;p&gt;Traefik listens on two entry points:&lt;/p&gt;</description></item><item><title>Authentik - SSO &amp; Authentication</title><link>https://docs.antoineglacet.com/docs/infrastructure/authentik/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/infrastructure/authentik/</guid><description>&lt;p&gt;Authentik provides Single Sign-On (SSO) and forward authentication for all web services.&lt;/p&gt;
+&lt;h2 id="table-of-contents"&gt;Table of Contents&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="#overview"&gt;Overview&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#architecture"&gt;Architecture&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#how-forward-auth-works"&gt;How Forward Auth Works&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#protected-services"&gt;Protected Services&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#user-management"&gt;User Management&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#grafana-oauth-integration"&gt;Grafana OAuth Integration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#monitoring"&gt;Monitoring&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#troubleshooting"&gt;Troubleshooting&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="overview"&gt;Overview&lt;/h2&gt;
+&lt;h3 id="what-is-authentik"&gt;What is Authentik?&lt;/h3&gt;
+&lt;p&gt;Authentik is an identity provider (IdP) that handles:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;User authentication (login)&lt;/li&gt;
+&lt;li&gt;Single Sign-On across services&lt;/li&gt;
+&lt;li&gt;OAuth2/OIDC provider&lt;/li&gt;
+&lt;li&gt;Forward authentication for Traefik&lt;/li&gt;
+&lt;li&gt;User and group management&lt;/li&gt;
+&lt;li&gt;Multi-factor authentication (MFA)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="access-points"&gt;Access Points&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Admin Interface&lt;/strong&gt;: &lt;a href="https://authentik.antoineglacet.com"&gt;https://authentik.antoineglacet.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;User Portal&lt;/strong&gt;: &lt;a href="https://authentik.antoineglacet.com/if/user/"&gt;https://authentik.antoineglacet.com/if/user/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;API&lt;/strong&gt;: &lt;a href="https://authentik.antoineglacet.com/api/v3/"&gt;https://authentik.antoineglacet.com/api/v3/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="key-features"&gt;Key Features&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Forward Auth&lt;/strong&gt;: Protects services via Traefik middleware&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;OAuth2/OIDC&lt;/strong&gt;: Integrates with apps like Grafana&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;User Management&lt;/strong&gt;: Create users, groups, and permissions&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Flows&lt;/strong&gt;: Customizable authentication/authorization workflows&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Providers&lt;/strong&gt;: Configure per-application access&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="architecture"&gt;Architecture&lt;/h2&gt;
+&lt;h3 id="components"&gt;Components&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;authentik-server → Web UI, OAuth provider, forward auth endpoint
+authentik-worker → Background tasks (email, scheduled jobs)
+authentik-redis → Session storage, cache
+postgres → User database, configurations, policies
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="container-details"&gt;Container Details&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View running Authentik containers&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose ps &lt;span style="color:#000;font-weight:bold"&gt;|&lt;/span&gt; grep authentik
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Check resource usage&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker stats authentik-server authentik-worker authentik-redis
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="database-schema"&gt;Database Schema&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Connect to database&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose &lt;span style="color:#204a87"&gt;exec&lt;/span&gt; postgres psql -U authentik -d authentik
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# List tables&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt;\d&lt;/span&gt;t
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View users&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;SELECT username, email, is_active FROM auth_user&lt;span style="color:#000;font-weight:bold"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="how-forward-auth-works"&gt;How Forward Auth Works&lt;/h2&gt;
+&lt;h3 id="request-flow"&gt;Request Flow&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;1. User requests: https://grafana.antoineglacet.com
+2. Traefik receives request
+3. Traefik calls Authentik: GET http://authentik-server:9000/outpost.goauthentik.io/auth/traefik
+4. Authentik checks session:
+ - Valid session → returns 200 + user headers
+ - No session → returns 302 redirect to login
+5. If 200: Traefik forwards request to Grafana with headers
+ If 302: User sent to Authentik login page
+6. After login, Authentik redirects back to original URL
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="middleware-configuration"&gt;Middleware Configuration&lt;/h3&gt;
+&lt;p&gt;Defined in &lt;code&gt;authentik-server&lt;/code&gt; labels in &lt;code&gt;docker-compose.yml&lt;/code&gt;:&lt;/p&gt;</description></item></channel></rss>

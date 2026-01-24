@@ -1,0 +1,583 @@
+<!doctype html><html itemscope itemtype=http://schema.org/WebPage lang=en class=no-js><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><link rel="shortcut icon" href=/favicons/favicon.ico><link rel=apple-touch-icon href=/favicons/apple-touch-icon-180x180.png sizes=180x180><link rel=icon type=image/png href=/favicons/favicon-16x16.png sizes=16x16><link rel=icon type=image/png href=/favicons/favicon-32x32.png sizes=32x32><link rel=icon type=image/png href=/favicons/android-36x36.png sizes=36x36><link rel=icon type=image/png href=/favicons/android-48x48.png sizes=48x48><link rel=icon type=image/png href=/favicons/android-72x72.png sizes=72x72><link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96><link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144><link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192><title>Troubleshooting Guide | Home Server Documentation</title><meta name=description content="Common issues and solutions for all home server components"><meta property="og:url" content="https://docs.antoineglacet.com/docs/troubleshooting/troubleshooting/"><meta property="og:site_name" content="Home Server Documentation"><meta property="og:title" content="Troubleshooting Guide"><meta property="og:description" content="Common issues and solutions for all home server components"><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="docs"><meta itemprop=name content="Troubleshooting Guide"><meta itemprop=description content="Common issues and solutions for all home server components"><meta itemprop=wordCount content="2230"><meta name=twitter:card content="summary"><meta name=twitter:title content="Troubleshooting Guide"><meta name=twitter:description content="Common issues and solutions for all home server components"><link rel=preload href=/scss/main.min.6d849f713d8c25ed95d783569522ad6e1604c48142bc1d1ab44b4a15795b3046.css as=style integrity="sha256-bYSfcT2MJe2V14NWlSKtbhYExIFCvB0atEtKFXlbMEY=" crossorigin=anonymous><link href=/scss/main.min.6d849f713d8c25ed95d783569522ad6e1604c48142bc1d1ab44b4a15795b3046.css rel=stylesheet integrity="sha256-bYSfcT2MJe2V14NWlSKtbhYExIFCvB0atEtKFXlbMEY=" crossorigin=anonymous><script src=https://code.jquery.com/jquery-3.7.1.min.js integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin=anonymous></script></head><body class=td-page><header><nav class="td-navbar js-navbar-scroll" data-bs-theme=dark><div class="td-navbar-container container-fluid flex-column flex-md-row"><a class=navbar-brand href=/><span class="navbar-brand__logo navbar-logo"></span><span class=navbar-brand__name>Home Server Documentation</span></a><div class="td-navbar-nav-scroll td-navbar-nav-scroll--indicator" id=main_navbar><div class="scroll-indicator scroll-left"></div><ul class=navbar-nav><li class=nav-item><a class=nav-link href=/docs/><span>Documentation</span></a></li><li class=nav-item><a class="nav-link active" href=/docs/><span>Docs</span></a></li><li class=nav-item><a class=nav-link href=https://homepage.antoineglacet.com target=_blank rel=noopener><span>Homepage</span></a></li></ul><div class="scroll-indicator scroll-right"></div></div><div class="d-none d-lg-block td-navbar__search"></div></div></nav></header><div class="container-fluid td-outer"><div class=td-main data-bs-spy=scroll data-bs-target=.td-toc data-bs-root-margin="0px 0px -10%"><div class="row flex-xl-nowrap"><aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none"><script>$(function(){$("#td-section-nav a").removeClass("active"),$("#td-section-nav #m-docstroubleshootingtroubleshooting").addClass("active"),$("#td-section-nav #m-docstroubleshootingtroubleshooting-li span").addClass("td-sidebar-nav-active-item"),$("#td-section-nav #m-docstroubleshootingtroubleshooting").parents("li").addClass("active-path"),$("#td-section-nav li.active-path").addClass("show"),$("#td-section-nav li.active-path").children("input").prop("checked",!0),$("#td-section-nav #m-docstroubleshootingtroubleshooting-li").siblings("li").addClass("show"),$("#td-section-nav #m-docstroubleshootingtroubleshooting-li").children("ul").children("li").addClass("show"),$("#td-sidebar-menu").toggleClass("d-none")})</script><div id=td-sidebar-menu class="td-sidebar__inner d-none"><form class="td-sidebar__search d-flex align-items-center"><button class="btn btn-link td-sidebar__toggle" type=button data-bs-toggle=collapse data-bs-target=#td-section-nav aria-controls=td-section-nav aria-expanded=false aria-label="Toggle section navigation"></button></form><nav class="td-sidebar-nav collapse foldable-nav" id=td-section-nav><ul class="td-sidebar-nav__section pe-md-3 ul-0"><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-docs-li><a href=/docs/ title=Documentation class="align-left ps-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-docs><span>Docs</span></a><ul class=ul-1><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-docsoperations-li><input type=checkbox id=m-docsoperations-check>
+<label for=m-docsoperations-check><a href=/docs/operations/ class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id=m-docsoperations><span>Operations</span></a></label><ul class="ul-2 foldable"><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsoperationsoperating-li><input type=checkbox id=m-docsoperationsoperating-check>
+<label for=m-docsoperationsoperating-check><a href=/docs/operations/operating/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsoperationsoperating><span>Operating Guide</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsoperationsquick_start-li><input type=checkbox id=m-docsoperationsquick_start-check>
+<label for=m-docsoperationsquick_start-check><a href=/docs/operations/quick_start/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsoperationsquick_start><span>Quick Start: Fix SSH Lag & LAN Latency</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsoperationsperformance-tuning-li><input type=checkbox id=m-docsoperationsperformance-tuning-check>
+<label for=m-docsoperationsperformance-tuning-check><a href=/docs/operations/performance-tuning/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsoperationsperformance-tuning><span>Performance Tuning Guide</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsoperationsperformance_optimization-li><input type=checkbox id=m-docsoperationsperformance_optimization-check>
+<label for=m-docsoperationsperformance_optimization-check><a href=/docs/operations/performance_optimization/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsoperationsperformance_optimization><span>Performance Optimization Guide</span></a></label></li></ul></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-docsinfrastructure-li><input type=checkbox id=m-docsinfrastructure-check>
+<label for=m-docsinfrastructure-check><a href=/docs/infrastructure/ class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id=m-docsinfrastructure><span>Infrastructure</span></a></label><ul class="ul-2 foldable"><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsinfrastructuretraefik-li><input type=checkbox id=m-docsinfrastructuretraefik-check>
+<label for=m-docsinfrastructuretraefik-check><a href=/docs/infrastructure/traefik/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsinfrastructuretraefik><span>Traefik - Reverse Proxy & TLS</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsinfrastructureauthentik-li><input type=checkbox id=m-docsinfrastructureauthentik-check>
+<label for=m-docsinfrastructureauthentik-check><a href=/docs/infrastructure/authentik/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsinfrastructureauthentik><span>Authentik - SSO & Authentication</span></a></label></li></ul></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-docsmonitoring-li><input type=checkbox id=m-docsmonitoring-check>
+<label for=m-docsmonitoring-check><a href=/docs/monitoring/ class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id=m-docsmonitoring><span>Monitoring</span></a></label><ul class="ul-2 foldable"><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsmonitoringmonitoring-li><input type=checkbox id=m-docsmonitoringmonitoring-check>
+<label for=m-docsmonitoringmonitoring-check><a href=/docs/monitoring/monitoring/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsmonitoringmonitoring><span>Monitoring & Observability</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsmonitoringgrafana-setup-li><input type=checkbox id=m-docsmonitoringgrafana-setup-check>
+<label for=m-docsmonitoringgrafana-setup-check><a href=/docs/monitoring/grafana-setup/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsmonitoringgrafana-setup><span>Grafana Setup Guide</span></a></label></li></ul></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-docstroubleshooting-li><input type=checkbox id=m-docstroubleshooting-check>
+<label for=m-docstroubleshooting-check><a href=/docs/troubleshooting/ class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id=m-docstroubleshooting><span>Troubleshooting</span></a></label><ul class="ul-2 foldable"><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docstroubleshootingtroubleshooting-li><input type=checkbox id=m-docstroubleshootingtroubleshooting-check>
+<label for=m-docstroubleshootingtroubleshooting-check><a href=/docs/troubleshooting/troubleshooting/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docstroubleshootingtroubleshooting><span>Troubleshooting Guide</span></a></label></li></ul></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-docsdeployment-li><input type=checkbox id=m-docsdeployment-check>
+<label for=m-docsdeployment-check><a href=/docs/deployment/ class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id=m-docsdeployment><span>Deployment</span></a></label><ul class="ul-2 foldable"><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsdeploymentdeployment_checklist-li><input type=checkbox id=m-docsdeploymentdeployment_checklist-check>
+<label for=m-docsdeploymentdeployment_checklist-check><a href=/docs/deployment/deployment_checklist/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsdeploymentdeployment_checklist><span>Deployment Checklist - Infrastructure Improvements</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsdeploymentpost-commit-steps-li><input type=checkbox id=m-docsdeploymentpost-commit-steps-check>
+<label for=m-docsdeploymentpost-commit-steps-check><a href=/docs/deployment/post-commit-steps/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsdeploymentpost-commit-steps><span>Post-Commit Setup Steps</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsdeploymentdeployment_notes-li><input type=checkbox id=m-docsdeploymentdeployment_notes-check>
+<label for=m-docsdeploymentdeployment_notes-check><a href=/docs/deployment/deployment_notes/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsdeploymentdeployment_notes><span>Deployment Notes - 2026-01-16</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsdeploymenthugo-site-setup-li><input type=checkbox id=m-docsdeploymenthugo-site-setup-check>
+<label for=m-docsdeploymenthugo-site-setup-check><a href=/docs/deployment/hugo-site-setup/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsdeploymenthugo-site-setup><span>Hugo Documentation Site - Setup Guide</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsdeploymentalerting_migration-li><input type=checkbox id=m-docsdeploymentalerting_migration-check>
+<label for=m-docsdeploymentalerting_migration-check><a href=/docs/deployment/alerting_migration/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsdeploymentalerting_migration><span>Alerting Migration to Grafana</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsdeploymentreadme-li><input type=checkbox id=m-docsdeploymentreadme-check>
+<label for=m-docsdeploymentreadme-check><a href=/docs/deployment/readme/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsdeploymentreadme><span></span></a></label></li></ul></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-docsplanning-li><input type=checkbox id=m-docsplanning-check>
+<label for=m-docsplanning-check><a href=/docs/planning/ title="Planning & Status" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id=m-docsplanning><span>Planning</span></a></label><ul class="ul-2 foldable"><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsplanningimplementation_status-li><input type=checkbox id=m-docsplanningimplementation_status-check>
+<label for=m-docsplanningimplementation_status-check><a href=/docs/planning/implementation_status/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsplanningimplementation_status><span>Implementation Status - Home Server Improvements</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsplanningnext_steps-li><input type=checkbox id=m-docsplanningnext_steps-check>
+<label for=m-docsplanningnext_steps-check><a href=/docs/planning/next_steps/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsplanningnext_steps><span>Next Steps - Alerting Migration Testing</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsplanningsecurity_remediation-li><input type=checkbox id=m-docsplanningsecurity_remediation-check>
+<label for=m-docsplanningsecurity_remediation-check><a href=/docs/planning/security_remediation/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsplanningsecurity_remediation><span>Security Remediation: Discord Webhook Leak</span></a></label></li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsplanningreadme-li><input type=checkbox id=m-docsplanningreadme-check>
+<label for=m-docsplanningreadme-check><a href=/docs/planning/readme/ class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id=m-docsplanningreadme><span></span></a></label></li></ul></li></ul></li></ul></nav></div></aside><aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none"><div class="td-page-meta ms-2 pb-1 pt-2 mb-0"></div><div class=td-toc data-proofer-ignore><div class=td-toc-title><span class=td-toc-title__text>On this page</span>
+<a class=td-toc-title__link title="Top of page" href=#></a></div><nav id=TableOfContents><ul><li><a href=#table-of-contents>Table of Contents</a></li><li><a href=#general-issues>General Issues</a><ul><li><a href=#services-wont-start>Services Won&rsquo;t Start</a></li><li><a href=#cant-connect-to-server>Can&rsquo;t Connect to Server</a></li><li><a href=#high-cpumemory-usage>High CPU/Memory Usage</a></li></ul></li><li><a href=#networking>Networking</a><ul><li><a href=#dns-resolution-issues>DNS Resolution Issues</a></li><li><a href=#cant-access-service-locally>Can&rsquo;t Access Service Locally</a></li><li><a href=#network-isolation-issues>Network Isolation Issues</a></li></ul></li><li><a href=#traefik--https>Traefik & HTTPS</a><ul><li><a href=#certificate-not-issued>Certificate Not Issued</a></li><li><a href=#404-not-found>404 Not Found</a></li><li><a href=#502-bad-gateway>502 Bad Gateway</a></li><li><a href=#503-service-unavailable>503 Service Unavailable</a></li><li><a href=#ssl-certificate-expired>SSL Certificate Expired</a></li></ul></li><li><a href=#authentik>Authentik</a><ul><li><a href=#cant-login>Can&rsquo;t Login</a></li><li><a href=#redirect-loop>Redirect Loop</a></li><li><a href=#502-error-on-authentik>502 Error on Authentik</a></li><li><a href=#oauth-login-fails>OAuth Login Fails</a></li></ul></li><li><a href=#monitoring>Monitoring</a><ul><li><a href=#prometheus-not-scraping-targets>Prometheus Not Scraping Targets</a></li><li><a href=#grafana-cant-query-data>Grafana Can&rsquo;t Query Data</a></li><li><a href=#no-logs-in-loki>No Logs in Loki</a></li><li><a href=#alerts-not-firing>Alerts Not Firing</a></li></ul></li><li><a href=#performance>Performance</a><ul><li><a href=#ssh-lag--slow-response>SSH Lag / Slow Response</a></li><li><a href=#container-using-too-much-memory>Container Using Too Much Memory</a></li><li><a href=#high-disk-io>High Disk I/O</a></li></ul></li><li><a href=#vpn>VPN</a><ul><li><a href=#vpn-not-connecting>VPN Not Connecting</a></li><li><a href=#transmission-cant-download>Transmission Can&rsquo;t Download</a></li><li><a href=#cant-access-prowlarrtransmission-ui>Can&rsquo;t Access Prowlarr/Transmission UI</a></li></ul></li><li><a href=#storage>Storage</a><ul><li><a href=#disk-space-full>Disk Space Full</a></li><li><a href=#permission-denied-errors>Permission Denied Errors</a></li><li><a href=#backup-failed>Backup Failed</a></li></ul></li><li><a href=#container-issues>Container Issues</a><ul><li><a href=#container-keeps-restarting>Container Keeps Restarting</a></li><li><a href=#container-wont-start>Container Won&rsquo;t Start</a></li><li><a href=#healthcheck-failing>Healthcheck Failing</a></li></ul></li><li><a href=#zigbeehome-automation>Zigbee/Home Automation</a><ul><li><a href=#zigbee2mqtt-cant-find-usb-adapter>Zigbee2MQTT Can&rsquo;t Find USB Adapter</a></li><li><a href=#home-assistant-discovery-not-working>Home Assistant Discovery Not Working</a></li></ul></li><li><a href=#getting-help>Getting Help</a><ul><li><a href=#information-to-gather>Information to Gather</a></li><li><a href=#debug-mode>Debug Mode</a></li><li><a href=#useful-resources>Useful Resources</a></li></ul></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/docs/>Docs</a></li><li class=breadcrumb-item><a href=/docs/troubleshooting/>Troubleshooting</a></li><li class="breadcrumb-item active" aria-current=page>Troubleshooting Guide</li></ol></nav><div class=td-content><h1>Troubleshooting Guide</h1><div class=lead>Common issues and solutions for all home server components</div><header class=article-meta></header><p>Common issues and solutions for the home server.</p><h2 id=table-of-contents>Table of Contents</h2><ul><li><a href=#general-issues>General Issues</a></li><li><a href=#networking>Networking</a></li><li><a href=#traefik--https>Traefik & HTTPS</a></li><li><a href=#authentik>Authentik</a></li><li><a href=#monitoring>Monitoring</a></li><li><a href=#performance>Performance</a></li><li><a href=#vpn>VPN</a></li><li><a href=#storage>Storage</a></li><li><a href=#container-issues>Container Issues</a></li></ul><h2 id=general-issues>General Issues</h2><h3 id=services-wont-start>Services Won&rsquo;t Start</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check for port conflicts</span>
+</span></span><span style=display:flex><span>docker compose ps
+</span></span><span style=display:flex><span>sudo netstat -tulpn <span style=color:#000;font-weight:700>|</span> grep -E <span style=color:#4e9a06>&#39;:(80|443|9090|3000)&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check logs for specific service</span>
+</span></span><span style=display:flex><span>docker compose logs <span style=color:#ce5c00;font-weight:700>[</span>service-name<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Verify .env file exists and is readable</span>
+</span></span><span style=display:flex><span>ls -la .env
+</span></span><span style=display:flex><span>cat .env <span style=color:#000;font-weight:700>|</span> grep TRAEFIK_DOMAIN
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Ensure networks exist</span>
+</span></span><span style=display:flex><span>docker network ls <span style=color:#000;font-weight:700>|</span> grep homelab
+</span></span><span style=display:flex><span>docker network create homelab_proxy  <span style=color:#8f5902;font-style:italic># if missing</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check Docker daemon</span>
+</span></span><span style=display:flex><span>systemctl status docker
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># View Docker daemon logs</span>
+</span></span><span style=display:flex><span>journalctl -u docker -f
+</span></span></code></pre></div><h3 id=cant-connect-to-server>Can&rsquo;t Connect to Server</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check server is online</span>
+</span></span><span style=display:flex><span>ping &lt;server-ip&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check SSH is responding</span>
+</span></span><span style=display:flex><span>telnet &lt;server-ip&gt; <span style=color:#0000cf;font-weight:700>22</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Verify services are running</span>
+</span></span><span style=display:flex><span>docker compose ps
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check firewall rules</span>
+</span></span><span style=display:flex><span>sudo ufw status
+</span></span><span style=display:flex><span>sudo iptables -L
+</span></span></code></pre></div><h3 id=high-cpumemory-usage>High CPU/Memory Usage</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Quick health check</span>
+</span></span><span style=display:flex><span>./scripts/health-check.sh
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Identify resource hogs</span>
+</span></span><span style=display:flex><span>docker stats --no-stream --format <span style=color:#4e9a06>&#34;table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}&#34;</span> <span style=color:#000;font-weight:700>|</span> sort -k2 -hr
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check host resources</span>
+</span></span><span style=display:flex><span>htop
+</span></span><span style=display:flex><span>free -h
+</span></span><span style=display:flex><span>vmstat <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#0000cf;font-weight:700>5</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Apply performance optimizations</span>
+</span></span><span style=display:flex><span>sudo ./scripts/optimize-performance.sh
+</span></span></code></pre></div><h2 id=networking>Networking</h2><h3 id=dns-resolution-issues>DNS Resolution Issues</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Test DNS resolution</span>
+</span></span><span style=display:flex><span>nslookup service.antoineglacet.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check if pointing to correct IP</span>
+</span></span><span style=display:flex><span>dig service.antoineglacet.com +short
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Verify Cloudflare DNS records</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Visit: https://dash.cloudflare.com</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check DDClient is updating</span>
+</span></span><span style=display:flex><span>docker compose logs ddclient
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Test local DNS (AdGuard)</span>
+</span></span><span style=display:flex><span>nslookup google.com 10.13.1.1
+</span></span></code></pre></div><h3 id=cant-access-service-locally>Can&rsquo;t Access Service Locally</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check service is running</span>
+</span></span><span style=display:flex><span>docker compose ps <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Verify port is exposed</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].NetworkSettings.Ports&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Test from host</span>
+</span></span><span style=display:flex><span>curl http://localhost:PORT
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check if on correct network</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].NetworkSettings.Networks&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Test connectivity between containers</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> <span style=color:#ce5c00;font-weight:700>[</span>service1<span style=color:#ce5c00;font-weight:700>]</span> ping <span style=color:#ce5c00;font-weight:700>[</span>service2<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> <span style=color:#ce5c00;font-weight:700>[</span>service1<span style=color:#ce5c00;font-weight:700>]</span> curl http://<span style=color:#ce5c00;font-weight:700>[</span>service2<span style=color:#ce5c00;font-weight:700>]</span>:PORT
+</span></span></code></pre></div><h3 id=network-isolation-issues>Network Isolation Issues</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Verify network exists</span>
+</span></span><span style=display:flex><span>docker network ls <span style=color:#000;font-weight:700>|</span> grep homelab
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Inspect network</span>
+</span></span><span style=display:flex><span>docker network inspect homelab
+</span></span><span style=display:flex><span>docker network inspect homelab_proxy
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check which containers are connected</span>
+</span></span><span style=display:flex><span>docker network inspect homelab <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].Containers&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Reconnect container to network</span>
+</span></span><span style=display:flex><span>docker network connect homelab_proxy <span style=color:#ce5c00;font-weight:700>[</span>container<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span></code></pre></div><h2 id=traefik--https>Traefik & HTTPS</h2><h3 id=certificate-not-issued>Certificate Not Issued</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check Traefik logs</span>
+</span></span><span style=display:flex><span>docker compose logs traefik <span style=color:#000;font-weight:700>|</span> grep -i <span style=color:#4e9a06>&#34;certificate\|acme\|error&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify Cloudflare token</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> traefik env <span style=color:#000;font-weight:700>|</span> grep CLOUDFLARE
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Test Cloudflare API access</span>
+</span></span><span style=display:flex><span>curl -X GET <span style=color:#4e9a06>&#34;https://api.cloudflare.com/client/v4/user/tokens/verify&#34;</span> <span style=color:#4e9a06>\
+</span></span></span><span style=display:flex><span>  -H <span style=color:#4e9a06>&#34;Authorization: Bearer </span><span style=color:#000>$TRAEFIK_CLOUDFLARE_TOKEN</span><span style=color:#4e9a06>&#34;</span> <span style=color:#4e9a06>\
+</span></span></span><span style=display:flex><span>  -H <span style=color:#4e9a06>&#34;Content-Type: application/json&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check acme.json permissions</span>
+</span></span><span style=display:flex><span>ls -la config/traefik/letsencrypt/acme.json
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Should be: -rw------- (600)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Check acme.json content</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> traefik cat /letsencrypt/acme.json <span style=color:#000;font-weight:700>|</span> jq
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Force new certificate</span>
+</span></span><span style=display:flex><span>rm config/traefik/letsencrypt/acme.json
+</span></span><span style=display:flex><span>docker compose restart traefik
+</span></span><span style=display:flex><span>docker compose logs -f traefik
+</span></span></code></pre></div><h3 id=404-not-found>404 Not Found</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Router not matching request</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check Host rule matches exactly</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].Config.Labels&#39;</span> <span style=color:#000;font-weight:700>|</span> grep rule
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify DNS points to server</span>
+</span></span><span style=display:flex><span>nslookup service.antoineglacet.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check Traefik dashboard for router</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Visit: https://traefik.antoineglacet.com</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. View active routers</span>
+</span></span><span style=display:flex><span>curl http://localhost:8080/api/http/routers <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[] | {name: .name, rule: .rule}&#39;</span>
+</span></span></code></pre></div><h3 id=502-bad-gateway>502 Bad Gateway</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Backend service unreachable</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check service is running</span>
+</span></span><span style=display:flex><span>docker compose ps <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify port in labels matches container port</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].Config.ExposedPorts&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Test connectivity from Traefik</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> traefik wget -O- http://<span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>:PORT
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check service logs</span>
+</span></span><span style=display:flex><span>docker compose logs <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Verify service is on homelab_proxy network</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].NetworkSettings.Networks&#39;</span> <span style=color:#000;font-weight:700>|</span> grep homelab_proxy
+</span></span></code></pre></div><h3 id=503-service-unavailable>503 Service Unavailable</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># No backend available</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Service not started</span>
+</span></span><span style=display:flex><span>docker compose ps <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Service not on correct network</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].NetworkSettings.Networks&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Health check failing</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].State.Health&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check Traefik sees service</span>
+</span></span><span style=display:flex><span>curl http://localhost:8080/api/http/services <span style=color:#000;font-weight:700>|</span> jq
+</span></span></code></pre></div><h3 id=ssl-certificate-expired>SSL Certificate Expired</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Should auto-renew 30 days before expiry</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check certificate expiry</span>
+</span></span><span style=display:flex><span><span style=color:#204a87>echo</span> <span style=color:#000;font-weight:700>|</span> openssl s_client -servername service.antoineglacet.com -connect service.antoineglacet.com:443 2&gt;/dev/null <span style=color:#000;font-weight:700>|</span> openssl x509 -noout -dates
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check Traefik logs for renewal attempts</span>
+</span></span><span style=display:flex><span>docker compose logs traefik <span style=color:#000;font-weight:700>|</span> grep -i renew
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Force renewal</span>
+</span></span><span style=display:flex><span>rm config/traefik/letsencrypt/acme.json
+</span></span><span style=display:flex><span>docker compose restart traefik
+</span></span></code></pre></div><h2 id=authentik>Authentik</h2><h3 id=cant-login>Can&rsquo;t Login</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Verify user exists and is active</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> postgres psql -U authentik -d authentik -c <span style=color:#4e9a06>&#34;SELECT username, is_active FROM authentik_core_user;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check Authentik logs</span>
+</span></span><span style=display:flex><span>docker compose logs authentik-server <span style=color:#000;font-weight:700>|</span> grep -i <span style=color:#4e9a06>&#34;login\|authentication&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Test PostgreSQL connection</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> postgres pg_isready -U authentik -d authentik
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Reset admin password</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> authentik-server ak create_admin_group
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Create recovery key</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> authentik-server ak create_recovery_key <span style=color:#0000cf;font-weight:700>10</span> akadmin
+</span></span></code></pre></div><h3 id=redirect-loop>Redirect Loop</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Clear browser cookies for *.antoineglacet.com</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check service ROOT_URL matches Traefik route</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># For Grafana:</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> grafana env <span style=color:#000;font-weight:700>|</span> grep ROOT_URL
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Should be: https://grafana.antoineglacet.com</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Verify OAuth redirect URI in Authentik</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Applications → Providers → [provider] → Redirect URIs</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check forward auth middleware</span>
+</span></span><span style=display:flex><span>docker inspect authentik-server <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].Config.Labels&#39;</span> <span style=color:#000;font-weight:700>|</span> grep forwardauth
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Test forward auth endpoint</span>
+</span></span><span style=display:flex><span>curl -I http://authentik-server:9000/outpost.goauthentik.io/auth/traefik
+</span></span></code></pre></div><h3 id=502-error-on-authentik>502 Error on Authentik</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check Authentik containers running</span>
+</span></span><span style=display:flex><span>docker compose ps <span style=color:#000;font-weight:700>|</span> grep authentik
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify PostgreSQL is healthy</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> postgres pg_isready -U authentik -d authentik
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check Authentik health</span>
+</span></span><span style=display:flex><span>curl -I https://authentik.antoineglacet.com/-/health/live/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check logs</span>
+</span></span><span style=display:flex><span>docker compose logs authentik-server --tail<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#0000cf;font-weight:700>50</span>
+</span></span><span style=display:flex><span>docker compose logs authentik-worker --tail<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#0000cf;font-weight:700>50</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Restart Authentik stack</span>
+</span></span><span style=display:flex><span>docker compose restart authentik-server authentik-worker authentik-redis
+</span></span></code></pre></div><h3 id=oauth-login-fails>OAuth Login Fails</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Verify client ID/secret match</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check .env vs Authentik provider settings</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check redirect URI matches exactly</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># In Authentik: Applications → Providers → [provider]</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Should match application&#39;s expected callback URL</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Test token endpoint</span>
+</span></span><span style=display:flex><span>curl -X POST https://authentik.antoineglacet.com/application/o/token/ <span style=color:#4e9a06>\
+</span></span></span><span style=display:flex><span>  -d <span style=color:#4e9a06>&#34;grant_type=client_credentials&#34;</span> <span style=color:#4e9a06>\
+</span></span></span><span style=display:flex><span>  -d <span style=color:#4e9a06>&#34;client_id=YOUR_CLIENT_ID&#34;</span> <span style=color:#4e9a06>\
+</span></span></span><span style=display:flex><span>  -d <span style=color:#4e9a06>&#34;client_secret=YOUR_CLIENT_SECRET&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check Authentik events</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># System → Events → Logs</span>
+</span></span></code></pre></div><h2 id=monitoring>Monitoring</h2><h3 id=prometheus-not-scraping-targets>Prometheus Not Scraping Targets</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check target status</span>
+</span></span><span style=display:flex><span>curl http://localhost:9090/api/v1/targets <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.data.activeTargets[] | {job: .labels.job, health: .health}&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># View unhealthy targets</span>
+</span></span><span style=display:flex><span>curl http://localhost:9090/api/v1/targets <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.data.activeTargets[] | select(.health != &#34;up&#34;)&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Common issues:</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># - node_exporter on host network</span>
+</span></span><span style=display:flex><span>docker compose ps node_exporter
+</span></span><span style=display:flex><span>curl http://172.17.0.1:9100/metrics
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># - Service not on homelab network</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].NetworkSettings.Networks&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># - Firewall blocking</span>
+</span></span><span style=display:flex><span>sudo ufw status
+</span></span><span style=display:flex><span>sudo iptables -L
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Restart Prometheus</span>
+</span></span><span style=display:flex><span>docker compose restart prometheus
+</span></span><span style=display:flex><span>docker compose logs prometheus
+</span></span></code></pre></div><h3 id=grafana-cant-query-data>Grafana Can&rsquo;t Query Data</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check datasources configured</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> grafana cat /etc/grafana/provisioning/datasources/datasources.yml
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify Prometheus reachable from Grafana</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> grafana curl http://prometheus:9090/-/ready
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Verify Loki reachable</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> grafana curl http://loki:3100/ready
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check Grafana logs</span>
+</span></span><span style=display:flex><span>docker compose logs grafana <span style=color:#000;font-weight:700>|</span> grep -i <span style=color:#4e9a06>&#34;datasource\|error&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Test datasource in UI</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Grafana → Configuration → Data sources → [datasource] → Test</span>
+</span></span></code></pre></div><h3 id=no-logs-in-loki>No Logs in Loki</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check Promtail is running</span>
+</span></span><span style=display:flex><span>docker compose ps promtail
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify Promtail can reach Loki</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> promtail wget -O- http://loki:3100/ready
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check Promtail logs</span>
+</span></span><span style=display:flex><span>docker compose logs promtail
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Verify Docker socket mounted</span>
+</span></span><span style=display:flex><span>docker inspect promtail <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].Mounts[] | select(.Source == &#34;/var/run/docker.sock&#34;)&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Query Loki API</span>
+</span></span><span style=display:flex><span>curl http://loki:3100/loki/api/v1/labels
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Check Loki logs</span>
+</span></span><span style=display:flex><span>docker compose logs loki
+</span></span></code></pre></div><h3 id=alerts-not-firing>Alerts Not Firing</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check alert rules loaded</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Grafana → Alerting → Alert rules</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify Discord webhook configured</span>
+</span></span><span style=display:flex><span>env <span style=color:#000;font-weight:700>|</span> grep DISCORD_WEBHOOK_URL
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Test webhook</span>
+</span></span><span style=display:flex><span>curl -H <span style=color:#4e9a06>&#34;Content-Type: application/json&#34;</span> <span style=color:#4e9a06>\
+</span></span></span><span style=display:flex><span>  -d <span style=color:#4e9a06>&#39;{&#34;content&#34;:&#34;Test alert&#34;}&#39;</span> <span style=color:#4e9a06>\
+</span></span></span><span style=display:flex><span>  <span style=color:#000>$DISCORD_WEBHOOK_URL</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check Grafana logs</span>
+</span></span><span style=display:flex><span>docker compose logs grafana <span style=color:#000;font-weight:700>|</span> grep -i alert
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Verify contact points</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Grafana → Alerting → Contact points → Test</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Check notification policies</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Grafana → Alerting → Notification policies</span>
+</span></span></code></pre></div><h2 id=performance>Performance</h2><h3 id=ssh-lag--slow-response>SSH Lag / Slow Response</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Quick health check</span>
+</span></span><span style=display:flex><span>./scripts/health-check.sh
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check memory pressure</span>
+</span></span><span style=display:flex><span>free -h
+</span></span><span style=display:flex><span>vmstat <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#0000cf;font-weight:700>5</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Identify resource hogs</span>
+</span></span><span style=display:flex><span>docker stats --no-stream <span style=color:#000;font-weight:700>|</span> sort -k4 -hr
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Apply kernel optimizations</span>
+</span></span><span style=display:flex><span>sudo ./scripts/optimize-performance.sh
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Add Docker memory limits</span>
+</span></span><span style=display:flex><span>./scripts/add-docker-memory-limits.sh
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Check swap usage</span>
+</span></span><span style=display:flex><span>free -h <span style=color:#000;font-weight:700>|</span> grep Swap
+</span></span><span style=display:flex><span>swapon --show
+</span></span></code></pre></div><h3 id=container-using-too-much-memory>Container Using Too Much Memory</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Identify culprit</span>
+</span></span><span style=display:flex><span>docker stats --no-stream --format <span style=color:#4e9a06>&#34;table {{.Name}}\t{{.MemUsage}}&#34;</span> <span style=color:#000;font-weight:700>|</span> sort -k2 -hr
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check container logs for memory errors</span>
+</span></span><span style=display:flex><span>docker compose logs <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> grep -i <span style=color:#4e9a06>&#34;memory\|oom&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Add memory limit</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># In docker-compose.yml:</span>
+</span></span><span style=display:flex><span>deploy:
+</span></span><span style=display:flex><span>  resources:
+</span></span><span style=display:flex><span>    limits:
+</span></span><span style=display:flex><span>      memory: 512M
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Restart with limit</span>
+</span></span><span style=display:flex><span>docker compose up -d <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Monitor</span>
+</span></span><span style=display:flex><span>docker stats <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span></code></pre></div><h3 id=high-disk-io>High Disk I/O</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check disk I/O</span>
+</span></span><span style=display:flex><span>iostat -x <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#0000cf;font-weight:700>5</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Find process causing I/O</span>
+</span></span><span style=display:flex><span>iotop -o
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check Loki/Prometheus disk usage</span>
+</span></span><span style=display:flex><span>du -sh data/loki data/prometheus
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Clean up old data</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Adjust retention in configs</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Check for log flooding</span>
+</span></span><span style=display:flex><span>docker compose logs <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> --tail<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#0000cf;font-weight:700>100</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Optimize database</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># For PostgreSQL:</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> postgres vacuumdb -U authentik -d authentik --analyze
+</span></span></code></pre></div><h2 id=vpn>VPN</h2><h3 id=vpn-not-connecting>VPN Not Connecting</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check nordlynx container</span>
+</span></span><span style=display:flex><span>docker compose ps nordlynx
+</span></span><span style=display:flex><span>docker compose logs nordlynx
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify private key set</span>
+</span></span><span style=display:flex><span>env <span style=color:#000;font-weight:700>|</span> grep NORDVPN_PRIVATE_KEY
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check connection status</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> transmission ping -c <span style=color:#0000cf;font-weight:700>3</span> google.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Verify IP is VPN server</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> transmission curl ifconfig.me
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Restart VPN</span>
+</span></span><span style=display:flex><span>docker compose restart nordlynx
+</span></span><span style=display:flex><span>sleep <span style=color:#0000cf;font-weight:700>10</span>
+</span></span><span style=display:flex><span>docker compose restart transmission prowlarr
+</span></span></code></pre></div><h3 id=transmission-cant-download>Transmission Can&rsquo;t Download</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Verify VPN is working</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> transmission curl ifconfig.me
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Should NOT be your home IP</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check Transmission is reachable</span>
+</span></span><span style=display:flex><span>curl http://localhost:9091
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Verify downloads directory permissions</span>
+</span></span><span style=display:flex><span>ls -la <span style=color:#4e9a06>${</span><span style=color:#000>DOWNLOADS</span><span style=color:#4e9a06>}</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Should be owned by ${PUID}:${PGID}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check Transmission logs</span>
+</span></span><span style=display:flex><span>docker compose logs transmission
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Test connectivity</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> transmission ping -c <span style=color:#0000cf;font-weight:700>3</span> google.com
+</span></span></code></pre></div><h3 id=cant-access-prowlarrtransmission-ui>Can&rsquo;t Access Prowlarr/Transmission UI</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Verify nordlynx publishes ports</span>
+</span></span><span style=display:flex><span>docker inspect nordlynx <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].NetworkSettings.Ports&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check Traefik routes to nordlynx</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Dashboard → Services → transmission, prowlarr</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Test direct access</span>
+</span></span><span style=display:flex><span>curl http://localhost:9091  <span style=color:#8f5902;font-style:italic># Transmission</span>
+</span></span><span style=display:flex><span>curl http://localhost:9696  <span style=color:#8f5902;font-style:italic># Prowlarr</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check nordlynx logs</span>
+</span></span><span style=display:flex><span>docker compose logs nordlynx
+</span></span></code></pre></div><h2 id=storage>Storage</h2><h3 id=disk-space-full>Disk Space Full</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check disk usage</span>
+</span></span><span style=display:flex><span>df -h
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Find large files</span>
+</span></span><span style=display:flex><span>du -sh /media/data/* <span style=color:#000;font-weight:700>|</span> sort -h
+</span></span><span style=display:flex><span>du -sh /home/antoine/home-server/data/* <span style=color:#000;font-weight:700>|</span> sort -h
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Clean Docker resources</span>
+</span></span><span style=display:flex><span>docker system prune -a --volumes  <span style=color:#8f5902;font-style:italic># ⚠️ Removes unused volumes!</span>
+</span></span><span style=display:flex><span>docker system df
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Clean old logs</span>
+</span></span><span style=display:flex><span>docker compose logs <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> --since 24h &gt; /dev/null 2&gt;<span style=color:#000;font-weight:700>&amp;</span><span style=color:#0000cf;font-weight:700>1</span>
+</span></span><span style=display:flex><span>journalctl --vacuum-time<span style=color:#ce5c00;font-weight:700>=</span>7d
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Clean Loki data</span>
+</span></span><span style=display:flex><span>rm -rf data/loki/chunks/*
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Clean Prometheus data (old metrics)</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Adjust retention in prometheus.yml</span>
+</span></span></code></pre></div><h3 id=permission-denied-errors>Permission Denied Errors</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check file ownership</span>
+</span></span><span style=display:flex><span>ls -la config/<span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify PUID/PGID in .env</span>
+</span></span><span style=display:flex><span>grep -E <span style=color:#4e9a06>&#34;PUID|PGID&#34;</span> .env
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Fix ownership</span>
+</span></span><span style=display:flex><span>sudo chown -R <span style=color:#4e9a06>${</span><span style=color:#000>PUID</span><span style=color:#4e9a06>}</span>:<span style=color:#4e9a06>${</span><span style=color:#000>PGID</span><span style=color:#4e9a06>}</span> config/<span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>/
+</span></span><span style=display:flex><span>sudo chown -R <span style=color:#4e9a06>${</span><span style=color:#000>PUID</span><span style=color:#4e9a06>}</span>:<span style=color:#4e9a06>${</span><span style=color:#000>PGID</span><span style=color:#4e9a06>}</span> data/<span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check directory permissions</span>
+</span></span><span style=display:flex><span>chmod <span style=color:#0000cf;font-weight:700>755</span> config/<span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. For sensitive files (like acme.json)</span>
+</span></span><span style=display:flex><span>chmod <span style=color:#0000cf;font-weight:700>600</span> config/traefik/letsencrypt/acme.json
+</span></span></code></pre></div><h3 id=backup-failed>Backup Failed</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check backup script logs</span>
+</span></span><span style=display:flex><span>cat logs/backup-*.log
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify backup destination exists</span>
+</span></span><span style=display:flex><span>ls -la <span style=color:#4e9a06>${</span><span style=color:#000>BACKUP</span><span style=color:#4e9a06>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check disk space at destination</span>
+</span></span><span style=display:flex><span>df -h <span style=color:#4e9a06>${</span><span style=color:#000>BACKUP</span><span style=color:#4e9a06>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Test backup manually</span>
+</span></span><span style=display:flex><span>./scripts/backup-postgres.sh
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Check Duplicati logs</span>
+</span></span><span style=display:flex><span>docker compose logs duplicati
+</span></span></code></pre></div><h2 id=container-issues>Container Issues</h2><h3 id=container-keeps-restarting>Container Keeps Restarting</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check restart count</span>
+</span></span><span style=display:flex><span>docker compose ps -a
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. View recent logs</span>
+</span></span><span style=display:flex><span>docker compose logs --tail<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#0000cf;font-weight:700>100</span> <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check exit code</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].State.ExitCode&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check healthcheck</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].State.Health&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Disable autoheal temporarily</span>
+</span></span><span style=display:flex><span>docker compose stop autoheal
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Check resource limits</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].HostConfig | {Memory, MemorySwap, CpuShares}&#39;</span>
+</span></span></code></pre></div><h3 id=container-wont-start>Container Won&rsquo;t Start</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check logs for error</span>
+</span></span><span style=display:flex><span>docker compose logs <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify dependencies</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Check depends_on in docker-compose.yml</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check for conflicting containers</span>
+</span></span><span style=display:flex><span>docker ps -a <span style=color:#000;font-weight:700>|</span> grep <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Remove and recreate</span>
+</span></span><span style=display:flex><span>docker compose rm -f <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>docker compose up -d <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Check configuration</span>
+</span></span><span style=display:flex><span>docker compose config <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span></code></pre></div><h3 id=healthcheck-failing>Healthcheck Failing</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Check healthcheck command</span>
+</span></span><span style=display:flex><span>docker inspect <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].Config.Healthcheck&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Run healthcheck manually</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>[</span>healthcheck-command<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Example for postgres:</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> postgres pg_isready -U postgres
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check service is actually responding</span>
+</span></span><span style=display:flex><span>docker compose <span style=color:#204a87>exec</span> <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> curl http://localhost:PORT
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Adjust healthcheck timing</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># In docker-compose.yml:</span>
+</span></span><span style=display:flex><span>healthcheck:
+</span></span><span style=display:flex><span>  interval: 30s
+</span></span><span style=display:flex><span>  timeout: 10s
+</span></span><span style=display:flex><span>  start_period: 60s  <span style=color:#8f5902;font-style:italic># Increase if slow to start</span>
+</span></span></code></pre></div><h2 id=zigbeehome-automation>Zigbee/Home Automation</h2><h3 id=zigbee2mqtt-cant-find-usb-adapter>Zigbee2MQTT Can&rsquo;t Find USB Adapter</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. List USB devices</span>
+</span></span><span style=display:flex><span>ls -la /dev/serial/by-id/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Verify path in .env</span>
+</span></span><span style=display:flex><span>grep ZIGBEE_ADAPTOR_PATH .env
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check device exists</span>
+</span></span><span style=display:flex><span>ls -la /dev/ttyUSB0
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Check permissions</span>
+</span></span><span style=display:flex><span>sudo chmod <span style=color:#0000cf;font-weight:700>666</span> /dev/ttyUSB0
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Add user to dialout group</span>
+</span></span><span style=display:flex><span>sudo usermod -aG dialout antoine
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Restart container</span>
+</span></span><span style=display:flex><span>docker compose restart zigbee2mqtt
+</span></span></code></pre></div><h3 id=home-assistant-discovery-not-working>Home Assistant Discovery Not Working</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. Verify Home Assistant on host network</span>
+</span></span><span style=display:flex><span>docker inspect home-assistant <span style=color:#000;font-weight:700>|</span> jq <span style=color:#4e9a06>&#39;.[0].HostConfig.NetworkMode&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Should be: &#34;host&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Check if broadcast/multicast working</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Some integrations need this</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Check firewall rules</span>
+</span></span><span style=display:flex><span>sudo ufw status
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Verify mDNS/Avahi</span>
+</span></span><span style=display:flex><span>systemctl status avahi-daemon
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Check Home Assistant logs</span>
+</span></span><span style=display:flex><span>docker compose logs home-assistant <span style=color:#000;font-weight:700>|</span> grep -i discovery
+</span></span></code></pre></div><h2 id=getting-help>Getting Help</h2><h3 id=information-to-gather>Information to Gather</h3><p>When reporting issues:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 1. System info</span>
+</span></span><span style=display:flex><span>uname -a
+</span></span><span style=display:flex><span>docker --version
+</span></span><span style=display:flex><span>docker compose version
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 2. Container status</span>
+</span></span><span style=display:flex><span>docker compose ps
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 3. Service logs</span>
+</span></span><span style=display:flex><span>docker compose logs <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span> --tail<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#0000cf;font-weight:700>100</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 4. Resource usage</span>
+</span></span><span style=display:flex><span>docker stats --no-stream
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 5. Network info</span>
+</span></span><span style=display:flex><span>docker network ls
+</span></span><span style=display:flex><span>docker network inspect homelab
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># 6. Recent changes</span>
+</span></span><span style=display:flex><span>git log -5 --oneline
+</span></span></code></pre></div><h3 id=debug-mode>Debug Mode</h3><p>Enable verbose logging:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Traefik</span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Add to command in docker-compose.yml:</span>
+</span></span><span style=display:flex><span>- --log.level<span style=color:#ce5c00;font-weight:700>=</span>DEBUG
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Authentik</span>
+</span></span><span style=display:flex><span>environment:
+</span></span><span style=display:flex><span>  - <span style=color:#000>AUTHENTIK_LOG_LEVEL</span><span style=color:#ce5c00;font-weight:700>=</span>debug
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic># Restart and view logs</span>
+</span></span><span style=display:flex><span>docker compose restart <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span><span style=display:flex><span>docker compose logs -f <span style=color:#ce5c00;font-weight:700>[</span>service<span style=color:#ce5c00;font-weight:700>]</span>
+</span></span></code></pre></div><h3 id=useful-resources>Useful Resources</h3><ul><li><code>IMPLEMENTATION_STATUS.md</code> - Current state of all services</li><li><code>SECURITY_REMEDIATION.md</code> - Security notes</li><li><code>PERFORMANCE_OPTIMIZATION.md</code> - Performance tuning</li><li><code>ALERTING_MIGRATION.md</code> - Alerting setup</li><li>GitHub Issues - Known problems and solutions</li></ul></div></main></div></div><footer class="td-footer row d-print-none"><div class=container-fluid><div class="row mx-md-2"><div class="td-footer__left col-6 col-sm-4 order-sm-1"><ul class=td-footer__links-list><li class=td-footer__links-item data-bs-toggle=tooltip title=Homepage aria-label=Homepage><a target=_blank rel=noopener href=https://homepage.antoineglacet.com aria-label=Homepage><i class="fa fa-home"></i></a></li></ul></div><div class="td-footer__right col-6 col-sm-4 order-sm-3"></div><div class="td-footer__center col-12 col-sm-4 py-2 order-sm-2"><span class=td-footer__copyright>&copy;
+2026
+<span class=td-footer__authors>Antoine Glacet</span></span><span class=td-footer__all_rights_reserved>All Rights Reserved</span></div></div></div></footer></div><script src=/js/main.min.258190f24d50bde9095e369c0cd7315407f95e1da5f39472b3850b40279a9e08.js integrity="sha256-JYGQ8k1QvekJXjacDNcxVAf5Xh2l85Rys4ULQCeangg=" crossorigin=anonymous></script><script defer src=/js/click-to-copy.min.73478a7d4807698aed7e355eb23f9890ca18fea3158604c8471746d046702bad.js integrity="sha256-c0eKfUgHaYrtfjVesj+YkMoY/qMVhgTIRxdG0EZwK60=" crossorigin=anonymous></script><script src=/js/tabpane-persist.js></script></body></html>

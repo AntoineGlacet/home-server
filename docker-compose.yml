@@ -76,25 +76,6 @@ services:
   # MONITORING & METRICS
   # ----------------------------
 
-  uptime-kuma:
-    image: louislam/uptime-kuma:1.23.15
-    container_name: uptime-kuma
-    volumes:
-      - ./data/uptime-kuma:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: always
-    networks:
-      - homelab
-      - homelab_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=homelab_proxy"
-      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime-kuma.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
-      - "traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare"
-      - "traefik.http.routers.uptime-kuma.middlewares=authentik@docker"
-      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
-
   prometheus:
     image: prom/prometheus:v2.55.1
     container_name: prometheus
@@ -267,6 +248,9 @@ services:
     cap_add:
       - NET_ADMIN
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - PRIVATE_KEY=${NORDVPN_PRIVATE_KEY}
       - NET_LOCAL=${LOCAL_NETWORK} # e.g., 192.168.0.0/16
     # Publish ports for any services sharing this network namespace (below)
@@ -473,27 +457,28 @@ services:
       # - "traefik.http.routers.plex.middlewares=authentik@docker"
       - "traefik.http.services.plex.loadbalancer.server.url=http://host.docker.internal:32400"
 
-  overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
-    container_name: overseerr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/overseerr:/config # fixed path name
-    restart: unless-stopped
-    networks:
-      - homelab
-      - homelab_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=homelab_proxy"
-      - "traefik.http.routers.overseerr.rule=Host(`overseerr.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.overseerr.entrypoints=websecure"
-      - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
-      - "traefik.http.routers.overseerr.middlewares=authentik@docker"
-      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+  # this is kind of useless to run continuously, let's stop that.
+  # overseerr:
+  #   image: lscr.io/linuxserver/overseerr:latest
+  #   container_name: overseerr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/overseerr:/config # fixed path name
+  #   restart: unless-stopped
+  #   networks:
+  #     - homelab
+  #     - homelab_proxy
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.docker.network=homelab_proxy"
+  #     - "traefik.http.routers.overseerr.rule=Host(`overseerr.${TRAEFIK_DOMAIN}`)"
+  #     - "traefik.http.routers.overseerr.entrypoints=websecure"
+  #     - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
+  #     - "traefik.http.routers.overseerr.middlewares=authentik@docker"
+  #     - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
 
   # ----------------------------
   # BOOKS / LIBRARY
@@ -942,6 +927,30 @@ services:
     volumes:
       - ./config/traefik/letsencrypt:/letsencrypt
       - ./config/traefik/certs:/output
+
+  # Documentation site
+  docs-site:
+    image: nginx:alpine
+    container_name: docs-site
+    restart: unless-stopped
+    volumes:
+      - ./hugo-docs/public:/usr/share/nginx/html:ro
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+        reservations:
+          memory: 8M
+    networks:
+      - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.docs.rule=Host(`docs.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.docs.entrypoints=websecure"
+      - "traefik.http.routers.docs.tls.certresolver=cloudflare"
+      - "traefik.http.routers.docs.middlewares=authentik@docker"
+      - "traefik.http.services.docs.loadbalancer.server.port=80"
 
   # Restart containers based on health
   autoheal:

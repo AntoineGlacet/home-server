@@ -74,14 +74,6 @@ Add these deploy sections to your docker-compose.yml:
         reservations:
           memory: 128M
 
-  uptime-kuma:
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
-
 # ==============================================================================
 # MEDIA SERVICES
 # ==============================================================================

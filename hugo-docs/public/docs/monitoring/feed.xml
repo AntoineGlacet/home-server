@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Monitoring on Home Server Documentation</title><link>https://docs.antoineglacet.com/docs/monitoring/</link><description>Recent content in Monitoring on Home Server Documentation</description><generator>Hugo</generator><language>en</language><atom:link href="https://docs.antoineglacet.com/docs/monitoring/feed.xml" rel="self" type="application/rss+xml"/><item><title>Monitoring &amp; Observability</title><link>https://docs.antoineglacet.com/docs/monitoring/monitoring/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/monitoring/monitoring/</guid><description>&lt;p&gt;Complete guide to the monitoring stack: Prometheus, Grafana, Loki, and alerting.&lt;/p&gt;
+&lt;h2 id="table-of-contents"&gt;Table of Contents&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="#overview"&gt;Overview&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#prometheus"&gt;Prometheus&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#grafana"&gt;Grafana&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#loki--promtail"&gt;Loki &amp;amp; Promtail&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#exporters"&gt;Exporters&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#alerting"&gt;Alerting&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#glances"&gt;Glances&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="overview"&gt;Overview&lt;/h2&gt;
+&lt;h3 id="monitoring-stack"&gt;Monitoring Stack&lt;/h3&gt;
+&lt;table&gt;
+ &lt;thead&gt;
+ &lt;tr&gt;
+ &lt;th&gt;Component&lt;/th&gt;
+ &lt;th&gt;Purpose&lt;/th&gt;
+ &lt;th&gt;Access&lt;/th&gt;
+ &lt;/tr&gt;
+ &lt;/thead&gt;
+ &lt;tbody&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;Prometheus&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Metrics collection &amp;amp; storage&lt;/td&gt;
+ &lt;td&gt;http://localhost:9090&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;Grafana&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Dashboards &amp;amp; alerting&lt;/td&gt;
+ &lt;td&gt;&lt;a href="https://grafana.antoineglacet.com"&gt;https://grafana.antoineglacet.com&lt;/a&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;Loki&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Log aggregation&lt;/td&gt;
+ &lt;td&gt;http://loki:3100 (internal)&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;Promtail&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Log collection&lt;/td&gt;
+ &lt;td&gt;Daemon (no UI)&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;cAdvisor&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Container metrics&lt;/td&gt;
+ &lt;td&gt;http://localhost:8080&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;Node Exporter&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Host system metrics&lt;/td&gt;
+ &lt;td&gt;http://172.17.0.1:9100&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;Blackbox Exporter&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Network probes&lt;/td&gt;
+ &lt;td&gt;Internal&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;strong&gt;Glances&lt;/strong&gt;&lt;/td&gt;
+ &lt;td&gt;Real-time monitor&lt;/td&gt;
+ &lt;td&gt;&lt;a href="https://glances.antoineglacet.com"&gt;https://glances.antoineglacet.com&lt;/a&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="data-flow"&gt;Data Flow&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Metrics: Exporters → Prometheus → Grafana → Dashboards
+Logs: Containers → Promtail → Loki → Grafana → Explore
+Alerts: Prometheus → Grafana Alerting → Discord
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="prometheus"&gt;Prometheus&lt;/h2&gt;
+&lt;h3 id="overview-1"&gt;Overview&lt;/h3&gt;
+&lt;p&gt;Prometheus scrapes metrics from various targets and stores them in a time-series database.&lt;/p&gt;</description></item><item><title>Grafana Setup Guide</title><link>https://docs.antoineglacet.com/docs/monitoring/grafana-setup/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/monitoring/grafana-setup/</guid><description>&lt;p&gt;This guide covers setting up Grafana with automatic datasource provisioning and pre-configured dashboards.&lt;/p&gt;
+&lt;h2 id="automatic-datasource-configuration"&gt;Automatic Datasource Configuration&lt;/h2&gt;
+&lt;p&gt;Grafana can automatically configure Prometheus and Loki datasources on startup.&lt;/p&gt;
+&lt;h3 id="create-datasources-configuration"&gt;Create Datasources Configuration&lt;/h3&gt;
+&lt;p&gt;Run these commands to set up datasource provisioning:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Create datasources directory (requires sudo due to Grafana container ownership)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkdir -p config/grafana/provisioning/datasources
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Create the datasources configuration file&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo tee config/grafana/provisioning/datasources/datasources.yml &amp;gt; /dev/null &lt;span style="color:#4e9a06"&gt;&amp;lt;&amp;lt;&amp;#39;EOF&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt;apiVersion: 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt;datasources:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; - name: Prometheus
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; type: prometheus
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; access: proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; url: http://prometheus:9090
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; isDefault: true
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; editable: false
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; jsonData:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; timeInterval: 15s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; httpMethod: POST
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; - name: Loki
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; type: loki
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; access: proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; url: http://loki:3100
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; editable: false
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; jsonData:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; maxLines: 1000
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; derivedFields:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; - datasourceUid: Prometheus
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; matcherRegex: &amp;#34;traceID=(\\w+)&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; name: TraceID
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt; url: &amp;#34;$${__value.raw}&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#4e9a06"&gt;EOF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Fix ownership (Grafana runs as UID 1000)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chown -R 1000:1000 config/grafana/provisioning
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="verify-datasources"&gt;Verify Datasources&lt;/h3&gt;
+&lt;p&gt;After restarting Grafana:&lt;/p&gt;</description></item></channel></rss>

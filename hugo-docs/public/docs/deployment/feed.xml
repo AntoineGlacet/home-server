@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Deployment on Home Server Documentation</title><link>https://docs.antoineglacet.com/docs/deployment/</link><description>Recent content in Deployment on Home Server Documentation</description><generator>Hugo</generator><language>en</language><atom:link href="https://docs.antoineglacet.com/docs/deployment/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deployment Checklist - Infrastructure Improvements</title><link>https://docs.antoineglacet.com/docs/deployment/deployment_checklist/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/deployment/deployment_checklist/</guid><description>&lt;p&gt;&lt;strong&gt;Date:&lt;/strong&gt; 2026-01-16
+&lt;strong&gt;Commits:&lt;/strong&gt; 568b47d + 3e81ad9&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="-completed---no-action-needed"&gt;✅ COMPLETED - No Action Needed&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ Swappiness reduced to 10 (you already did this!)&lt;/li&gt;
+&lt;li&gt;✅ All code changes committed&lt;/li&gt;
+&lt;li&gt;✅ Docker Compose configuration validated (syntax OK)&lt;/li&gt;
+&lt;li&gt;✅ Resource limits configured&lt;/li&gt;
+&lt;li&gt;✅ Security headers configured&lt;/li&gt;
+&lt;li&gt;✅ Alertmanager configured&lt;/li&gt;
+&lt;li&gt;✅ Grafana auto-provisioning configured&lt;/li&gt;
+&lt;li&gt;✅ Image versions pinned&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="-required-before-deployment"&gt;🔴 REQUIRED BEFORE DEPLOYMENT&lt;/h2&gt;
+&lt;h3 id="1-add-discord-webhook-to-env"&gt;1. Add Discord Webhook to .env&lt;/h3&gt;
+&lt;p&gt;You need to add your Discord webhook URL to the &lt;code&gt;.env&lt;/code&gt; file:&lt;/p&gt;</description></item><item><title>Post-Commit Setup Steps</title><link>https://docs.antoineglacet.com/docs/deployment/post-commit-steps/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/deployment/post-commit-steps/</guid><description>&lt;p&gt;This document outlines manual steps required after applying the infrastructure improvements commit.&lt;/p&gt;
+&lt;h2 id="-priority-1-performance-optimization-do-this-first"&gt;🚨 Priority 1: Performance Optimization (DO THIS FIRST!)&lt;/h2&gt;
+&lt;h3 id="apply-swap-tuning"&gt;Apply Swap Tuning&lt;/h3&gt;
+&lt;p&gt;This will immediately improve your interactive session responsiveness:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Apply swappiness change immediately&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo sysctl vm.swappiness&lt;span style="color:#ce5c00;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#0000cf;font-weight:bold"&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Make it permanent&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#204a87"&gt;echo&lt;/span&gt; &lt;span style="color:#4e9a06"&gt;&amp;#39;vm.swappiness=10&amp;#39;&lt;/span&gt; &lt;span style="color:#000;font-weight:bold"&gt;|&lt;/span&gt; sudo tee /etc/sysctl.d/99-swappiness.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Verify&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cat /proc/sys/vm/swappiness
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Should output: 10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Expected result:&lt;/strong&gt; SSH sessions respond instantly, less disk thrashing&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="-priority-2-grafana-datasource-configuration"&gt;🔧 Priority 2: Grafana Datasource Configuration&lt;/h2&gt;
+&lt;p&gt;Grafana container runs as UID 1000, so datasource provisioning requires sudo:&lt;/p&gt;</description></item><item><title>Deployment Notes - 2026-01-16</title><link>https://docs.antoineglacet.com/docs/deployment/deployment_notes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/deployment/deployment_notes/</guid><description>&lt;h2 id="summary"&gt;Summary&lt;/h2&gt;
+&lt;p&gt;This deployment fixes critical issues from the previous monitoring infrastructure deployment and completes the Discord alerting setup.&lt;/p&gt;
+&lt;h2 id="what-was-fixed"&gt;What Was Fixed&lt;/h2&gt;
+&lt;h3 id="1-traefik-v32-incompatibility--critical-fix"&gt;1. &lt;strong&gt;Traefik v3.2 Incompatibility&lt;/strong&gt; ⚠️ CRITICAL FIX&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Problem:&lt;/strong&gt; All web services were inaccessible after previous deployment.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Root Cause:&lt;/strong&gt; Traefik v3.2.5 had an outdated Docker client library incompatible with Docker API v1.44+&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Error: client version 1.24 is too old. Minimum supported API version is 1.44
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Solution:&lt;/strong&gt; Changed to &lt;code&gt;traefik:latest&lt;/code&gt; (currently v3.6.7)&lt;/p&gt;</description></item><item><title>Hugo Documentation Site - Setup Guide</title><link>https://docs.antoineglacet.com/docs/deployment/hugo-site-setup/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/deployment/hugo-site-setup/</guid><description>&lt;p&gt;This document describes the Hugo static site implementation for serving documentation.&lt;/p&gt;
+&lt;h2 id="quick-start"&gt;Quick Start&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Start the docs site&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose up -d docs-site
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View logs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose logs -f docs-site
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Visit: https://docs.antoineglacet.com&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="what-was-implemented"&gt;What Was Implemented&lt;/h2&gt;
+&lt;h3 id="documentation-site"&gt;Documentation Site&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Static Site Generator&lt;/strong&gt;: Hugo with Docsy theme&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Build Strategy&lt;/strong&gt;: Build locally, commit generated HTML&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Serving&lt;/strong&gt;: nginx:alpine container (~5-10MB RAM)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;URL&lt;/strong&gt;: &lt;a href="https://docs.antoineglacet.com"&gt;https://docs.antoineglacet.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authentication&lt;/strong&gt;: Protected by Authentik&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Content&lt;/strong&gt;: Symlinks to existing &lt;code&gt;docs/&lt;/code&gt; markdown files&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="architecture"&gt;Architecture&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;docs/ (source of truth)
+ ↓ symlinked by
+hugo-docs/content/
+ ↓ built by
+hugo-docs/public/ (static HTML, 2MB)
+ ↓ served by
+nginx:alpine container
+ ↓ exposed via
+Traefik + Authentik
+ ↓
+https://docs.antoineglacet.com
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="file-organization"&gt;File Organization&lt;/h2&gt;
+&lt;h3 id="source-structure"&gt;Source Structure&lt;/h3&gt;
+&lt;p&gt;All documentation &lt;strong&gt;remains&lt;/strong&gt; in the &lt;code&gt;docs/&lt;/code&gt; directory:&lt;/p&gt;</description></item><item><title>Alerting Migration to Grafana</title><link>https://docs.antoineglacet.com/docs/deployment/alerting_migration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/deployment/alerting_migration/</guid><description>&lt;p&gt;&lt;strong&gt;Date&lt;/strong&gt;: 2026-01-17&lt;br&gt;
+&lt;strong&gt;Migration&lt;/strong&gt;: Prometheus Alertmanager → Grafana Unified Alerting&lt;br&gt;
+&lt;strong&gt;Status&lt;/strong&gt;: ✅ Provisioning Complete - Ready for Testing&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="-what-changed"&gt;🎯 What Changed&lt;/h2&gt;
+&lt;h3 id="before-old-stack"&gt;Before (Old Stack)&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Prometheus → Alertmanager → alertmanager-discord → Discord
+ (container) (container)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Issues&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;2 extra containers just for alerting&lt;/li&gt;
+&lt;li&gt;Separate configuration (Alertmanager YAML)&lt;/li&gt;
+&lt;li&gt;Limited templating capabilities&lt;/li&gt;
+&lt;li&gt;Discord plugin needed maintenance&lt;/li&gt;
+&lt;li&gt;Split monitoring (Prometheus rules, Alertmanager routing)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="after-new-stack"&gt;After (New Stack)&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Prometheus → Grafana Alerting → Discord
+ (metrics) (built-in) (native)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Benefits&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ &lt;strong&gt;-2 containers&lt;/strong&gt; removed (alertmanager, alertmanager-discord)&lt;/li&gt;
+&lt;li&gt;✅ &lt;strong&gt;Unified configuration&lt;/strong&gt; - all in Grafana provisioning&lt;/li&gt;
+&lt;li&gt;✅ &lt;strong&gt;Better templating&lt;/strong&gt; - full Grafana template support&lt;/li&gt;
+&lt;li&gt;✅ &lt;strong&gt;Native Discord&lt;/strong&gt; - no external plugin needed&lt;/li&gt;
+&lt;li&gt;✅ &lt;strong&gt;Configuration as Code&lt;/strong&gt; - fully provisioned via YAML&lt;/li&gt;
+&lt;li&gt;✅ &lt;strong&gt;Easier management&lt;/strong&gt; - all alerts in Grafana UI&lt;/li&gt;
+&lt;li&gt;✅ &lt;strong&gt;Simpler architecture&lt;/strong&gt; - one less moving part&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="-new-file-structure"&gt;📂 New File Structure&lt;/h2&gt;
+&lt;p&gt;All alerting configuration is now in:&lt;/p&gt;</description></item><item><title/><link>https://docs.antoineglacet.com/docs/deployment/readme/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/deployment/readme/</guid><description>&lt;h1 id="deployment-documentation"&gt;Deployment Documentation&lt;/h1&gt;
+&lt;p&gt;Documentation related to deployment processes and migrations.&lt;/p&gt;
+&lt;h2 id="files"&gt;Files&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="DEPLOYMENT_CHECKLIST.md"&gt;DEPLOYMENT_CHECKLIST.md&lt;/a&gt;&lt;/strong&gt; - Pre-deployment verification checklist&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="DEPLOYMENT_NOTES.md"&gt;DEPLOYMENT_NOTES.md&lt;/a&gt;&lt;/strong&gt; - Deployment history and notes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href="ALERTING_MIGRATION.md"&gt;ALERTING_MIGRATION.md&lt;/a&gt;&lt;/strong&gt; - Migration from Alertmanager to Grafana Unified Alerting&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="purpose"&gt;Purpose&lt;/h2&gt;
+&lt;p&gt;This directory contains documentation about:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Deployment procedures and checklists&lt;/li&gt;
+&lt;li&gt;Migration guides for major changes&lt;/li&gt;
+&lt;li&gt;Deployment history and lessons learned&lt;/li&gt;
+&lt;li&gt;Post-deployment validation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="related-documentation"&gt;Related Documentation&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="../operating.md"&gt;Operating Guide&lt;/a&gt; - Day-to-day operations&lt;/li&gt;
+&lt;li&gt;&lt;a href="../troubleshooting.md"&gt;Troubleshooting&lt;/a&gt; - Common deployment issues&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

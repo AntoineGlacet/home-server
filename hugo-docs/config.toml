@@ -1,0 +1,85 @@
+baseURL = "https://docs.antoineglacet.com/"
+title = "Home Server Documentation"
+theme = "docsy"
+
+# Language settings
+contentDir = "content"
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false
+enableRobotsTXT = true
+enableGitInfo = false
+
+# Enable following symlinks in content directory
+[security]
+  [security.exec]
+    allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^npx$', '^postcss$']
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$']
+  [security.http]
+    methods = ['(?i)GET|POST']
+    urls = ['.*']
+
+# Disable taxonomies (we don't need tags/categories)
+disableKinds = ["taxonomy", "term"]
+
+# Highlighting config
+pygmentsCodeFences = true
+pygmentsUseClasses = false
+pygmentsStyle = "tango"
+
+[params]
+# Meta
+description = "Infrastructure documentation for Dell OptiPlex 3050 home lab"
+copyright = "Antoine Glacet"
+
+# UI configuration
+[params.ui]
+navbar_logo = false
+navbar_translucent_over_cover_disable = false
+sidebar_menu_compact = true
+sidebar_menu_foldable = true
+sidebar_cache_limit = 10
+breadcrumb_disable = false
+sidebar_search_disable = false
+footer_about_enable = false
+
+[params.ui.feedback]
+enable = false
+
+[params.ui.readingtime]
+enable = false
+
+# Links config (optional)
+[[params.links.user]]
+  name = "Homepage"
+  url = "https://homepage.antoineglacet.com"
+  icon = "fa fa-home"
+  desc = "Service dashboard"
+
+# Menu
+[[menu.main]]
+  name = "Documentation"
+  weight = 10
+  url = "/docs/"
+
+[[menu.main]]
+  name = "Homepage"
+  weight = 20
+  url = "https://homepage.antoineglacet.com"
+
+# Build settings
+[outputs]
+  home = ["HTML"]
+  section = ["HTML", "RSS"]
+  page = ["HTML"]
+
+[outputFormats.RSS]
+  baseName = "feed"
+
+# Markup settings
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "tango"

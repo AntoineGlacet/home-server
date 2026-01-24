@@ -16,7 +16,6 @@ __pycache__
 .env
 
 # IDE
-.vscode
 .Trash*
 
 # test directory
@@ -107,3 +106,11 @@ config/zigbee2mqtt/secrets.yaml
 config/appflowy/ssl/*
 !config/appflowy/nginx/nginx.conf
 config/zigbee2mqtt/configuration.yaml
+
+# Hugo documentation site
+hugo-docs/resources/
+hugo-docs/.hugo_build.lock
+hugo-docs/themes/docsy/node_modules/
+# Commit the built site (public/) for zero-build deployment
+hugo-docs/themes/docsy/.git
+hugo-docs/themes/

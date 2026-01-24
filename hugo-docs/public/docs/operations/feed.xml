@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Operations on Home Server Documentation</title><link>https://docs.antoineglacet.com/docs/operations/</link><description>Recent content in Operations on Home Server Documentation</description><generator>Hugo</generator><language>en</language><atom:link href="https://docs.antoineglacet.com/docs/operations/feed.xml" rel="self" type="application/rss+xml"/><item><title>Operating Guide</title><link>https://docs.antoineglacet.com/docs/operations/operating/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/operations/operating/</guid><description>&lt;p&gt;Complete guide to day-to-day operations of the home server.&lt;/p&gt;
+&lt;h2 id="table-of-contents"&gt;Table of Contents&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="#basic-operations"&gt;Basic Operations&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#helper-scripts"&gt;Helper Scripts&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#environment--secrets"&gt;Environment &amp;amp; Secrets&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#networking"&gt;Networking&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#storage--backups"&gt;Storage &amp;amp; Backups&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="#useful-commands"&gt;Useful Commands&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="basic-operations"&gt;Basic Operations&lt;/h2&gt;
+&lt;h3 id="starting--stopping-services"&gt;Starting &amp;amp; Stopping Services&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Start everything&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Stop everything (preserves volumes/data)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose down
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Restart specific service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose restart &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Stop specific service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose stop &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Start specific service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose start &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Recreate service (useful after config changes)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose up -d --force-recreate &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="viewing-logs"&gt;Viewing Logs&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Follow logs for all services&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose logs -f
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Follow logs for specific service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose logs -f &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View last 100 lines&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose logs --tail&lt;span style="color:#ce5c00;font-weight:bold"&gt;=&lt;/span&gt;&lt;span style="color:#0000cf;font-weight:bold"&gt;100&lt;/span&gt; &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View logs since timestamp&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose logs --since 2026-01-24T10:00:00 &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="updating-services"&gt;Updating Services&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Pull latest images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose pull
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Apply updates (recreate containers with new images)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Update specific service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose pull &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose up -d &lt;span style="color:#ce5c00;font-weight:bold"&gt;[&lt;/span&gt;service-name&lt;span style="color:#ce5c00;font-weight:bold"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View what will be updated&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose pull &lt;span style="color:#ce5c00;font-weight:bold"&gt;&amp;amp;&amp;amp;&lt;/span&gt; docker compose up -d --dry-run
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="checking-status"&gt;Checking Status&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View all containers&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose ps
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View detailed status&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose ps -a
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Check resource usage&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker stats
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Quick health overview&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;./scripts/health-check.sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="cleanup"&gt;Cleanup&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Remove stopped containers&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker compose rm
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Clean up unused Docker resources&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker system prune
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# Aggressive cleanup (includes unused images and volumes)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker system prune -a --volumes &lt;span style="color:#8f5902;font-style:italic"&gt;# ⚠️ WARNING: removes unused volumes!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8f5902;font-style:italic"&gt;# View disk usage&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker system df
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="helper-scripts"&gt;Helper Scripts&lt;/h2&gt;
+&lt;p&gt;Located in &lt;code&gt;scripts/&lt;/code&gt; directory:&lt;/p&gt;</description></item><item><title>Quick Start: Fix SSH Lag &amp; LAN Latency</title><link>https://docs.antoineglacet.com/docs/operations/quick_start/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/operations/quick_start/</guid><description>&lt;h2 id="tldr---just-fix-it-now"&gt;TL;DR - Just Fix It Now&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#204a87"&gt;cd&lt;/span&gt; ~/home-server
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo ./scripts/optimize-performance.sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That&amp;rsquo;s it! Your SSH lag should improve immediately.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="what-this-does"&gt;What This Does&lt;/h2&gt;
+&lt;p&gt;✅ Increases swappiness to 60 (proactive memory management)&lt;br&gt;
+✅ Optimizes network buffers (20x larger for gigabit LAN)&lt;br&gt;
+✅ Enables hardware offload (reduces CPU for network I/O)&lt;br&gt;
+✅ Tunes kernel parameters for server workload&lt;br&gt;
+✅ Creates automatic backups and rollback script&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="why-your-ssh-is-lagging"&gt;Why Your SSH is Lagging&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Problem&lt;/strong&gt;: Only 311MB RAM free with 39 containers running&lt;br&gt;
+&lt;strong&gt;Cause&lt;/strong&gt;: Swappiness=10 prevents swapping out 3.9GB of inactive memory&lt;br&gt;
+&lt;strong&gt;Result&lt;/strong&gt;: Emergency memory reclaim when SSH needs RAM = lag spikes&lt;/p&gt;</description></item><item><title>Performance Tuning Guide</title><link>https://docs.antoineglacet.com/docs/operations/performance-tuning/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/operations/performance-tuning/</guid><description>&lt;p&gt;This guide covers performance optimizations for the Dell OptiPlex 3050 home server running 37+ Docker containers.&lt;/p&gt;
+&lt;h2 id="system-specifications"&gt;System Specifications&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;CPU:&lt;/strong&gt; Intel Core i5-7500T (4 cores @ 2.70GHz)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RAM:&lt;/strong&gt; 8GB DDR4&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Storage:&lt;/strong&gt; 98GB system drive + 5.5TB data drive&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;OS:&lt;/strong&gt; Ubuntu 24.04.3 LTS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="critical-issue-swap-thrashing"&gt;Critical Issue: Swap Thrashing&lt;/h2&gt;
+&lt;h3 id="problem"&gt;Problem&lt;/h3&gt;
+&lt;p&gt;With the default Ubuntu swappiness setting of &lt;code&gt;60&lt;/code&gt;, the system aggressively swaps memory to disk even when there&amp;rsquo;s available RAM. This causes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Slow interactive SSH sessions&lt;/strong&gt; - Commands take seconds to respond&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;High disk I/O&lt;/strong&gt; - Constant swap read/write activity&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Degraded container performance&lt;/strong&gt; - Services become sluggish&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Poor responsiveness&lt;/strong&gt; - Desktop/terminal feels frozen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="why-this-happens"&gt;Why This Happens&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Swappiness&lt;/strong&gt; is a Linux kernel parameter that controls how aggressively the system swaps memory pages to disk:&lt;/p&gt;</description></item><item><title>Performance Optimization Guide</title><link>https://docs.antoineglacet.com/docs/operations/performance_optimization/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://docs.antoineglacet.com/docs/operations/performance_optimization/</guid><description>&lt;p&gt;&lt;strong&gt;Created&lt;/strong&gt;: 2026-01-17&lt;br&gt;
+&lt;strong&gt;System&lt;/strong&gt;: Intel Core i5-7500T @ 2.70GHz, 8GB RAM, Ubuntu 24.04.3 LTS&lt;br&gt;
+&lt;strong&gt;Workload&lt;/strong&gt;: 39 Docker containers (media, monitoring, auth, smart home, etc.)&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="-problem-identified"&gt;🔴 Problem Identified&lt;/h2&gt;
+&lt;h3 id="symptoms"&gt;Symptoms&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Severe SSH lag&lt;/strong&gt; when connecting from LAN&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Slow interactive session response&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Service latency&lt;/strong&gt; on the local network&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="root-cause-analysis"&gt;Root Cause Analysis&lt;/h3&gt;
+&lt;p&gt;The issue was &lt;strong&gt;NOT&lt;/strong&gt; what you might expect:&lt;/p&gt;
+&lt;table&gt;
+ &lt;thead&gt;
+ &lt;tr&gt;
+ &lt;th&gt;Assumption&lt;/th&gt;
+ &lt;th&gt;Reality&lt;/th&gt;
+ &lt;/tr&gt;
+ &lt;/thead&gt;
+ &lt;tbody&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&amp;ldquo;swappiness=10 is good for servers&amp;rdquo;&lt;/td&gt;
+ &lt;td&gt;❌ &lt;strong&gt;Wrong for heavily-loaded systems&lt;/strong&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&amp;ldquo;Lower swappiness = better performance&amp;rdquo;&lt;/td&gt;
+ &lt;td&gt;❌ &lt;strong&gt;Causes emergency swap situations&lt;/strong&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&amp;ldquo;My system has enough RAM&amp;rdquo;&lt;/td&gt;
+ &lt;td&gt;❌ &lt;strong&gt;Only 311MB free, 92.95% committed&lt;/strong&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="the-real-problem"&gt;The Real Problem&lt;/h3&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Memory Distribution:
+├─ Total RAM: 7.6GB
+├─ Used: 4.5GB (active processes)
+├─ Inactive: 3.9GB (cached, doing nothing useful)
+├─ Free: 311MB ⚠️ CRITICAL - too low!
+└─ Swap: 238MB (actively being used)
+
+Problem: 3.9GB of INACTIVE memory hogging RAM while active 
+processes fight over the remaining 311MB!
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;With &lt;strong&gt;swappiness=10&lt;/strong&gt;, the kernel &lt;strong&gt;refuses to swap out inactive pages&lt;/strong&gt; until memory pressure becomes critical. When SSH needs memory, the kernel has to perform &lt;strong&gt;emergency reclaim or swap operations&lt;/strong&gt;, causing &lt;strong&gt;blocking I/O&lt;/strong&gt; and the lag you experience.&lt;/p&gt;</description></item></channel></rss>

@@ -80,6 +80,12 @@ services:
     image: prom/prometheus:v2.55.1
     container_name: prometheus
     user: "1000"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
     environment:
       - PUID=1000
       - PGID=1000
@@ -123,7 +129,7 @@ services:
       - '-housekeeping_interval=30s'
       - '-docker_only=true'
       - '-store_container_labels=true'
-      - '-disable_metrics=percpu,process,sched,tcp,udp,diskIO,disk'
+      - '-disable_metrics=percpu,process,sched,tcp,udp,diskIO,disk,advtcp'
     privileged: true
     devices:
       - /dev/kmsg

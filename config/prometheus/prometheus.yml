@@ -26,6 +26,12 @@ scrape_configs:
     static_configs:
       - targets: ['cadvisor:8080']
     scrape_interval: 30s
+    # Drop verbose Docker Compose labels to reduce memory usage
+    metric_relabel_configs:
+      - action: labeldrop
+        regex: 'container_label_com_docker_compose_(project_config_files|config_hash|project_working_dir|version)'
+      - action: labeldrop
+        regex: 'container_label_org_opencontainers_image_(description|url|source|documentation|vendor|licenses)'
 
   - job_name: 'traefik'
     static_configs:

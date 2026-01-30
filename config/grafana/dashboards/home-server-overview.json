@@ -631,8 +631,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "probe_duration_seconds{job=\"blackbox_icmp\"} * 1000",
-          "legendFormat": "{{instance}}",
+          "expr": "label_replace(label_replace(label_replace(label_replace(label_replace(probe_duration_seconds{job=\"blackbox_icmp\"}, \"target\", \"$1\", \"instance\", \"(.*)\"), \"target\", \"Gateway\", \"instance\", \"10.13.1.1\"), \"target\", \"Google DNS\", \"instance\", \"8.8.8.8\"), \"target\", \"Cloudflare DNS\", \"instance\", \"1.1.1.1\"), \"target\", \"MS Teams Relay\", \"instance\", \"52.113.194.132\") * 1000",
+          "legendFormat": "{{target}}",
           "refId": "A"
         }
       ],
@@ -701,7 +701,7 @@
           "refId": "A"
         }
       ],
-      "title": "Avg Internet Latency",
+      "title": "Avg Internet Latency (All Targets)",
       "type": "gauge"
     },
     {
@@ -766,7 +766,7 @@
           "refId": "A"
         }
       ],
-      "title": "Packet Loss",
+      "title": "Packet Loss (All Targets)",
       "type": "gauge"
     },
     {
@@ -841,7 +841,7 @@
           "refId": "A"
         }
       ],
-      "title": "Internet Status",
+      "title": "Internet Status (Google DNS)",
       "type": "stat"
     },
     {
@@ -1002,8 +1002,8 @@
         "showHeader": true,
         "sortBy": [
           {
-            "desc": false,
-            "displayName": "Container"
+            "desc": true,
+            "displayName": "Memory"
           }
         ]
       },
@@ -1014,7 +1014,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "container_last_seen{name!=\"\",name!=\"POD\"}",
+          "expr": "label_replace(time() - container_last_seen{name!=\"\",name!=\"POD\"} < bool 60, \"name\", \"$1\", \"container_label_com_docker_compose_service\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1024,7 +1024,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "container_memory_usage_bytes{name!=\"\",name!=\"POD\"}",
+          "expr": "label_replace(container_memory_usage_bytes{name!=\"\",name!=\"POD\"}, \"name\", \"$1\", \"container_label_com_docker_compose_service\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "B"
@@ -1034,7 +1034,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(container_cpu_usage_seconds_total{name!=\"\",name!=\"POD\"}[5m]) * 100",
+          "expr": "label_replace(rate(container_cpu_usage_seconds_total{name!=\"\",name!=\"POD\"}[5m]) * 100, \"name\", \"$1\", \"container_label_com_docker_compose_service\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "C"
@@ -1044,13 +1044,13 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "time() - container_start_time_seconds{name!=\"\",name!=\"POD\"}",
+          "expr": "label_replace(time() - container_start_time_seconds{name!=\"\",name!=\"POD\"}, \"name\", \"$1\", \"container_label_com_docker_compose_service\", \"(.+)\")",
           "format": "table",
           "instant": true,
           "refId": "D"
         }
       ],
-      "title": "All Containers",
+      "title": "All Containers (by Service)",
       "transformations": [
         {
           "id": "merge",
@@ -1079,7 +1079,21 @@
               "Value #B": "Memory",
               "Value #C": "CPU %",
               "Value #D": "Uptime",
-              "name": "Container"
+              "name": "Service"
+            }
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "Service",
+                "Status",
+                "Memory",
+                "CPU %",
+                "Uptime"
+              ]
             }
           }
         },
@@ -1212,132 +1226,21 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/2.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/4.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/5.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 8,
-        "x": 8,
-        "y": 36
-      },
-      "id": 31,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": ["sum"],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "11.4.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum by (code) (increase(traefik_entrypoint_requests_total[24h]))",
-          "legendFormat": "{{code}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Traefik - Status Codes (24h)",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
           "mappings": [
             {
               "options": {
-                "match": "null",
-                "result": {
+                "0": {
                   "color": "red",
                   "index": 1,
                   "text": "DOWN"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "pattern": ".*",
-                "result": {
+                },
+                "1": {
                   "color": "green",
                   "index": 0,
                   "text": "UP"
                 }
               },
-              "type": "regex"
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -1354,7 +1257,7 @@
       "gridPos": {
         "h": 6,
         "w": 8,
-        "x": 16,
+        "x": 8,
         "y": 36
       },
       "id": 32,
@@ -1377,7 +1280,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "container_last_seen{name=\"authentik-server\"}",
+          "expr": "time() - container_last_seen{name=\"authentik-server\"} < bool 60",
           "refId": "A"
         }
       ],
@@ -1397,25 +1300,18 @@
           "mappings": [
             {
               "options": {
-                "match": "null",
-                "result": {
+                "0": {
                   "color": "red",
                   "index": 1,
                   "text": "DOWN"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "pattern": ".*",
-                "result": {
+                },
+                "1": {
                   "color": "green",
                   "index": 0,
                   "text": "UP"
                 }
               },
-              "type": "regex"
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -1431,7 +1327,7 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 8,
+        "w": 6,
         "x": 0,
         "y": 42
       },
@@ -1455,7 +1351,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "container_last_seen{name=\"adguard\"}",
+          "expr": "time() - container_last_seen{name=\"adguard\"} < bool 60",
           "refId": "A"
         }
       ],
@@ -1475,25 +1371,18 @@
           "mappings": [
             {
               "options": {
-                "match": "null",
-                "result": {
+                "0": {
                   "color": "red",
                   "index": 1,
                   "text": "DOWN"
-                }
-              },
-              "type": "special"
-            },
-            {
-              "options": {
-                "pattern": ".*",
-                "result": {
+                },
+                "1": {
                   "color": "green",
                   "index": 0,
                   "text": "UP"
                 }
               },
-              "type": "regex"
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -1509,8 +1398,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 8,
-        "x": 8,
+        "w": 6,
+        "x": 6,
         "y": 42
       },
       "id": 34,
@@ -1533,11 +1422,82 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "container_last_seen{name=~\".*postgres.*\"}",
+          "expr": "time() - container_last_seen{name=~\".*postgres.*\"} < bool 60",
           "refId": "A"
         }
       ],
       "title": "Postgres Status",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "DOWN"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "UP"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 42
+      },
+      "id": 36,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "11.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "time() - container_last_seen{name=\"traefik\"} < bool 60",
+          "refId": "A"
+        }
+      ],
+      "title": "Traefik Status",
       "type": "stat"
     },
     {
@@ -1566,8 +1526,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 8,
-        "x": 16,
+        "w": 6,
+        "x": 18,
         "y": 42
       },
       "id": 35,

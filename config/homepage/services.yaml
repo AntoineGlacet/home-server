@@ -81,7 +81,12 @@
         icon: glances
         href: https://glances.antoineglacet.com
         description: System monitoring
+- LAN only:
+    - WireGuard (wg-easy):
+        icon: wireguard
+        href: http://10.13.89.90:51821
+        description: VPN admin & device QR codes (LAN/VPN only)
     - Home Router:
         icon: asus-router
-        href: http://http://10.13.1.1/
-        description: Asus router (only from LAN)
+        href: http://10.13.1.1/
+        description: Asus router admin (LAN only)

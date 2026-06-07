@@ -18,10 +18,13 @@ http:
     - 172.16.0.0/12 # docker bridge networks (incl. homelab_proxy)
 
 # custom oidc integration from HACS (https://github.com/christiaangoossens/hass-oidc-auth)
+# Updated to v1.0.1 with auto-redirect to Authentik SSO
 auth_oidc:
   client_id: !secret client_id
   client_secret: !secret client_secret
   discovery_url: !secret discovery_url
+  features:
+    default_redirect: false  # Auto-redirect to Authentik (backup: add ?skip_oidc_redirect=true to URL)
 
 
 # add themes folder

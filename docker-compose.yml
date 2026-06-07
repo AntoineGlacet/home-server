@@ -14,7 +14,7 @@ services:
   # ----------------------------
 
   home-assistant:
-    image: homeassistant/home-assistant:2025.10
+    image: homeassistant/home-assistant:2026.4
     container_name: home-assistant
     user: "1000:1000"
     volumes:
@@ -565,7 +565,6 @@ services:
       - TZ=${TZ}
       - PUID=${PUID}  # Customize user ID
       - PGID=${PGID}  # Customize group ID
-      # - SIYUAN_ACCESS_AUTH_CODE=${SIYUAN_ACCESS_AUTH_CODE}
       - SIYUAN_ACCESS_AUTH_CODE_BYPASS=${SIYUAN_ACCESS_AUTH_CODE_BYPASS}
     networks:
       - homelab
@@ -573,10 +572,18 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=homelab_proxy"
+      # Router 1: Web UI with Authentik (lower priority)
       - "traefik.http.routers.siyuan.rule=Host(`siyuan.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.siyuan.entrypoints=websecure"
       - "traefik.http.routers.siyuan.tls.certresolver=cloudflare"
       - "traefik.http.routers.siyuan.middlewares=authentik@docker"
+      - "traefik.http.routers.siyuan.priority=1"
+      # Router 2: API without Authentik (higher priority) - relies on SiYuan's token auth
+      - "traefik.http.routers.siyuan-api.rule=Host(`siyuan.${TRAEFIK_DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.siyuan-api.entrypoints=websecure"
+      - "traefik.http.routers.siyuan-api.tls.certresolver=cloudflare"
+      - "traefik.http.routers.siyuan-api.priority=10"
+      # Service (shared by both routers)
       - "traefik.http.services.siyuan.loadbalancer.server.port=6806"
 
   # ----------------------------

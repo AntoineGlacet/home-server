@@ -736,6 +736,42 @@ services:
       - "traefik.http.services.adguard.loadbalancer.server.port=80"
 
   # ----------------------------
+  # REMOTE ACCESS VPN
+  # ----------------------------
+
+  # WireGuard VPN + web UI for secure LAN/service access from anywhere.
+  # Admin UI is LAN/VPN-only (not behind Traefik); only the UDP data plane
+  # (51820) is meant to be forwarded on the router. VPN clients use AdGuard
+  # for DNS and can reach the whole LAN via the host (ip_forward + masquerade).
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy:14
+    container_name: wg-easy
+    environment:
+      - TZ=${TZ}
+      - WG_HOST=${WG_HOST}                  # public endpoint, kept current by ddclient
+      - PASSWORD_HASH=${WG_PASSWORD_HASH}   # bcrypt hash of admin UI password (in .env)
+      - WG_DEFAULT_DNS=${WG_DEFAULT_DNS}    # AdGuard on the host (10.13.89.90)
+      - WG_DEFAULT_ADDRESS=10.8.0.x         # VPN client subnet, distinct from LAN 10.13/16
+      - WG_ALLOWED_IPS=0.0.0.0/0, ::/0      # full tunnel (per-client adjustable in UI)
+      - WG_PORT=51820                       # advertised WireGuard port in client configs
+      - WG_PERSISTENT_KEEPALIVE=25          # keep NAT mappings alive
+      - UI_TRAFFIC_STATS=true
+    volumes:
+      - ./config/wg-easy:/etc/wireguard
+    ports:
+      - "51820:51820/udp"                   # WireGuard data plane (forward this on the router)
+      - "51821:51821/tcp"                   # admin UI — LAN/VPN only, NOT exposed via Traefik
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    networks:
+      - homelab
+
+  # ----------------------------
   # BACKUP & RECOVERY
   # ----------------------------
   duplicati:

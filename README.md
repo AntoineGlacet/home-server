@@ -95,6 +95,7 @@ Three network tiers isolate traffic:
 - **Loki + Promtail**: Centralized log aggregation
 - **AdGuard Home**: Network-wide DNS and ad blocking
 - **NordLynx VPN**: Protects Transmission and Prowlarr traffic
+- **wg-easy (WireGuard)**: Self-hosted remote access to the LAN; basis for Sunshine/Moonlight game streaming
 
 ## Documentation
 
@@ -104,6 +105,7 @@ Three network tiers isolate traffic:
 - **[Traefik](docs/traefik.md)** - Reverse proxy configuration, TLS certificates, routing
 - **[Authentik](docs/authentik.md)** - SSO setup, user management, OAuth integration
 - **[Monitoring](docs/monitoring.md)** - Prometheus, Grafana, Loki, alerting, dashboards
+- **[Remote Access](docs/remote-access.md)** - WireGuard VPN (wg-easy), AdGuard DNS, Sunshine/Moonlight game streaming
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
 
 ### Performance & Optimization

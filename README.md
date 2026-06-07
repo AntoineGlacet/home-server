@@ -42,6 +42,7 @@ All services live in one `docker-compose.yml`:
 | **Media** | Plex, Sonarr, Radarr, Bazarr, Transmission, Prowlarr, Calibre Web |
 | **Monitoring** | Prometheus, Grafana, Loki, Promtail, cAdvisor, Glances, Node Exporter |
 | **Infrastructure** | Traefik, Authentik, AdGuard Home, PostgreSQL, Redis |
+| **Remote Access** | wg-easy (WireGuard VPN), NordLynx (torrent VPN) |
 | **Utilities** | Homepage, Duplicati, Syncthing, Samba, DDClient, FlareSolverr |
 
 ## Common Operations

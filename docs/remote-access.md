@@ -12,6 +12,8 @@ relay, control plane, or SaaS.
 
 - [Architecture](#architecture)
 - [How it works](#how-it-works)
+- [DNS & the VPN endpoint](#dns--the-vpn-endpoint)
+- [Port forwarding](#port-forwarding)
 - [One-time prerequisites](#one-time-prerequisites-you)
 - [Adding a device (admin)](#adding-a-device-admin)
 - [Game streaming: Sunshine + Moonlight](#game-streaming-sunshine--moonlight)
@@ -27,16 +29,18 @@ relay, control plane, or SaaS.
 | **Game stream** | Sunshine (Windows PC) + Moonlight (clients) | Hardware-encoded desktop/game streaming **over** the VPN |
 | **Public web** | Traefik + Authentik (existing) | A few browser apps stay reachable without the VPN |
 
-Only **one** port faces the internet: **UDP 51820** (WireGuard). SSH, NAS/SMB, the wg-easy
-admin UI, and Sunshine are **never** exposed publicly — they're reachable only once you're on
-the VPN (or on the LAN).
+The remote-access + streaming path adds exactly **one** inbound port: **UDP 51820** (WireGuard).
+SSH, NAS/SMB, the wg-easy admin UI, and Sunshine are **never** exposed publicly — they ride
+inside the tunnel. (Separately, the public web stack uses **TCP 443** via Cloudflare — see
+[Port forwarding](#port-forwarding).)
 
 ## How it works
 
 - `wg-easy` runs on the OptiPlex (`10.13.89.90`) and is defined in `docker-compose.yml` under
   the **REMOTE ACCESS VPN** section.
-- Clients connect to `WG_HOST` (`antoineglacet.com`, kept pointed at the home IP by `ddclient`)
-  on UDP 51820.
+- Clients connect to `WG_HOST` = **`vpn.antoineglacet.com`** on UDP 51820 — a dedicated
+  **DNS-only (grey-cloud)** Cloudflare record kept current by `ddclient`. It must **not** be the
+  proxied apex; see [DNS & the VPN endpoint](#dns--the-vpn-endpoint).
 - The host has `ip_forward=1` and `wg-easy` sets up masquerading, so a connected client can
   reach the **entire `10.13.0.0/16` LAN** — including the Windows gaming PC and AdGuard — even
   though those machines are not WireGuard peers themselves.
@@ -45,14 +49,51 @@ the VPN (or on the LAN).
 
 Admin UI: **http://10.13.89.90:51821** (on the LAN, or via the VPN). Not on the internet.
 
+## DNS & the VPN endpoint
+
+WireGuard's handshake is **UDP**. `antoineglacet.com` and its subdomains are **proxied through
+Cloudflare** (orange cloud) — Cloudflare relays HTTP/S (80/443) but **silently drops the
+WireGuard UDP**, so pointing clients at the proxied name means the handshake never reaches home
+(the peer shows up with zero transfer). That was the original "connects but no internet" bug.
+
+The fix, and the standing rule:
+
+- **`vpn.antoineglacet.com`** is a separate **A record set to DNS-only (grey cloud)** so it
+  resolves straight to the home public IP. `ddclient` keeps it updated
+  (`config/ddclient/ddclient.conf`) as the dynamic IP changes. `WG_HOST` points here.
+- **Split-horizon (already in place):** AdGuard has a `*.antoineglacet.com → 10.13.89.90`
+  rewrite, so on the LAN (and once on the VPN) the web hostnames resolve to the local Traefik
+  IP — no NAT hairpin. Cellular clients (not yet on the VPN) get the public IP from Cloudflare.
+  Both paths are correct; nothing to change.
+- If you ever recreate the record, keep it **grey-cloud**. To verify it's not proxied:
+  `curl -s 'https://1.1.1.1/dns-query?name=vpn.antoineglacet.com&type=A' -H 'accept: application/dns-json'`
+  should return the home IP, not a `104.x`/`172.67.x` Cloudflare address.
+
+## Port forwarding
+
+Router (WAN → `10.13.89.90`) port-forward rules needed:
+
+| Port | Needed? | Why |
+| --- | --- | --- |
+| **UDP 51820** | **Yes** | WireGuard data plane — the only inbound port the VPN/streaming path needs |
+| **TCP 443** | **Yes** | Public web stack (Cloudflare proxy → Traefik origin over HTTPS) |
+| **TCP 80** | **No** | TLS certs use the Cloudflare **DNS-01** challenge (not HTTP-01), and Cloudflare does the http→https redirect itself. Forwarding 80 from the WAN is unnecessary; you can drop it to shrink attack surface. (Keep Traefik's local `:80` publish so LAN http→https redirects still work.) |
+
+> Confirm Cloudflare's SSL/TLS mode is **Full (strict)** — that's what makes Cloudflare connect
+> to the origin on 443. The router must **never** forward 51821 (the wg-easy admin UI).
+
 ## One-time prerequisites (you)
 
 These are on devices/hardware outside the server, so they can't be scripted from the repo:
 
-1. **Router port-forward:** forward **UDP 51820 → 10.13.89.90:51820**. Until this is done, the
-   VPN only works from inside the LAN. (Docker publishes the port directly, so UFW on the host
-   does not need a rule; if a connection from the internet still fails, confirm the forward.)
-2. **Gaming PC static IP:** give the Windows PC a **static DHCP reservation** on the router so
+1. **Router port-forward:** forward **UDP 51820 → 10.13.89.90:51820** (see
+   [Port forwarding](#port-forwarding) for the full list). Until this is done, the VPN only
+   works from inside the LAN. (Docker publishes the port directly, so UFW on the host does not
+   need a rule; if a connection from the internet still fails, confirm the forward.)
+2. **Cloudflare DNS record:** `vpn.antoineglacet.com` must exist as a **DNS-only (grey-cloud)**
+   A record (created once; `ddclient` then keeps its IP current). See
+   [DNS & the VPN endpoint](#dns--the-vpn-endpoint).
+3. **Gaming PC static IP:** give the Windows PC a **static DHCP reservation** on the router so
    its LAN IP doesn't change (Moonlight connects to it by IP).
 
 ## Adding a device (admin)
@@ -103,7 +144,12 @@ automatically and it's effectively one tap.
 ## Troubleshooting
 
 - **Can't connect from outside but works on LAN** → router port-forward (UDP 51820) missing or
-  wrong target IP, or `WG_HOST` not resolving to the home IP (check `ddclient`).
+  wrong target IP; or `WG_HOST` points at a **Cloudflare-proxied** name (must be the grey-cloud
+  `vpn.antoineglacet.com`); or that record isn't resolving to the home IP (check `ddclient`).
+  Tell-tale sign: on the server, `docker exec wg-easy wg show` lists the peer with **no
+  handshake / 0 B transfer** — the packets aren't reaching home.
+- **Endpoint on the client shows the wrong host** → after changing `WG_HOST`, re-scan the QR (or
+  edit the client's `Endpoint` to `vpn.antoineglacet.com:51820`); keys are unchanged.
 - **Connected but no internet / DNS** → check `WG_DEFAULT_DNS=10.13.89.90` and that AdGuard is
   up; verify the client shows in AdGuard's query log.
 - **Can't reach a LAN host** → confirm the client's Allowed IPs include `10.13.0.0/16` (or

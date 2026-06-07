@@ -106,7 +106,25 @@ docker system df
 
 ## Helper Scripts
 
-Located in `scripts/` directory:
+### deploy.sh (deploy from laptop)
+
+The repo's **source of truth is a laptop clone**, deployed to the OptiPlex over the LAN.
+`deploy.sh` (in the repo root) checks the local tree is clean, pushes `master` to GitHub,
+then SSHes to the server, fast-forwards its checkout, and runs `start-all.sh`
+(`docker compose up -d --remove-orphans`).
+
+```bash
+./deploy.sh            # push + deploy current branch
+./deploy.sh --health   # also run scripts/health-check.sh afterwards
+./deploy.sh --no-push   # re-apply current GitHub state without a new push
+```
+
+Safety: it aborts (no clobber) if the server has uncommitted changes to tracked files, and
+uses `git merge --ff-only`. Secrets live only in the server's gitignored `.env` and are never
+committed — add any new keys to `.env.example` and set the real value on the server before
+deploying.
+
+The scripts below live in the `scripts/` directory:
 
 ### health-check.sh
 

@@ -977,30 +977,6 @@ services:
       - ./config/traefik/letsencrypt:/letsencrypt
       - ./config/traefik/certs:/output
 
-  # Documentation site
-  docs-site:
-    image: nginx:alpine
-    container_name: docs-site
-    restart: unless-stopped
-    volumes:
-      - ./hugo-docs/public:/usr/share/nginx/html:ro
-    deploy:
-      resources:
-        limits:
-          memory: 32M
-        reservations:
-          memory: 8M
-    networks:
-      - homelab_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=homelab_proxy"
-      - "traefik.http.routers.docs.rule=Host(`docs.${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.docs.entrypoints=websecure"
-      - "traefik.http.routers.docs.tls.certresolver=cloudflare"
-      - "traefik.http.routers.docs.middlewares=authentik@docker"
-      - "traefik.http.services.docs.loadbalancer.server.port=80"
-
   # Restart containers based on health
   autoheal:
     image: willfarrell/autoheal:latest

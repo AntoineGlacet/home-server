@@ -49,10 +49,6 @@
         description: Subtitle management
 
 - infrastructure:
-    - Documentation:
-        icon: mdi-book-open-variant
-        href: https://docs.antoineglacet.com
-        description: Server documentation & guides
     - AdGuard Home:
         icon: adguard-home
         href: https://adguard.antoineglacet.com

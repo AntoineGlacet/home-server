@@ -3,8 +3,8 @@ homeassistant:
 mqtt:
   base_topic: zigbee2mqtt
   server: mqtt://mqtt:1883
-  user: hass
-  password: ***REMOVED***
+  user: '!secret mqtt_user'
+  password: '!secret mqtt_password'
 serial:
   port: /dev/ttyUSB0
 frontend:

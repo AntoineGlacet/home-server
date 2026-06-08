@@ -1,6 +1,15 @@
-# CRITICAL — outstanding security item
+# CRITICAL — security items
 
-> Tracked here for a focused, deliberate fix. Not yet addressed.
+## ✅ RESOLVED (2026-06-08): Committed MQTT password rotated + purged from history
+
+The `hass` MQTT password was rotated everywhere (mosquitto `users.db`, Home Assistant
+`.storage`, and the gitignored `.env` via z2m's `ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD` override),
+the plaintext removed from the tracked `configuration.yaml`, and the old value scrubbed from
+all git history with `git filter-repo` + force-push (verified 0 occurrences). Note: z2m has no
+`!secret` feature (that's Home Assistant) — its creds come from `.env` env-overrides, and z2m
+does not write them back into `configuration.yaml`. Original plan kept below for reference.
+
+<details><summary>Original plan (done)</summary>
 
 ## 🔴 Committed MQTT password (`hass` / plaintext) in git history
 
@@ -32,6 +41,8 @@ credential is reused across the smart-home stack, so rotating it is a coordinate
 - Steps 1–3 are reversible via the `.storage` backup.
 - Even without the purge, rotating (step 1) makes the leaked password useless — do the
   rotation first, verify the smart home is healthy, then do the purge.
+
+</details>
 
 ---
 

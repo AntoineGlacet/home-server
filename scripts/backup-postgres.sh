@@ -102,9 +102,9 @@ backup_all_databases() {
   
   for db in "${DATABASES[@]}"; do
     if backup_database "${db}"; then
-      ((success_count++))
+      success_count=$((success_count+1))
     else
-      ((fail_count++))
+      fail_count=$((fail_count+1))
     fi
     echo ""
   done
@@ -122,7 +122,7 @@ rotate_backups() {
   while IFS= read -r -d '' backup_file; do
     rm -f "${backup_file}"
     log_info "Deleted old backup: $(basename "${backup_file}")"
-    ((deleted_count++))
+    deleted_count=$((deleted_count+1))
   done < <(find "${BACKUP_DIR}" -name "*.sql.gz" -type f -mtime +${RETENTION_DAYS} -print0 2>/dev/null)
   
   if (( deleted_count > 0 )); then
@@ -147,7 +147,7 @@ list_backups() {
       size=$(du -h "${backup_file}" | cut -f1)
       age=$(stat -c '%y' "${backup_file}" | cut -d' ' -f1-2)
       echo "  • $(basename "${backup_file}") - ${size} - ${age}"
-      ((backup_count++))
+      backup_count=$((backup_count+1))
     done < <(find "${BACKUP_DIR}" -name "*.sql.gz" -type f | sort -r | head -10)
     
     if (( backup_count == 0 )); then

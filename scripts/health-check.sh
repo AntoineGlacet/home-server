@@ -135,7 +135,7 @@ check_system_load() {
   echo -e "${CYAN}━━━ ⚡ System Load ━━━${NC}"
   
   local load1 load5 load15
-  read -r load1 load5 load15 <<< "$(uptime | awk -F'load average:' '{print $2}' | tr -d ' ')"
+  read -r load1 load5 load15 <<< "$(uptime | awk -F'load average: ' '{gsub(/,/," ",$2); print $2}')"
   
   local cpu_count
   cpu_count=$(nproc)

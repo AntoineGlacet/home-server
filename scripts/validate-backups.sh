@@ -42,12 +42,12 @@ log_success() {
 
 log_warning() {
   echo -e "${YELLOW}[WARN]${NC} $*"
-  ((WARNINGS++))
+  WARNINGS=$((WARNINGS+1))
 }
 
 log_error() {
   echo -e "${RED}[FAIL]${NC} $*"
-  ((ERRORS++))
+  ERRORS=$((ERRORS+1))
 }
 
 print_header() {

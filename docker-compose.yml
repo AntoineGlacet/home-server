@@ -249,7 +249,7 @@ services:
   # ----------------------------
 
   nordlynx:
-    image: ghcr.io/bubuntux/nordlynx:latest
+    image: ghcr.io/bubuntux/nordlynx@sha256:2e1444bec3f67820e04e2755a5eb9d51f2d52453aff577e8a0b52f6cbeb364f3  # pinned (no semver tags upstream)
     container_name: nordlynx
     cap_add:
       - NET_ADMIN
@@ -705,7 +705,7 @@ services:
   # Ad-blocking DNS server
   adguard:
     container_name: adguard
-    image: adguard/adguardhome:latest
+    image: adguard/adguardhome:v0.107.74
     volumes:
       - ./config/adguard/work:/opt/adguardhome/work
       - ./config/adguard/conf:/opt/adguardhome/conf
@@ -755,15 +755,15 @@ services:
       - WG_ALLOWED_IPS=0.0.0.0/0, ::/0      # full tunnel (per-client adjustable in UI)
       - WG_PORT=51820                       # advertised WireGuard port in client configs
       - WG_PERSISTENT_KEEPALIVE=25          # keep NAT mappings alive
+      - WG_MTU=1280                         # avoids fragmentation over cellular/CGNAT (fixes Moonlight stream)
       - UI_TRAFFIC_STATS=true
     volumes:
       - ./config/wg-easy:/etc/wireguard
     ports:
       - "51820:51820/udp"                   # WireGuard data plane (forward this on the router)
-      - "51821:51821/tcp"                   # admin UI — LAN/VPN only, NOT exposed via Traefik
+      - "10.13.89.90:51821:51821/tcp"       # admin UI — bound to LAN IP only (also reachable over VPN), NOT via Traefik
     cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
+      - NET_ADMIN                           # SYS_MODULE not needed: host has wireguard module loaded + kernel autoload
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
@@ -803,7 +803,7 @@ services:
   # ----------------------------
 
   authentik-redis:
-    image: redis:7-alpine
+    image: redis:7.4.9-alpine
     container_name: authentik-redis
     command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning", "--requirepass", "${AUTHENTIK_REDIS__PASSWORD}" ]
     restart: unless-stopped
@@ -889,7 +889,7 @@ services:
 
   # Reverse proxy, dashboard & certificates
   traefik:
-    image: traefik:latest
+    image: traefik:v3.7.0
     container_name: traefik
     restart: unless-stopped
     command:
@@ -1022,6 +1022,4 @@ services:
 # not sure why we only use this for appflowy stuff  
 volumes:
   postgres_data:
-  minio_data:
   authentik_redis_data:
-  pgadmin_data:

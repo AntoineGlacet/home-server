@@ -556,7 +556,7 @@ services:
     command:
       - '--workspace=/siyuan/workspace/'
     ports:
-      - 6806:6806
+      - 10.13.89.90:6806:6806   # LAN/VPN only — API access goes here, not via Traefik
     volumes:
       - ./config/siyuan/workspace:/siyuan/workspace
     restart: unless-stopped
@@ -572,18 +572,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=homelab_proxy"
-      # Router 1: Web UI with Authentik (lower priority)
+      # Web UI behind Authentik. /api is NOT exposed publicly anymore — reach the
+      # API on the LAN/VPN at http://10.13.89.90:6806 (SiYuan's token auth protects it).
       - "traefik.http.routers.siyuan.rule=Host(`siyuan.${TRAEFIK_DOMAIN}`)"
       - "traefik.http.routers.siyuan.entrypoints=websecure"
       - "traefik.http.routers.siyuan.tls.certresolver=cloudflare"
       - "traefik.http.routers.siyuan.middlewares=authentik@docker"
-      - "traefik.http.routers.siyuan.priority=1"
-      # Router 2: API without Authentik (higher priority) - relies on SiYuan's token auth
-      - "traefik.http.routers.siyuan-api.rule=Host(`siyuan.${TRAEFIK_DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.siyuan-api.entrypoints=websecure"
-      - "traefik.http.routers.siyuan-api.tls.certresolver=cloudflare"
-      - "traefik.http.routers.siyuan-api.priority=10"
-      # Service (shared by both routers)
       - "traefik.http.services.siyuan.loadbalancer.server.port=6806"
 
   # ----------------------------

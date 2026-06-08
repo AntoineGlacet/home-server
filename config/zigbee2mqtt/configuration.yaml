@@ -3,8 +3,8 @@ homeassistant:
 mqtt:
   base_topic: zigbee2mqtt
   server: mqtt://mqtt:1883
-  user: '!secret mqtt_user'
-  password: '!secret mqtt_password'
+  # user/password injected via ZIGBEE2MQTT_CONFIG_MQTT_USER / _PASSWORD env vars
+  # (see docker-compose.yml + .env) to keep credentials out of this tracked file
 serial:
   port: /dev/ttyUSB0
 frontend:

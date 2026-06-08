@@ -765,6 +765,27 @@ services:
     networks:
       - homelab
 
+  # Wake-on-LAN helper: keeps a permanent static ARP entry for the gaming PC on the
+  # host LAN interface, so Moonlight's magic packet (arriving over WireGuard) is
+  # forwarded to the PC's NIC even while it's powered off. Runs in the host net
+  # namespace; no Traefik, no published ports.
+  wol-arp:
+    image: alpine:3.20
+    container_name: wol-arp
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    command:
+      - sh
+      - -c
+      - |
+        apk add --no-cache iproute2 >/dev/null 2>&1
+        while true; do
+          ip neigh replace 10.13.89.126 lladdr 6c:02:e0:40:24:51 nud permanent dev enp1s0
+          sleep 600
+        done
+
   # ----------------------------
   # BACKUP & RECOVERY
   # ----------------------------

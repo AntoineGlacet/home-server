@@ -133,6 +133,34 @@ Streaming runs **inside** the VPN — Sunshine's ports stay on the LAN and are n
 > For best latency: on a strong connection full-tunnel is fine. If a particular client streams
 > poorly, set that client to split-tunnel (still routing `10.13.0.0/16`) in the wg-easy UI.
 
+## Waking the gaming PC (Wake-on-LAN)
+
+Moonlight's **Wake** button works over WireGuard thanks to a static-ARP helper. A WoL
+magic packet only wakes a PC if it physically reaches its NIC; from the VPN that fails by
+default because the tunnel ends inside the `wg-easy` container (off the LAN's broadcast
+domain) and a powered-off PC has no ARP entry. The `wol-arp` service (in
+`docker-compose.yml`, host-net + `NET_ADMIN`) keeps a **permanent static ARP entry** for
+the PC on the host's `enp1s0`:
+
+```
+ip neigh replace 10.13.89.126 lladdr 6c:02:e0:40:24:51 nud permanent dev enp1s0
+```
+
+So Moonlight's unicast magic packet (routed over the tunnel → wg-easy → host) is forwarded
+onto the LAN to the PC's MAC even while it sleeps. If the PC's IP or MAC changes, update
+the `wol-arp` command and keep a static DHCP reservation.
+
+**PC-side prerequisites (one-time, on the Windows gaming PC):**
+- BIOS/UEFI: enable **Wake-on-LAN** / "Power On by PCIe/PCI".
+- Windows: Device Manager → your NIC → **Power Management**: "Allow this device to wake the
+  computer"; **Advanced** → "Wake on Magic Packet" = Enabled.
+- **Disable Fast Startup** (Control Panel → Power Options → "Choose what the power buttons
+  do" → uncheck *Turn on fast startup*). Fast Startup makes shutdown a hybrid state where
+  WoL usually fails; sleep/hibernate are fine.
+- Give the PC a **static DHCP reservation** so its IP↔MAC stay put.
+
+Then from the phone (on the VPN): Moonlight → the host → **Wake**.
+
 ## Family quick-start
 
 > **To play / access home stuff remotely:** turn on the **VPN** toggle → open **Moonlight** →

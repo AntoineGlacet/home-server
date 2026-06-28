@@ -3,6 +3,23 @@
 > **Status:** not deployed. Captured 2026-06-28 while evaluating a Google Photos
 > replacement. Revisit when the storage + RAM constraints below are resolved.
 
+## Decision (2026-06-29): deferred — hardware-limited
+
+Immich is the right tool (see below), and quality would be equal-or-better than
+Google Photos. **We are not deploying it on the current hardware.** The OptiPlex
+3050 (8 GB RAM, data drive 90% full) cannot comfortably host Immich's ML stack
+*and* a full photo library on top of the existing 39-container stack. This is a
+hardware ceiling, not a software choice — Google Photos stays the photo store for
+now.
+
+**Revisit when any of these change (the upgrade triggers):**
+- **RAM:** box goes from 8 GB → 16 GB+ (Immich ML wants 1.5–3 GB headroom).
+- **Disk:** the data drive is expanded/replaced so a full Takeout import + ongoing
+  growth fits with room to spare (currently only ~530 GB free of 5.5 TB).
+- Or: the whole stack moves to a more capable host.
+
+Until then this file is the complete build/migration plan, ready to execute.
+
 ## Why Immich
 
 [Immich](https://immich.app) is the closest self-hosted equivalent to Google

@@ -39,14 +39,14 @@
         icon: prowlarr
         href: https://prowlarr.antoineglacet.com
         description: Indexer aggregator
-    - Overseerr:
-        icon: overseerr
-        href: https://overseerr.antoineglacet.com
-        description: Discover and request new titles
     - Bazarr:
         icon: bazarr
         href: https://bazarr.antoineglacet.com
         description: Subtitle management
+    - Tautulli:
+        icon: tautulli
+        href: https://tautulli.antoineglacet.com
+        description: Plex monitoring & stats
 
 - infrastructure:
     - AdGuard Home:

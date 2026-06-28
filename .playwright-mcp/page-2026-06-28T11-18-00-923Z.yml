@@ -1,0 +1,270 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - link "Please wait Please wait Please wait Please wait" [ref=e8] [cursor=pointer]:
+        - /url: http://glances:61208
+        - generic [ref=e9]:
+          - generic [ref=e10]:
+            - img [ref=e11]
+            - generic [ref=e17]: Please wait
+          - generic [ref=e19]:
+            - img [ref=e20]
+            - generic [ref=e25]: Please wait
+          - generic [ref=e27]:
+            - img [ref=e28]
+            - generic [ref=e33]: Please wait
+          - generic [ref=e35]:
+            - img [ref=e36]
+            - generic [ref=e41]: Please wait
+      - generic [ref=e43]:
+        - generic [ref=e46]: 6/28/26, 8:18 PM
+        - generic [ref=e48]:
+          - img [ref=e50]
+          - generic [ref=e52]:
+            - generic [ref=e53]: Updating
+            - generic [ref=e54]: Please wait
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - button "overview" [expanded] [ref=e57]:
+          - heading "overview" [level=2] [ref=e58]
+          - img [ref=e59]
+        - list [ref=e63]:
+          - listitem [ref=e64]:
+            - generic [ref=e66]:
+              - link "siyuan" [ref=e67] [cursor=pointer]:
+                - /url: https://siyuan.antoineglacet.com
+                - img "logo" [ref=e68]
+              - link "Siyuan notes & productivity" [ref=e69] [cursor=pointer]:
+                - /url: https://siyuan.antoineglacet.com
+                - generic [ref=e70]:
+                  - text: Siyuan
+                  - paragraph [ref=e71]: notes & productivity
+          - listitem [ref=e72]:
+            - generic [ref=e74]:
+              - link "home-assistant" [ref=e75] [cursor=pointer]:
+                - /url: https://homeassistant.antoineglacet.com
+                - img "logo" [ref=e76]
+              - link "Home Assistant Automations and smart devices" [ref=e77] [cursor=pointer]:
+                - /url: https://homeassistant.antoineglacet.com
+                - generic [ref=e78]:
+                  - text: Home Assistant
+                  - paragraph [ref=e79]: Automations and smart devices
+          - listitem [ref=e80]:
+            - generic [ref=e82]:
+              - link "zigbee2mqtt" [ref=e83] [cursor=pointer]:
+                - /url: https://zigbee2mqtt.antoineglacet.com
+                - img "logo" [ref=e84]
+              - link "Zigbee2MQTT Zigbee coordinator management" [ref=e85] [cursor=pointer]:
+                - /url: https://zigbee2mqtt.antoineglacet.com
+                - generic [ref=e86]:
+                  - text: Zigbee2MQTT
+                  - paragraph [ref=e87]: Zigbee coordinator management
+      - generic [ref=e88]:
+        - button "media" [expanded] [ref=e89]:
+          - heading "media" [level=2] [ref=e90]
+          - img [ref=e91]
+        - list [ref=e95]:
+          - listitem [ref=e96]:
+            - generic [ref=e98]:
+              - link "plex" [ref=e99] [cursor=pointer]:
+                - /url: https://plex.antoineglacet.com
+                - img "logo" [ref=e100]
+              - link "Plex Stream your media library" [ref=e101] [cursor=pointer]:
+                - /url: https://plex.antoineglacet.com
+                - generic [ref=e102]:
+                  - text: Plex
+                  - paragraph [ref=e103]: Stream your media library
+          - listitem [ref=e104]:
+            - generic [ref=e106]:
+              - link "calibre" [ref=e107] [cursor=pointer]:
+                - /url: https://calibre-web.antoineglacet.com
+                - img "logo" [ref=e108]
+              - link "Calibre-Web Browse e-book collection" [ref=e109] [cursor=pointer]:
+                - /url: https://calibre-web.antoineglacet.com
+                - generic [ref=e110]:
+                  - text: Calibre-Web
+                  - paragraph [ref=e111]: Browse e-book collection
+          - listitem [ref=e112]:
+            - generic [ref=e113]:
+              - generic [ref=e114]:
+                - link "transmission" [ref=e115] [cursor=pointer]:
+                  - /url: https://transmission.antoineglacet.com
+                  - img "logo" [ref=e116]
+                - link "Transmission BitTorrent client" [ref=e117] [cursor=pointer]:
+                  - /url: https://transmission.antoineglacet.com
+                  - generic [ref=e118]:
+                    - text: Transmission
+                    - paragraph [ref=e119]: BitTorrent client
+              - generic [ref=e120]:
+                - generic [ref=e121]:
+                  - generic [ref=e122]: "-"
+                  - generic [ref=e123]: Leech
+                - generic [ref=e124]:
+                  - generic [ref=e125]: "-"
+                  - generic [ref=e126]: Download
+                - generic [ref=e127]:
+                  - generic [ref=e128]: "-"
+                  - generic [ref=e129]: Seed
+                - generic [ref=e130]:
+                  - generic [ref=e131]: "-"
+                  - generic [ref=e132]: Upload
+          - listitem [ref=e133]:
+            - generic [ref=e135]:
+              - link "sonarr" [ref=e136] [cursor=pointer]:
+                - /url: https://sonarr.antoineglacet.com
+                - img "logo" [ref=e137]
+              - link "Sonarr Manage TV library" [ref=e138] [cursor=pointer]:
+                - /url: https://sonarr.antoineglacet.com
+                - generic [ref=e139]:
+                  - text: Sonarr
+                  - paragraph [ref=e140]: Manage TV library
+          - listitem [ref=e141]:
+            - generic [ref=e143]:
+              - link "radarr" [ref=e144] [cursor=pointer]:
+                - /url: https://radarr.antoineglacet.com
+                - img "logo" [ref=e145]
+              - link "Radarr Manage movie library" [ref=e146] [cursor=pointer]:
+                - /url: https://radarr.antoineglacet.com
+                - generic [ref=e147]:
+                  - text: Radarr
+                  - paragraph [ref=e148]: Manage movie library
+          - listitem [ref=e149]:
+            - generic [ref=e151]:
+              - link "prowlarr" [ref=e152] [cursor=pointer]:
+                - /url: https://prowlarr.antoineglacet.com
+                - img "logo" [ref=e153]
+              - link "Prowlarr Indexer aggregator" [ref=e154] [cursor=pointer]:
+                - /url: https://prowlarr.antoineglacet.com
+                - generic [ref=e155]:
+                  - text: Prowlarr
+                  - paragraph [ref=e156]: Indexer aggregator
+          - listitem [ref=e157]:
+            - generic [ref=e159]:
+              - link "overseerr" [ref=e160] [cursor=pointer]:
+                - /url: https://overseerr.antoineglacet.com
+                - img "logo" [ref=e161]
+              - link "Overseerr Discover and request new titles" [ref=e162] [cursor=pointer]:
+                - /url: https://overseerr.antoineglacet.com
+                - generic [ref=e163]:
+                  - text: Overseerr
+                  - paragraph [ref=e164]: Discover and request new titles
+          - listitem [ref=e165]:
+            - generic [ref=e167]:
+              - link "bazarr" [ref=e168] [cursor=pointer]:
+                - /url: https://bazarr.antoineglacet.com
+                - img "logo" [ref=e169]
+              - link "Bazarr Subtitle management" [ref=e170] [cursor=pointer]:
+                - /url: https://bazarr.antoineglacet.com
+                - generic [ref=e171]:
+                  - text: Bazarr
+                  - paragraph [ref=e172]: Subtitle management
+      - generic [ref=e173]:
+        - button "infrastructure" [expanded] [ref=e174]:
+          - heading "infrastructure" [level=2] [ref=e175]
+          - img [ref=e176]
+        - list [ref=e180]:
+          - listitem [ref=e181]:
+            - generic [ref=e183]:
+              - link "adguard-home" [ref=e184] [cursor=pointer]:
+                - /url: https://adguard.antoineglacet.com
+                - img "logo" [ref=e185]
+              - link "AdGuard Home Network-wide DNS filtering" [ref=e186] [cursor=pointer]:
+                - /url: https://adguard.antoineglacet.com
+                - generic [ref=e187]:
+                  - text: AdGuard Home
+                  - paragraph [ref=e188]: Network-wide DNS filtering
+          - listitem [ref=e189]:
+            - generic [ref=e191]:
+              - link "authentik" [ref=e192] [cursor=pointer]:
+                - /url: https://authentik.antoineglacet.com
+                - img "logo" [ref=e193]
+              - link "Authentik Identity provider & SSO" [ref=e194] [cursor=pointer]:
+                - /url: https://authentik.antoineglacet.com
+                - generic [ref=e195]:
+                  - text: Authentik
+                  - paragraph [ref=e196]: Identity provider & SSO
+          - listitem [ref=e197]:
+            - generic [ref=e199]:
+              - link "traefik" [ref=e200] [cursor=pointer]:
+                - /url: https://traefik.antoineglacet.com
+                - img "logo" [ref=e201]
+              - link "Traefik Reverse proxy dashboard" [ref=e202] [cursor=pointer]:
+                - /url: https://traefik.antoineglacet.com
+                - generic [ref=e203]:
+                  - text: Traefik
+                  - paragraph [ref=e204]: Reverse proxy dashboard
+          - listitem [ref=e205]:
+            - generic [ref=e207]:
+              - link "grafana" [ref=e208] [cursor=pointer]:
+                - /url: https://grafana.antoineglacet.com
+                - img "logo" [ref=e209]
+              - link "Grafana Metrics dashboards" [ref=e210] [cursor=pointer]:
+                - /url: https://grafana.antoineglacet.com
+                - generic [ref=e211]:
+                  - text: Grafana
+                  - paragraph [ref=e212]: Metrics dashboards
+          - listitem [ref=e213]:
+            - generic [ref=e215]:
+              - link "syncthing" [ref=e216] [cursor=pointer]:
+                - /url: https://syncthing.antoineglacet.com
+                - img "logo" [ref=e217]
+              - link "Syncthing File synchronisation" [ref=e218] [cursor=pointer]:
+                - /url: https://syncthing.antoineglacet.com
+                - generic [ref=e219]:
+                  - text: Syncthing
+                  - paragraph [ref=e220]: File synchronisation
+          - listitem [ref=e221]:
+            - generic [ref=e223]:
+              - link "duplicati" [ref=e224] [cursor=pointer]:
+                - /url: https://duplicati.antoineglacet.com
+                - img "logo" [ref=e225]
+              - link "Duplicati Encrypted backups" [ref=e226] [cursor=pointer]:
+                - /url: https://duplicati.antoineglacet.com
+                - generic [ref=e227]:
+                  - text: Duplicati
+                  - paragraph [ref=e228]: Encrypted backups
+          - listitem [ref=e229]:
+            - generic [ref=e231]:
+              - link "glances" [ref=e232] [cursor=pointer]:
+                - /url: https://glances.antoineglacet.com
+                - img "logo" [ref=e233]
+              - link "Glances System monitoring" [ref=e234] [cursor=pointer]:
+                - /url: https://glances.antoineglacet.com
+                - generic [ref=e235]:
+                  - text: Glances
+                  - paragraph [ref=e236]: System monitoring
+      - generic [ref=e237]:
+        - button "LAN only" [expanded] [ref=e238]:
+          - heading "LAN only" [level=2] [ref=e239]
+          - img [ref=e240]
+        - list [ref=e244]:
+          - listitem [ref=e245]:
+            - generic [ref=e247]:
+              - link "wireguard" [ref=e248] [cursor=pointer]:
+                - /url: http://10.13.89.90:51821
+                - img "logo" [ref=e249]
+              - link "WireGuard (wg-easy) VPN admin & device QR codes (LAN/VPN only)" [ref=e250] [cursor=pointer]:
+                - /url: http://10.13.89.90:51821
+                - generic [ref=e251]:
+                  - text: WireGuard (wg-easy)
+                  - paragraph [ref=e252]: VPN admin & device QR codes (LAN/VPN only)
+          - listitem [ref=e253]:
+            - generic [ref=e255]:
+              - link "asus-router" [ref=e256] [cursor=pointer]:
+                - /url: http://10.13.1.1/
+                - img "logo" [ref=e257]
+              - link "Home Router Asus router admin (LAN only)" [ref=e258] [cursor=pointer]:
+                - /url: http://10.13.1.1/
+                - generic [ref=e259]:
+                  - text: Home Router
+                  - paragraph [ref=e260]: Asus router admin (LAN only)
+    - generic [ref=e261]:
+      - generic [ref=e262]:
+        - img [ref=e264] [cursor=pointer]
+        - generic [ref=e267]:
+          - img [ref=e268]
+          - img [ref=e271] [cursor=pointer]
+          - img [ref=e274]
+      - link "v1.13.0 (5bfe18b, May 9, 2026)" [ref=e280] [cursor=pointer]:
+        - /url: https://github.com/gethomepage/homepage/releases/tag/v1.13.0
+  - alert [ref=e281]

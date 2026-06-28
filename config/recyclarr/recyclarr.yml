@@ -1,39 +1,70 @@
-# Recyclarr configuration — TRaSH Guides as code.
-# Docs: https://recyclarr.dev   Templates: `recyclarr list templates`
+# yaml-language-server: $schema=https://schemas.recyclarr.dev/v8/config-schema.json
+# Recyclarr configuration — TRaSH Guides as code.   https://recyclarr.dev
 #
-# API keys are injected from .env (SONARR_API_KEY / RADARR_API_KEY) via !env_var,
-# so this file is safe to commit. base_url uses the compose service DNS names on
-# the `homelab` network.
+# Tuned for this server:
+#   * 1080p only, SQP "streaming" sizing -> small files (~2-4 GB movies) so the
+#     5.5 TB drive does not fill up. No 4K / Remux (those are the disk hogs).
+#   * Original language preferred (see NOTE below).
 #
-# After editing, force a sync without waiting for cron:
+# API keys come from .env via !env_var, so this file is safe to commit.
+# base_url uses the compose service DNS names on the `homelab` network.
+#
+# NOTE — "original language" is NOT something Recyclarr manages. Set it once in
+# the UI and Recyclarr will leave it alone (it persists across syncs):
+#   Radarr/Sonarr > Settings > Profiles > (profile) > Language = "Original"
+#
+# Force a sync now (instead of waiting for the daily cron):
 #   docker exec recyclarr recyclarr sync
 
-sonarr:
-  series:
-    base_url: http://sonarr:8989
-    api_key: !env_var SONARR_API_KEY
-    delete_old_custom_formats: true
-    replace_existing_custom_formats: true
-
-    include:
-      - template: sonarr-quality-definition-series
-      - template: sonarr-v4-quality-profile-web-1080p
-      - template: sonarr-v4-custom-formats-web-1080p
-
-    quality_profiles:
-      - name: WEB-1080p
-
 radarr:
-  movies:
+  movies-1080p-sqp:
     base_url: http://radarr:7878
     api_key: !env_var RADARR_API_KEY
-    delete_old_custom_formats: true
-    replace_existing_custom_formats: true
 
-    include:
-      - template: radarr-quality-definition-movie
-      - template: radarr-quality-profile-hd-bluray-web
-      - template: radarr-custom-formats-hd-bluray-web
+    # SQP streaming sizing keeps 1080p small. If movies still land above ~4 GB,
+    # lower preferred_ratio toward 0.0 (biases Radarr to smaller releases).
+    quality_definition:
+      type: sqp-streaming
+      preferred_ratio: 0.3
 
     quality_profiles:
-      - name: HD Bluray + WEB
+      - trash_id: 90a3370d2d30cbaf08d9c23b856a12c8  # [SQP] SQP-1 WEB (1080p)
+        reset_unmatched_scores:
+          enabled: true
+
+    custom_format_groups:
+      add:
+        - trash_id: 15b1cf0b6f1a1493856a4355907affee  # [Unwanted] Unwanted Formats SQP
+          select:
+            - b6832f586342ef70d9c128d40c07b872  # Bad Dual Groups
+            - cc444569854e9de0b084ab2b8b1532b2  # Black and White Editions
+            - e6886871085226c3da1830830146846c  # Generated Dynamic HDR
+            - bfd8eb01832d646a0a89c4deb46f8564  # Upscaled
+
+sonarr:
+  tv-1080p:
+    base_url: http://sonarr:8989
+    api_key: !env_var SONARR_API_KEY
+
+    quality_definition:
+      type: series
+
+    quality_profiles:
+      - trash_id: 72dae194fc92bf828f32cde7744e51a1  # WEB-1080p
+        reset_unmatched_scores:
+          enabled: true
+
+    custom_format_groups:
+      add:
+        - trash_id: 158188097a58d7687dee647e04af0da3  # [Optional] Golden Rule HD
+          select:
+            - 47435ece6b99a0b477caf360e79ba0bb  # x265 (HD)
+        - trash_id: 59c3af66780d08332fdc64e68297098f  # [Unwanted] Unwanted Formats
+          select:
+            - 15a05bc7c1a36e2b57fd628f8977e2fc  # AV1
+            - 32b367365729d530ca1c124a0b180c64  # Bad Dual Groups
+            - 85c61753df5da1fb2aab6f2a47426b09  # BR-DISK
+            - fbcb31d8dabd2a319072b84fc0b7249c  # Extras
+            - 9c11cd3f07101cdba90a2d81cf0e56b4  # LQ
+            - e2315f990da2e2cbfc9fa5b7a6fcfe48  # LQ (Release Title)
+            - 23297a736ca77c0fc8e70f8edd7ee56c  # Upscaled

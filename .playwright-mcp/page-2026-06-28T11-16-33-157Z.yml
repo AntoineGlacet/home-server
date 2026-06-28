@@ -1,0 +1,14 @@
+- generic [active] [ref=e1]:
+  - generic:
+    - region "Status messages"
+  - generic [ref=e10]:
+    - generic [ref=e11]:
+      - img "authentik Logo" [ref=e13]
+      - generic "Loading" [ref=e17]:
+        - progressbar [ref=e18]:
+          - progressbar [ref=e21]
+          - heading "Loading" [level=1] [ref=e25]:
+            - generic [ref=e26]: Loading
+    - list [ref=e28]:
+      - listitem [ref=e29]:
+        - generic [ref=e30]: Powered by authentik

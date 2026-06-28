@@ -707,6 +707,14 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - HOMEPAGE_ALLOWED_HOSTS=homepage.antoineglacet.com
+      # Service-widget API keys/tokens, referenced in services.yaml as
+      # {{HOMEPAGE_VAR_*}}. Values live in .env (never committed).
+      - HOMEPAGE_VAR_SONARR_API_KEY=${SONARR_API_KEY}
+      - HOMEPAGE_VAR_RADARR_API_KEY=${RADARR_API_KEY}
+      - HOMEPAGE_VAR_PROWLARR_API_KEY=${PROWLARR_API_KEY}
+      - HOMEPAGE_VAR_BAZARR_API_KEY=${BAZARR_API_KEY}
+      - HOMEPAGE_VAR_TAUTULLI_API_KEY=${TAUTULLI_API_KEY}
+      - HOMEPAGE_VAR_PLEX_TOKEN=${PLEX_TOKEN}
     networks:
       - homelab
       - homelab_proxy

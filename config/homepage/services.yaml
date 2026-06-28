@@ -16,6 +16,10 @@
         icon: plex
         href: https://plex.antoineglacet.com
         description: Stream your media library
+        widget:
+            type: plex
+            url: http://10.13.89.90:32400
+            key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
     - Calibre-Web:
         icon: calibre
         href: https://calibre-web.antoineglacet.com
@@ -31,22 +35,43 @@
         icon: sonarr
         href: https://sonarr.antoineglacet.com
         description: Manage TV library
+        widget:
+            type: sonarr
+            url: http://sonarr:8989
+            key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
     - Radarr:
         icon: radarr
         href: https://radarr.antoineglacet.com
         description: Manage movie library
+        widget:
+            type: radarr
+            url: http://radarr:7878
+            key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
     - Prowlarr:
         icon: prowlarr
         href: https://prowlarr.antoineglacet.com
         description: Indexer aggregator
+        widget:
+            type: prowlarr
+            # Prowlarr shares the nordlynx (VPN) network namespace
+            url: http://nordlynx:9696
+            key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
     - Bazarr:
         icon: bazarr
         href: https://bazarr.antoineglacet.com
         description: Subtitle management
+        widget:
+            type: bazarr
+            url: http://bazarr:6767
+            key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
     - Tautulli:
         icon: tautulli
         href: https://tautulli.antoineglacet.com
         description: Plex monitoring & stats
+        widget:
+            type: tautulli
+            url: http://tautulli:8181
+            key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
 
 - infrastructure:
     - AdGuard Home:

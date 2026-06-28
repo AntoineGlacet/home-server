@@ -21,6 +21,9 @@ __pycache__
 # test directory
 test
 
+# Playwright MCP scratch output (browser snapshots/screenshots/console logs)
+.playwright-mcp/
+
 # data directories
 */data
 /data

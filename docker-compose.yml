@@ -435,6 +435,33 @@ services:
       - "traefik.http.routers.bazarr.middlewares=authentik@docker"
       - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
 
+  # Recyclarr — syncs TRaSH-guide quality definitions & custom formats into
+  # Sonarr/Radarr as code. The image runs a built-in cron (default @daily).
+  # Config lives in config/recyclarr/recyclarr.yml (tracked in git); API keys
+  # come from .env via !env_var so no secrets land in the repo.
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:latest
+    container_name: recyclarr
+    user: ${PUID}:${PGID}
+    environment:
+      - TZ=${TZ}
+      - SONARR_API_KEY=${SONARR_API_KEY}
+      - RADARR_API_KEY=${RADARR_API_KEY}
+    volumes:
+      - ./config/recyclarr:/config
+    depends_on:
+      - sonarr
+      - radarr
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 32M
+    networks:
+      - homelab
+
   # ----------------------------
   # MEDIA SERVING & DISCOVERY
   # ----------------------------
@@ -453,6 +480,15 @@ services:
     volumes:
       - ./config/plex:/config
       - ${MEDIA}:/media
+    # Intel Quick Sync (HD 630) for hardware transcoding.
+    # NOTE: Plex only uses this with an active Plex Pass — the GPU stays idle
+    # until then. group_add gives the container access to the render node
+    # (GID 109 = `render` on the host; 44 = `video`).
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - "109"
+      - "44"
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -485,6 +521,37 @@ services:
   #     - "traefik.http.routers.overseerr.tls.certresolver=cloudflare"
   #     - "traefik.http.routers.overseerr.middlewares=authentik@docker"
   #     - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+
+  # Tautulli — Plex monitoring, history & transcode stats.
+  # Reaches Plex over the host LAN (Plex runs network_mode: host on :32400).
+  # On first run, point it at http://<server-LAN-IP>:32400.
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/tautulli:/config
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 64M
+    networks:
+      - homelab
+      - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.tautulli.rule=Host(`tautulli.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.tautulli.entrypoints=websecure"
+      - "traefik.http.routers.tautulli.tls.certresolver=cloudflare"
+      - "traefik.http.routers.tautulli.middlewares=authentik@docker"
+      - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
 
   # ----------------------------
   # BOOKS / LIBRARY

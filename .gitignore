@@ -107,6 +107,11 @@ config/appflowy/ssl/*
 !config/appflowy/nginx/nginx.conf
 config/zigbee2mqtt/configuration.yaml
 
+# Recyclarr — track the config-as-code YAML; ignore its runtime cache/repo clone
+!config/recyclarr/
+!config/recyclarr/*.yml
+!config/recyclarr/*.yaml
+
 # wg-easy: intentionally NOT allowlisted — it stores WireGuard private keys
 # and client configs under config/wg-easy/. Keep them untracked (covered by
 # the /config/** ignore above); only the .gitkeep is tracked to preserve the dir.

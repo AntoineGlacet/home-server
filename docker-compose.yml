@@ -302,8 +302,12 @@ services:
     depends_on:
       - nordlynx
     restart: unless-stopped
+    # Ping an IP, not a hostname: busybox ping's resolver fails against NordVPN's
+    # DNS ("bad address") even when the app resolves fine, causing a permanent
+    # autoheal restart loop. Pinging 1.1.1.1 still validates the VPN tunnel
+    # (the killswitch blocks it if the tunnel drops), without the DNS dependency.
     healthcheck:
-      test: [ "CMD", "ping", "-c", "1", "google.com" ]
+      test: [ "CMD", "ping", "-c", "1", "1.1.1.1" ]
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -325,8 +329,11 @@ services:
     depends_on:
       - nordlynx
     restart: unless-stopped
+    # See transmission above: ping an IP, not a hostname, to avoid busybox's
+    # DNS resolver failing against NordVPN's servers and triggering an autoheal
+    # restart loop. 1.1.1.1 still fails (as desired) if the VPN tunnel drops.
     healthcheck:
-      test: [ "CMD", "ping", "-c", "1", "google.com" ]
+      test: [ "CMD", "ping", "-c", "1", "1.1.1.1" ]
       interval: 1m30s
       timeout: 10s
       retries: 3

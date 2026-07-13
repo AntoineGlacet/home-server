@@ -14,6 +14,8 @@ datasources:
 
   - name: Loki
     type: loki
+    # Explicit uid — dashboards and provisioned alert rules reference "loki"
+    uid: loki
     access: proxy
     url: http://loki:3100
     editable: false

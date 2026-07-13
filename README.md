@@ -77,6 +77,7 @@ docker compose ps                 # Container status
 | **AdGuard** | https://adguard.antoineglacet.com | DNS & ad blocking |
 | **Home Assistant** | https://homeassistant.antoineglacet.com | Home automation |
 | **Plex** | https://plex.antoineglacet.com | Media server |
+| **Minabot** | — (see [minabot/README.md](minabot/README.md)) | Minagine auto clock-in/out bot |
 
 ## Architecture
 

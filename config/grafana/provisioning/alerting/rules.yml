@@ -1581,3 +1581,65 @@ groups:
         labels:
           severity: critical
           category: network
+
+  # ============================================================================
+  # MINABOT (Minagine auto clock-in/out)
+  # ============================================================================
+  - orgId: 1
+    name: minabot
+    folder: Services
+    interval: 5m
+    rules:
+      # The bot logs "check_if_working_day completed successfully" on every
+      # run (working day or not), twice a day. Runs reach container stdout →
+      # promtail → Loki. If nothing logged in 26h, the bot is broken
+      # (crashed cron, selenium missing, Minagine login failure, ...).
+      - uid: minabot-no-recent-run
+        title: Minabot has not completed a run in 26h
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 93600  # 26h
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: sum(count_over_time({container="minabot"} |= `check_if_working_day completed successfully` [26h]))
+              queryType: instant
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 93600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: classic_conditions
+        # No log lines at all (e.g. container gone) must also alert
+        noDataState: Alerting
+        execErrState: Error
+        for: 15m
+        annotations:
+          summary: "Minabot has not completed a run in 26h"
+          description: "No successful minagine working-day check logged in 26h. Check `docker logs minabot`, that minabot-selenium exists, and Minagine login."
+        labels:
+          severity: critical
+          category: automation

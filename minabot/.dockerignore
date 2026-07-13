@@ -1,0 +1,34 @@
+# Git files
+.git
+.gitignore
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+script/.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Notes and documentation
+notes
+README.md

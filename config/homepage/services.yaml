@@ -11,6 +11,10 @@
         icon: zigbee2mqtt
         href: https://zigbee2mqtt.antoineglacet.com
         description: Zigbee coordinator management
+    - Minabot:
+        icon: mdi-robot
+        href: https://grafana.antoineglacet.com/explore?schemaVersion=1&panes=%7B%22m%22%3A%7B%22datasource%22%3A%22loki%22%2C%22queries%22%3A%5B%7B%22expr%22%3A%22%7Bcontainer%3D%5C%22minabot%5C%22%7D%22%7D%5D%7D%7D
+        description: Minagine auto clock-in/out (logs in Grafana)
 - media:
     - Plex:
         icon: plex

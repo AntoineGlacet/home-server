@@ -1,0 +1,8 @@
+# Core dependencies
+selenium==4.15.2
+python-dotenv==1.0.0
+python-crontab==3.0.0
+lxml==4.9.3
+
+# Docker SDK for on-demand Selenium control
+docker==7.0.0

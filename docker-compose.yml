@@ -655,6 +655,79 @@ services:
       - "traefik.http.services.siyuan.loadbalancer.server.port=6806"
 
   # ----------------------------
+  # MINABOT — Minagine auto clock-in/out (see minabot/README.md)
+  # ----------------------------
+
+  # Headless Chrome for minabot. restart: "no" is intentional: minabot starts
+  # it via the docker socket ~5 min before each clock action and stops it
+  # after, so it uses no RAM most of the day. Every `compose up -d` (deploy +
+  # weekly update) recreates/starts it; the bot stops it again after its next
+  # run. NOTE: weekly-update.sh's `docker system prune -f` deletes stopped
+  # containers — that killed the old standalone setup. Here the weekly
+  # `up -d` runs before the prune, and minabot can also recreate the
+  # container itself from the mounted compose file.
+  minabot-selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: minabot-selenium
+    restart: "no"
+    environment:
+      - TZ=${TZ}
+      # Reduce memory usage
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_SESSION_TIMEOUT=300
+    shm_size: 512m
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:4444/wd/hub/status" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - homelab
+
+  minabot:
+    build: ./minabot
+    container_name: minabot
+    restart: unless-stopped
+    # Minagine credentials + schedule; untracked, lives only on the server
+    # (same convention as the root .env).
+    env_file:
+      - ./minabot/script/.env
+    volumes:
+      - ./minabot/script:/script
+      - ./data/minabot/logs:/logs
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      # Docker socket: start/stop minabot-selenium on demand
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Compose file + env so the bot can recreate minabot-selenium if it was
+      # removed (e.g. by docker system prune) — see minabot/README.md
+      - ./docker-compose.yml:/compose/docker-compose.yml:ro
+      - ./.env:/compose/.env:ro
+    tty: true
+    healthcheck:
+      # cron is the scheduler; if it dies the bot is dead → autoheal restarts
+      test: [ "CMD", "pgrep", "cron" ]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    command:
+      [
+        "sh",
+        "-c",
+        "logrotate /etc/logrotate.d/minabot && service cron start && $$PYTHON_PATH /script/cron.py && tail -f /dev/null"
+      ]
+    networks:
+      - homelab
+
+  # ----------------------------
   # UTILITIES
   # ----------------------------
 

@@ -722,7 +722,7 @@ services:
       [
         "sh",
         "-c",
-        "logrotate /etc/logrotate.d/minabot && service cron start && $$PYTHON_PATH /script/cron.py && tail -f /dev/null"
+        "(logrotate /etc/logrotate.d/minabot || echo 'logrotate failed (non-fatal)') && service cron start && $$PYTHON_PATH /script/cron.py && tail -f /dev/null"
       ]
     networks:
       - homelab

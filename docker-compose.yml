@@ -101,7 +101,7 @@ services:
       - homelab_proxy
 
   node_exporter:
-    image: quay.io/prometheus/node-exporter:v1.8.2
+    image: quay.io/prometheus/node-exporter:v1.12.1
     container_name: node_exporter
     command:
       - '--path.rootfs=/host'
@@ -112,7 +112,7 @@ services:
       - '/:/host:ro,rslave'
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.51.0
+    image: ghcr.io/cadvisor/cadvisor:v0.60.5
     container_name: cadvisor
     ports:
       - "8080:8080"
@@ -138,7 +138,7 @@ services:
       - homelab
 
   blackbox-exporter:
-    image: prom/blackbox-exporter:v0.25.0
+    image: prom/blackbox-exporter:v0.28.0
     container_name: blackbox-exporter
     command:
       - '--config.file=/config/blackbox.yml'

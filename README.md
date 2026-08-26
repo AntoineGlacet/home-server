@@ -7,7 +7,8 @@
 **Dell OptiPlex 3050**
 - CPU: Intel Core i5-7500T (4 cores @ 2.70GHz)
 - RAM: 8GB DDR4
-- Storage: 98GB system drive + 5.5TB data drive
+- Storage: 238GB Micron SATA SSD (160GB root LV, ~75GB free in the VG)
+  + 5.5TB Toshiba HDD at `/media/data`
 - OS: Ubuntu 24.04.4 LTS (noble), supported to May 2029
 
 ## Quick Start

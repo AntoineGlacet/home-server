@@ -168,7 +168,7 @@ services:
 
   grafana:
     logging: *default-logging
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:13.1.4
     container_name: grafana
     user: "1000"
     environment:

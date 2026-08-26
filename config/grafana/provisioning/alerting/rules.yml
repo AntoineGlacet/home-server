@@ -102,7 +102,7 @@ groups:
         for: 5m
         annotations:
           summary: "High swap I/O activity detected"
-          description: "Swap I/O rate is {{ $values.C0.Value | humanize }} pages/sec. System may be thrashing. Check memory usage and swappiness settings."
+          description: "Swap I/O rate is {{ with $values.C0 }}{{ with .Value }}{{ . | humanize }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} pages/sec. System may be thrashing. Check memory usage and swappiness settings."
         labels:
           severity: warning
           category: system
@@ -151,7 +151,7 @@ groups:
         for: 2m
         annotations:
           summary: "CRITICAL: System is swap thrashing"
-          description: "Severe swap thrashing ({{ $values.C0.Value | humanize }} pages/sec). System is likely unresponsive. Immediate action needed - add RAM or reduce containers."
+          description: "Severe swap thrashing ({{ with $values.C0 }}{{ with .Value }}{{ . | humanize }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} pages/sec). System is likely unresponsive. Immediate action needed - add RAM or reduce containers."
         labels:
           severity: critical
           category: system
@@ -203,7 +203,7 @@ groups:
         for: 5m
         annotations:
           summary: "Low free memory with high inactive pages"
-          description: "Available memory is low but there are {{ $values.C0.Value | humanize1024 }}B of inactive pages. Consider increasing vm.swappiness to proactively swap out inactive memory."
+          description: "Available memory is low but there are {{ with $values.C0 }}{{ with .Value }}{{ . | humanize1024 }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }}B of inactive pages. Consider increasing vm.swappiness to proactively swap out inactive memory."
         labels:
           severity: warning
           category: system
@@ -252,7 +252,7 @@ groups:
         for: 3m
         annotations:
           summary: "Sustained high I/O wait"
-          description: "CPU spending {{ $values.C0.Value | humanizePercentage }} time in I/O wait for 3+ minutes. May indicate swap thrashing or slow disk."
+          description: "CPU spending {{ with $values.C0 }}{{ with .Value }}{{ . | humanizePercentage }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} time in I/O wait for 3+ minutes. May indicate swap thrashing or slow disk."
         labels:
           severity: warning
           category: system
@@ -361,7 +361,7 @@ groups:
         for: 5m
         annotations:
           summary: "High memory usage on {{ $labels.instance }}"
-          description: "Memory usage is above 6GB ({{ $values.C0.Value | humanize1024 }}B used)"
+          description: "Memory usage is above 6GB ({{ with $values.C0 }}{{ with .Value }}{{ . | humanize1024 }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }}B used)"
         labels:
           severity: warning
           category: system
@@ -410,7 +410,7 @@ groups:
         for: 1m
         annotations:
           summary: "Critical memory shortage on {{ $labels.instance }}"
-          description: "Less than 512MB RAM available ({{ $values.C0.Value | humanize1024 }}B free). System may start OOM killing processes."
+          description: "Less than 512MB RAM available ({{ with $values.C0 }}{{ with .Value }}{{ . | humanize1024 }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }}B free). System may start OOM killing processes."
         labels:
           severity: critical
           category: system
@@ -459,7 +459,7 @@ groups:
         for: 10m
         annotations:
           summary: "High swap usage on {{ $labels.instance }}"
-          description: "Swap usage is above 2GB ({{ $values.C0.Value | humanize1024 }}B used). Note: With swappiness=60, this is normal. Check swap I/O rate instead."
+          description: "Swap usage is above 2GB ({{ with $values.C0 }}{{ with .Value }}{{ . | humanize1024 }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }}B used). Note: With swappiness=60, this is normal. Check swap I/O rate instead."
         labels:
           severity: warning
           category: system
@@ -516,7 +516,7 @@ groups:
         for: 5m
         annotations:
           summary: "Root filesystem running low on space"
-          description: "Root filesystem has less than 20% free space ({{ $values.C0.Value | humanizePercentage }} available)"
+          description: "Root filesystem has less than 20% free space ({{ with $values.C0 }}{{ with .Value }}{{ . | humanizePercentage }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} available)"
         labels:
           severity: warning
           category: disk
@@ -565,7 +565,7 @@ groups:
         for: 2m
         annotations:
           summary: "Root filesystem critically low on space"
-          description: "Root filesystem has less than 10% free space ({{ $values.C0.Value | humanizePercentage }} available). Immediate action required!"
+          description: "Root filesystem has less than 10% free space ({{ with $values.C0 }}{{ with .Value }}{{ . | humanizePercentage }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} available). Immediate action required!"
         labels:
           severity: critical
           category: disk
@@ -614,7 +614,7 @@ groups:
         for: 5m
         annotations:
           summary: "Data drive running low on space"
-          description: "Data drive (/media/data) has less than 15% free space ({{ $values.C0.Value | humanizePercentage }} available)"
+          description: "Data drive (/media/data) has less than 15% free space ({{ with $values.C0 }}{{ with .Value }}{{ . | humanizePercentage }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} available)"
         labels:
           severity: warning
           category: disk
@@ -818,7 +818,7 @@ groups:
         for: 10m
         annotations:
           summary: "Container {{ $labels.name }} using excessive CPU"
-          description: "Container {{ $labels.name }} is using more than 3 CPU cores ({{ $values.C0.Value | humanize }} cores)"
+          description: "Container {{ $labels.name }} is using more than 3 CPU cores ({{ with $values.C0 }}{{ with .Value }}{{ . | humanize }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} cores)"
         labels:
           severity: warning
           category: container
@@ -867,7 +867,7 @@ groups:
         for: 10m
         annotations:
           summary: "Container {{ $labels.name }} using excessive memory"
-          description: "Container {{ $labels.name }} is using more than 1GB RAM ({{ $values.C0.Value | humanize1024 }}B)"
+          description: "Container {{ $labels.name }} is using more than 1GB RAM ({{ with $values.C0 }}{{ with .Value }}{{ . | humanize1024 }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }}B)"
         labels:
           severity: warning
           category: container
@@ -924,7 +924,7 @@ groups:
         for: 10m
         annotations:
           summary: "High system load on {{ $labels.instance }}"
-          description: "15-minute load average is at {{ $values.C0.Value | humanizePercentage }} of CPU capacity"
+          description: "15-minute load average is at {{ with $values.C0 }}{{ with .Value }}{{ . | humanizePercentage }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} of CPU capacity"
         labels:
           severity: warning
           category: system
@@ -1022,7 +1022,7 @@ groups:
         for: 5m
         annotations:
           summary: "High disk I/O wait time"
-          description: "CPU is spending {{ $values.C0.Value | humanizePercentage }} time waiting for disk I/O. May indicate swap thrashing or slow disk."
+          description: "CPU is spending {{ with $values.C0 }}{{ with .Value }}{{ . | humanizePercentage }}{{ else }}n/a{{ end }}{{ else }}n/a{{ end }} time waiting for disk I/O. May indicate swap thrashing or slow disk."
         labels:
           severity: warning
           category: system

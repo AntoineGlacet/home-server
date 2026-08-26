@@ -8,7 +8,7 @@
 - CPU: Intel Core i5-7500T (4 cores @ 2.70GHz)
 - RAM: 8GB DDR4
 - Storage: 98GB system drive + 5.5TB data drive
-- OS: Ubuntu 24.04.3 LTS
+- OS: Ubuntu 24.04.4 LTS (noble), supported to May 2029
 
 ## Quick Start
 

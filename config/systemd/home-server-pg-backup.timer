@@ -1,0 +1,14 @@
+[Unit]
+Description=Daily PostgreSQL dump for the home-server stack
+
+[Timer]
+# 03:30 local, after the nightly media/indexer churn has settled.
+OnCalendar=*-*-* 03:30:00
+# Catch up if the box was off at 03:30 -- an unattended backup that silently
+# skips a missed window is how this went 2.7 years without running.
+Persistent=true
+RandomizedDelaySec=300
+Unit=home-server-pg-backup.service
+
+[Install]
+WantedBy=timers.target

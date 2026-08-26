@@ -67,6 +67,11 @@ config/portainer/backups/
 !config/promtail/**/*.yaml
 !config/promtail/**/*.yml
 
+# systemd units installed by scripts/root-maintenance.sh
+!config/systemd/
+!config/systemd/*.service
+!config/systemd/*.timer
+
 # Grafana - dashboards and provisioning
 !config/grafana/
 !config/grafana/**/

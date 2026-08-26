@@ -1,0 +1,15 @@
+[Unit]
+Description=Dump all home-server PostgreSQL databases
+Documentation=https://github.com/antoineglacet/home-server
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=antoine
+Group=antoine
+WorkingDirectory=/home/antoine/home-server
+ExecStart=/home/antoine/home-server/scripts/backup-postgres.sh
+# The script only shells out to docker; it needs no privileges of its own.
+NoNewPrivileges=true
+PrivateTmp=true

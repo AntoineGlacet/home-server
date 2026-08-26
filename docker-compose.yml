@@ -310,7 +310,7 @@ services:
 
   transmission:
     logging: *default-logging
-    image: lscr.io/linuxserver/transmission:latest
+    image: lscr.io/linuxserver/transmission:4.1.3-r0-ls354
     container_name: transmission
     environment:
       - PUID=${PUID}
@@ -339,7 +339,7 @@ services:
 
   prowlarr:
     logging: *default-logging
-    image: lscr.io/linuxserver/prowlarr:latest
+    image: lscr.io/linuxserver/prowlarr:2.4.0.5397-ls154
     container_name: prowlarr
     environment:
       - PUID=${PUID}
@@ -366,7 +366,7 @@ services:
 
   sonarr:
     logging: *default-logging
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr:4.0.19.2979-ls320
     container_name: sonarr
     environment:
       - PUID=${PUID}
@@ -402,7 +402,7 @@ services:
 
   radarr:
     logging: *default-logging
-    image: lscr.io/linuxserver/radarr:latest
+    image: lscr.io/linuxserver/radarr:6.3.0.10514-ls312
     container_name: radarr
     hostname: radarr
     environment:
@@ -439,7 +439,7 @@ services:
 
   bazarr:
     logging: *default-logging
-    image: lscr.io/linuxserver/bazarr:latest
+    image: lscr.io/linuxserver/bazarr:v1.6.0-ls355
     container_name: bazarr
     environment:
       - PUID=${PUID}
@@ -476,7 +476,7 @@ services:
   # come from .env via !env_var so no secrets land in the repo.
   recyclarr:
     logging: *default-logging
-    image: ghcr.io/recyclarr/recyclarr:latest
+    image: ghcr.io/recyclarr/recyclarr:8.3.2
     container_name: recyclarr
     user: ${PUID}:${PGID}
     environment:
@@ -504,7 +504,7 @@ services:
 
   plex:
     logging: *default-logging
-    image: lscr.io/linuxserver/plex:latest
+    image: lscr.io/linuxserver/plex:1.43.3.10828-00f62d37d-ls315
     container_name: plex
     network_mode: host # best for DLNA, HW accel, discovery
     environment:
@@ -564,7 +564,7 @@ services:
   # On first run, point it at http://<server-LAN-IP>:32400.
   tautulli:
     logging: *default-logging
-    image: lscr.io/linuxserver/tautulli:latest
+    image: lscr.io/linuxserver/tautulli:v2.17.2-ls237
     container_name: tautulli
     environment:
       - PUID=${PUID}
@@ -597,7 +597,7 @@ services:
 
   calibre-web-automated:
     logging: *default-logging
-    image: crocodilestick/calibre-web-automated:latest
+    image: crocodilestick/calibre-web-automated@sha256:c31a738b6d5ec6982c050063dd3f063b6943eb1051fc81144789f840d9093a8d
     container_name: calibre-web-automated
     environment:
       - PUID=${PUID}
@@ -626,7 +626,7 @@ services:
 
   syncthing:
     logging: *default-logging
-    image: syncthing/syncthing:latest
+    image: syncthing/syncthing:2.1.2
     container_name: syncthing
     restart: unless-stopped
     environment:
@@ -702,7 +702,7 @@ services:
   # container itself from the mounted compose file.
   minabot-selenium:
     logging: *default-logging
-    image: selenium/standalone-chrome:latest
+    image: selenium/standalone-chrome@sha256:9569014786466376d3e5cf8a7758562368cd9637f783dcd3abdb2eaf3a0d5cd7
     container_name: minabot-selenium
     restart: "no"
     environment:
@@ -792,7 +792,7 @@ services:
   flaresolverr:
     logging: *default-logging
     # DockerHub mirror flaresolverr/flaresolverr:latest
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:v3.5.0
     container_name: flaresolverr
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
@@ -818,7 +818,7 @@ services:
     logging: *default-logging
     container_name: homepage
     restart: unless-stopped
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.io/gethomepage/homepage:v1.13.2
     volumes:
       - ./config/homepage:/app/config
     environment:
@@ -851,7 +851,7 @@ services:
   # refresh dynamic IP to cloudflare DNS
   ddclient:
     logging: *default-logging
-    image: lscr.io/linuxserver/ddclient:latest
+    image: lscr.io/linuxserver/ddclient:v4.0.0-ls228
     container_name: ddclient
     environment:
       - PUID=${PUID}
@@ -871,7 +871,7 @@ services:
   samba:
     logging: *default-logging
     container_name: samba
-    image: dperson/samba:latest
+    image: dperson/samba@sha256:66088b78a19810dd1457a8f39340e95e663c728083efa5fe7dc0d40b2478e869
     volumes:
       - ${DATA}:/data
     environment:
@@ -990,7 +990,7 @@ services:
   # ----------------------------
   duplicati:
     logging: *default-logging
-    image: lscr.io/linuxserver/duplicati:latest
+    image: lscr.io/linuxserver/duplicati:v2.3.0.4_stable_2026-07-09-ls301
     container_name: duplicati
     environment:
       - PUID=${PUID}
@@ -1200,7 +1200,7 @@ services:
   # Restart containers based on health
   autoheal:
     logging: *default-logging
-    image: willfarrell/autoheal:latest
+    image: willfarrell/autoheal@sha256:234413eaa9a585978f6cb2d35f0dcdeb70fc4dadbaa3d7230197dd17e97125fb
     container_name: autoheal
     environment:
       - AUTOHEAL_CONTAINER_LABEL=all

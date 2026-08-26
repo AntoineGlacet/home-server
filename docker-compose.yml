@@ -8,12 +8,24 @@ networks:
     name: homelab_proxy
     driver: bridge
 
+# ----------------------------
+# SHARED DEFAULTS
+# ----------------------------
+# Cap every container's json-file log. Without this Docker keeps container logs
+# forever: loki alone reached 21 GiB and took the root filesystem to 95%.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   # ----------------------------
   # CORE SMART-HOME STACK
   # ----------------------------
 
   home-assistant:
+    logging: *default-logging
     image: homeassistant/home-assistant:2026.4
     container_name: home-assistant
     user: "1000:1000"
@@ -32,6 +44,7 @@ services:
       - "traefik.http.services.homeassistant.loadbalancer.server.url=http://host.docker.internal:8123"
 
   mqtt:
+    logging: *default-logging
     image: eclipse-mosquitto:2.0.21
     container_name: mqtt
     restart: unless-stopped
@@ -45,6 +58,7 @@ services:
       - homelab
 
   zigbee2mqtt:
+    logging: *default-logging
     image: koenkk/zigbee2mqtt:1.42.0
     container_name: zigbee2mqtt
     restart: unless-stopped
@@ -77,6 +91,7 @@ services:
   # ----------------------------
 
   prometheus:
+    logging: *default-logging
     image: prom/prometheus:v2.55.1
     container_name: prometheus
     user: "1000"
@@ -101,6 +116,7 @@ services:
       - homelab_proxy
 
   node_exporter:
+    logging: *default-logging
     image: quay.io/prometheus/node-exporter:v1.12.1
     container_name: node_exporter
     command:
@@ -112,6 +128,7 @@ services:
       - '/:/host:ro,rslave'
 
   cadvisor:
+    logging: *default-logging
     image: ghcr.io/google/cadvisor:v0.60.5
     container_name: cadvisor
     ports:
@@ -138,6 +155,7 @@ services:
       - homelab
 
   blackbox-exporter:
+    logging: *default-logging
     image: prom/blackbox-exporter:v0.28.0
     container_name: blackbox-exporter
     command:
@@ -149,6 +167,7 @@ services:
       - homelab
 
   grafana:
+    logging: *default-logging
     image: grafana/grafana:11.4.0
     container_name: grafana
     user: "1000"
@@ -194,6 +213,7 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   loki:
+    logging: *default-logging
     image: grafana/loki:2.9.4
     container_name: loki
     command: -config.file=/etc/loki/local-config.yaml
@@ -206,6 +226,7 @@ services:
       - homelab
 
   promtail:
+    logging: *default-logging
     image: grafana/promtail:2.9.4
     container_name: promtail
     command: -config.file=/etc/promtail/config.yaml
@@ -221,6 +242,7 @@ services:
       - homelab
 
   glances:
+    logging: *default-logging
     image: nicolargo/glances:4.3.0-full
     container_name: glances
     restart: unless-stopped
@@ -249,6 +271,7 @@ services:
   # ----------------------------
 
   nordlynx:
+    logging: *default-logging
     image: ghcr.io/bubuntux/nordlynx@sha256:2e1444bec3f67820e04e2755a5eb9d51f2d52453aff577e8a0b52f6cbeb364f3  # pinned (no semver tags upstream)
     container_name: nordlynx
     cap_add:
@@ -286,6 +309,7 @@ services:
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
 
   transmission:
+    logging: *default-logging
     image: lscr.io/linuxserver/transmission:latest
     container_name: transmission
     environment:
@@ -314,6 +338,7 @@ services:
       start_period: 10s
 
   prowlarr:
+    logging: *default-logging
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
@@ -340,6 +365,7 @@ services:
       start_period: 10s
 
   sonarr:
+    logging: *default-logging
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
@@ -375,6 +401,7 @@ services:
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
 
   radarr:
+    logging: *default-logging
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     hostname: radarr
@@ -411,6 +438,7 @@ services:
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
 
   bazarr:
+    logging: *default-logging
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
     environment:
@@ -447,6 +475,7 @@ services:
   # Config lives in config/recyclarr/recyclarr.yml (tracked in git); API keys
   # come from .env via !env_var so no secrets land in the repo.
   recyclarr:
+    logging: *default-logging
     image: ghcr.io/recyclarr/recyclarr:latest
     container_name: recyclarr
     user: ${PUID}:${PGID}
@@ -474,6 +503,7 @@ services:
   # ----------------------------
 
   plex:
+    logging: *default-logging
     image: lscr.io/linuxserver/plex:latest
     container_name: plex
     network_mode: host # best for DLNA, HW accel, discovery
@@ -533,6 +563,7 @@ services:
   # Reaches Plex over the host LAN (Plex runs network_mode: host on :32400).
   # On first run, point it at http://<server-LAN-IP>:32400.
   tautulli:
+    logging: *default-logging
     image: lscr.io/linuxserver/tautulli:latest
     container_name: tautulli
     environment:
@@ -565,6 +596,7 @@ services:
   # ----------------------------
 
   calibre-web-automated:
+    logging: *default-logging
     image: crocodilestick/calibre-web-automated:latest
     container_name: calibre-web-automated
     environment:
@@ -593,6 +625,7 @@ services:
   # ----------------------------
 
   syncthing:
+    logging: *default-logging
     image: syncthing/syncthing:latest
     container_name: syncthing
     restart: unless-stopped
@@ -625,6 +658,7 @@ services:
   # ----------------------------
 
   siyuan:
+    logging: *default-logging
     image: b3log/siyuan:v3.1.17
     container_name: siyuan
     command:
@@ -667,6 +701,7 @@ services:
   # `up -d` runs before the prune, and minabot can also recreate the
   # container itself from the mounted compose file.
   minabot-selenium:
+    logging: *default-logging
     image: selenium/standalone-chrome:latest
     container_name: minabot-selenium
     restart: "no"
@@ -689,6 +724,7 @@ services:
       - homelab
 
   minabot:
+    logging: *default-logging
     build: ./minabot
     container_name: minabot
     restart: unless-stopped
@@ -732,6 +768,7 @@ services:
   # ----------------------------
 
   postgres:
+    logging: *default-logging
     restart: unless-stopped
     image: pgvector/pgvector:pg16
     environment:
@@ -753,6 +790,7 @@ services:
       - "autoheal=true"
 
   flaresolverr:
+    logging: *default-logging
     # DockerHub mirror flaresolverr/flaresolverr:latest
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
@@ -777,6 +815,7 @@ services:
       - homelab_proxy
     # portal to access all other web UI
   homepage:
+    logging: *default-logging
     container_name: homepage
     restart: unless-stopped
     image: ghcr.io/gethomepage/homepage:latest
@@ -811,6 +850,7 @@ services:
 
   # refresh dynamic IP to cloudflare DNS
   ddclient:
+    logging: *default-logging
     image: lscr.io/linuxserver/ddclient:latest
     container_name: ddclient
     environment:
@@ -829,6 +869,7 @@ services:
 
   # SMB file sharing for Windows clients
   samba:
+    logging: *default-logging
     container_name: samba
     image: dperson/samba:latest
     volumes:
@@ -853,6 +894,7 @@ services:
 
   # Ad-blocking DNS server
   adguard:
+    logging: *default-logging
     container_name: adguard
     image: adguard/adguardhome:v0.107.74
     volumes:
@@ -893,6 +935,7 @@ services:
   # (51820) is meant to be forwarded on the router. VPN clients use AdGuard
   # for DNS and can reach the whole LAN via the host (ip_forward + masquerade).
   wg-easy:
+    logging: *default-logging
     image: ghcr.io/wg-easy/wg-easy:14
     container_name: wg-easy
     environment:
@@ -925,6 +968,7 @@ services:
   # forwarded to the PC's NIC even while it's powered off. Runs in the host net
   # namespace; no Traefik, no published ports.
   wol-arp:
+    logging: *default-logging
     image: alpine:3.20
     container_name: wol-arp
     network_mode: host
@@ -945,6 +989,7 @@ services:
   # BACKUP & RECOVERY
   # ----------------------------
   duplicati:
+    logging: *default-logging
     image: lscr.io/linuxserver/duplicati:latest
     container_name: duplicati
     environment:
@@ -973,6 +1018,7 @@ services:
   # ----------------------------
 
   authentik-redis:
+    logging: *default-logging
     image: redis:7.4.9-alpine
     container_name: authentik-redis
     command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning", "--requirepass", "${AUTHENTIK_REDIS__PASSWORD}" ]
@@ -983,6 +1029,7 @@ services:
       - homelab
 
   authentik-server:
+    logging: *default-logging
     image: ghcr.io/goauthentik/server:2025.8.3
     container_name: authentik-server
     command: server
@@ -1031,6 +1078,7 @@ services:
       - "traefik.http.middlewares.authentik.forwardauth.authResponseHeaders=authorization,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version"
 
   authentik-worker:
+    logging: *default-logging
     image: ghcr.io/goauthentik/server:2025.8.3
     container_name: authentik-worker
     command: worker
@@ -1059,6 +1107,7 @@ services:
 
   # Reverse proxy, dashboard & certificates
   traefik:
+    logging: *default-logging
     image: traefik:v3.7.0
     container_name: traefik
     restart: unless-stopped
@@ -1130,6 +1179,7 @@ services:
       - "traefik.http.middlewares.rate-limit.ratelimit.period=1s"
 
   traefik-certs-dumper:
+    logging: *default-logging
     image: ldez/traefik-certs-dumper:v2.9.1
     container_name: traefik-certs-dumper
     command:
@@ -1149,6 +1199,7 @@ services:
 
   # Restart containers based on health
   autoheal:
+    logging: *default-logging
     image: willfarrell/autoheal:latest
     container_name: autoheal
     environment:

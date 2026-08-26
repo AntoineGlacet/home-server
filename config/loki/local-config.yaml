@@ -3,6 +3,10 @@ auth_enabled: false
 server:
   http_listen_port: 3100
   grpc_listen_port: 9096
+  # Loki's own stdout is scraped by promtail and pushed back into Loki. At info
+  # level the boltdb-shipper handover chatter alone wrote ~1.6 GB/day (21 GiB
+  # accumulated, taking / to 95%). warn keeps errors visible without the flood.
+  log_level: warn
 
 common:
   instance_addr: 127.0.0.1
@@ -33,6 +37,28 @@ storage_config:
     active_index_directory: /loki/index
     cache_location: /loki/boltdb-cache
     shared_store: filesystem
+
+# Without a retention policy Loki kept every 24h index table back to 2023-01-01
+# (~1300 of them) and re-announced all of them on every handover cycle. The
+# compactor enforces retention and collapses that backlog.
+limits_config:
+  retention_period: 336h # 14 days
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+  ingestion_rate_mb: 8
+  ingestion_burst_size_mb: 16
+  per_stream_rate_limit: 3MB
+  per_stream_rate_limit_burst: 10MB
+  max_streams_per_user: 5000
+  max_query_series: 5000
+
+compactor:
+  working_directory: /loki/compactor
+  shared_store: filesystem
+  compaction_interval: 10m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 50
 
 ruler:
   storage:

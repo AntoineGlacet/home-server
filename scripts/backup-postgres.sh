@@ -14,14 +14,35 @@ NC='\033[0m' # No Color
 # Configuration
 BACKUP_DIR="${BACKUP_DIR:-./data/postgres-backups}"
 RETENTION_DAYS=7
-CONTAINER_NAME="postgres"
 POSTGRES_USER="${POSTGRES_SUPERUSER:-postgres}"
 
-# Databases to back up
-DATABASES=(
-  "authentik"
-  "postgres"  # System database
-)
+# The postgres service has no container_name:, so compose names it
+# <project>-postgres-1. Resolve it by label instead of hardcoding a name --
+# hardcoding "postgres" is why this script exited 1 on every invocation.
+CONTAINER_NAME="${POSTGRES_CONTAINER:-$(
+  docker ps --filter 'label=com.docker.compose.service=postgres' \
+            --format '{{.Names}}' | head -1
+)}"
+
+# Databases are discovered at run time rather than hardcoded: the previous
+# static list silently omitted appflowy. Override with POSTGRES_DATABASES
+# ("db1 db2") if you need a narrower set.
+discover_databases() {
+  if [[ -n "${POSTGRES_DATABASES:-}" ]]; then
+    read -r -a DATABASES <<<"${POSTGRES_DATABASES}"
+    return
+  fi
+  mapfile -t DATABASES < <(
+    docker exec "${CONTAINER_NAME}" psql -U "${POSTGRES_USER}" -tAc \
+      "select datname from pg_database where not datistemplate and datallowconn order by 1"
+  )
+  if (( ${#DATABASES[@]} == 0 )); then
+    log_error "Discovered no databases -- refusing to report a successful backup"
+    exit 1
+  fi
+  log_info "Discovered ${#DATABASES[@]} database(s): ${DATABASES[*]}"
+}
+DATABASES=()
 
 log_info() {
   echo -e "${BLUE}[INFO]${NC} $*"
@@ -49,11 +70,35 @@ create_backup_dir() {
 
 # Check if Docker container is running
 check_container() {
+  if [[ -z "${CONTAINER_NAME}" ]]; then
+    log_error "Could not find a running container for compose service 'postgres'"
+    exit 1
+  fi
   if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     log_error "PostgreSQL container '${CONTAINER_NAME}' is not running"
     exit 1
   fi
-  log_success "PostgreSQL container is running"
+  log_success "PostgreSQL container is running (${CONTAINER_NAME})"
+}
+
+# Roles and grants live outside any single database. --no-owner/--no-acl below
+# strips them from the per-database dumps, so without this a restore comes back
+# with no users.
+backup_globals() {
+  local timestamp backup_file
+  timestamp=$(date +%Y%m%d_%H%M%S)
+  backup_file="${BACKUP_DIR}/globals_${timestamp}.sql.gz"
+
+  log_info "Backing up globals (roles, grants)"
+  if docker exec "${CONTAINER_NAME}" pg_dumpall \
+    -U "${POSTGRES_USER}" --globals-only 2>/dev/null | gzip >"${backup_file}" \
+    && [[ -s "${backup_file}" ]]; then
+    log_success "Globals written: ${backup_file} ($(du -h "${backup_file}" | cut -f1))"
+  else
+    log_error "Failed to back up globals"
+    rm -f "${backup_file}"
+    return 1
+  fi
 }
 
 # Backup a single database
@@ -182,10 +227,14 @@ main() {
   
   check_container
   echo ""
-  
+
   create_backup_dir
   echo ""
-  
+
+  discover_databases
+  backup_globals || log_warning "Continuing without a globals dump"
+  echo ""
+
   backup_all_databases
   echo ""
   
@@ -214,7 +263,7 @@ To restore a database from backup:
 
   2. Restore the database:
      gunzip -c data/postgres-backups/authentik_YYYYMMDD_HHMMSS.sql.gz | \
-       docker exec -i postgres psql -U postgres -d authentik
+       docker exec -i "$(docker ps --filter label=com.docker.compose.service=postgres --format '{{.Names}}' | head -1)" psql -U postgres -d authentik
 
   3. Restart services:
      docker compose start authentik-server authentik-worker
@@ -227,7 +276,7 @@ Full restoration example:
   # Restore specific backup
   docker compose stop authentik-server authentik-worker
   gunzip -c data/postgres-backups/authentik_20260116_120000.sql.gz | \
-    docker exec -i postgres psql -U postgres -d authentik
+    docker exec -i "$(docker ps --filter label=com.docker.compose.service=postgres --format '{{.Names}}' | head -1)" psql -U postgres -d authentik
   docker compose start authentik-server authentik-worker
 
   # Verify services are healthy

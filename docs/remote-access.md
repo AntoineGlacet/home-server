@@ -143,12 +143,32 @@ domain) and a powered-off PC has no ARP entry. The `wol-arp` service (in
 the PC on the host's `enp1s0`:
 
 ```
-ip neigh replace 10.13.89.126 lladdr 6c:02:e0:40:24:51 nud permanent dev enp1s0
+arp -i "$WOL_IFACE" -s "$WOL_IP" "$WOL_MAC"      # busybox built-in, no packages needed
 ```
 
 So Moonlight's unicast magic packet (routed over the tunnel → wg-easy → host) is forwarded
-onto the LAN to the PC's MAC even while it sleeps. If the PC's IP or MAC changes, update
-the `wol-arp` command and keep a static DHCP reservation.
+onto the LAN to the PC's MAC even while it sleeps. The IP, MAC and interface come from
+`WOL_IP` / `WOL_MAC` / `WOL_IFACE` in `.env` (defaults in `docker-compose.yml`). **If the
+PC's IP or MAC changes, update those and keep a static DHCP reservation** — the entry is a
+fixed IP↔MAC mapping, so a new DHCP lease silently breaks waking.
+
+> **Regression 2026-08-26 → 2026-09-19 (fixed).** This helper used to `apk add iproute2`
+> with the output sent to `/dev/null`, then call `ip neigh replace`. On boot the container
+> starts before AdGuard — this box's own DNS — is answering, so the install failed silently
+> and the loop fell back to busybox's `ip`, which has no `neigh replace` subcommand. No ARP
+> entry was ever created and Wake-on-LAN was dead for three weeks, with nothing in the logs
+> but `ip: invalid argument 'replace' to 'ip'`. It now uses busybox's own `arp -s`, which
+> needs no package, no DNS and no network, and it logs failures instead of hiding them.
+
+### Checking it
+
+```
+docker logs --tail 5 wol-arp                 # should be silent; any line here is a failure
+ip neigh show 10.13.89.126                   # must show "lladdr <MAC> PERMANENT"
+```
+
+If the entry says `FAILED` or has no `lladdr`, the magic packet has nowhere to go and
+Moonlight's **Wake** button will appear to do nothing.
 
 **PC-side prerequisites (one-time, on the Windows gaming PC):**
 - BIOS/UEFI: enable **Wake-on-LAN** / "Power On by PCIe/PCI".

@@ -975,13 +975,35 @@ services:
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+    environment:
+      # Must match the gaming PC's DHCP reservation. If either changes, the
+      # entry points at nothing and Wake-on-LAN silently stops working.
+      - WOL_IP=${WOL_IP:-10.13.89.126}
+      - WOL_MAC=${WOL_MAC:-6c:02:e0:40:24:51}
+      - WOL_IFACE=${WOL_IFACE:-enp1s0}
     command:
       - sh
       - -c
       - |
-        apk add --no-cache iproute2 >/dev/null 2>&1
+        # Keeps a permanent ARP entry for the gaming PC so Moonlight's unicast
+        # magic packet still has a MAC to go to once the PC is off and its ARP
+        # entry has aged out. See docs/remote-access.md.
+        #
+        # This used to run `apk add iproute2 >/dev/null 2>&1` once, then
+        # `ip neigh replace` in a loop. At boot the container starts before
+        # AdGuard -- this box's own resolver -- answers, so the install failed,
+        # the error went to /dev/null, and the loop then called busybox's `ip`,
+        # which has no `neigh replace`. No entry was ever created: WoL was dead
+        # from 2026-08-26 (container recreate) to 2026-09-19, with nothing in
+        # the logs but "ip: invalid argument 'replace' to 'ip'".
+        #
+        # busybox's built-in `arp -s` sets an identical PERMANENT entry and
+        # needs no package, no DNS and no network, so there is no race left to
+        # lose. Errors are printed, not swallowed.
+        set -u
         while true; do
-          ip neigh replace 10.13.89.126 lladdr 6c:02:e0:40:24:51 nud permanent dev enp1s0
+          arp -i "$$WOL_IFACE" -s "$$WOL_IP" "$$WOL_MAC" ||
+            echo "wol-arp: failed to set $$WOL_IP -> $$WOL_MAC on $$WOL_IFACE"
           sleep 600
         done
 

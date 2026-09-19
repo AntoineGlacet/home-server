@@ -981,13 +981,19 @@ services:
       #
       # Updated 2026-09-19. The PC was rebuilt (hostname is now the Windows
       # default DESKTOP-K2T60TO) and came back on a different NIC:
-      #   old  10.13.89.126  6c:02:e0:40:24:51   <- the router reservation
-      #   new  10.13.89.122  14:85:7f:55:7e:b8   <- confirmed by Sunshine
+      #   was  10.13.89.126  6c:02:e0:40:24:51   <- the old router reservation
+      #   now  10.13.89.122  14:85:7f:55:7e:b8   <- confirmed by Sunshine
       # Both are globally-unique addresses, so this is a real second adapter,
-      # not Windows MAC randomisation. The reservation is bound to the old MAC,
-      # so it no longer applies and the PC takes a pool address -- which is why
-      # everything pinned to .126 broke at once.
-      - WOL_IP=${WOL_IP:-10.13.89.122}
+      # not Windows MAC randomisation. A DHCP reservation binds to a MAC, not a
+      # machine, so the old one stopped applying and the PC took a pool address
+      # -- which is why everything pinned to .126 broke at once.
+      #
+      # The reservation is being repointed at the NEW MAC so the PC returns to
+      # .126 and Moonlight's saved host entry stays valid. Until the PC renews
+      # its lease it is still on .122; WoL keeps working across that gap either
+      # way, because the magic packet is addressed by MAC and this entry
+      # supplies it.
+      - WOL_IP=${WOL_IP:-10.13.89.126}
       - WOL_MAC=${WOL_MAC:-14:85:7f:55:7e:b8}
       - WOL_IFACE=${WOL_IFACE:-enp1s0}
     command:

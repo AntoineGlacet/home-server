@@ -190,10 +190,21 @@ done
 curl -s "http://<ip>:47989/serverinfo?uniqueid=0" | grep -o '<hostname>[^<]*'
 ```
 
-Then: update the **DHCP reservation to the new MAC**, set `WOL_IP`/`WOL_MAC` to match, and
-re-pair Moonlight — a rebuilt Sunshine reports `PairStatus=0` and will not accept the old
-pairing. A Windows reinstall also resets the BIOS **Wake-on-LAN** option, the NIC's **Wake
-on Magic Packet** setting and **Fast Startup**, all three of which must be set again.
+Then repoint the **DHCP reservation at the new MAC, keeping the same IP** (`.126` here).
+That is the cheapest repair: the address the rest of the setup is pinned to never changes,
+so `WOL_IP`, Moonlight's saved host entry and anything else holding that IP stay correct
+and only `WOL_MAC` needs updating.
+
+A Windows reinstall also resets the BIOS **Wake-on-LAN** option, the NIC's **Wake on Magic
+Packet** setting and **Fast Startup** — all three must be set again, and none of them is
+visible from the server.
+
+> **Pairing is not IP-based.** Moonlight pairs against Sunshine's certificate, not its
+> address, so changing the PC's IP never costs a re-pair. What does is losing Sunshine's
+> state directory, which a clean Windows install does. Note `PairStatus` in `/serverinfo`
+> is reported **per client**: a probe with an arbitrary `uniqueid` always returns `0`, so
+> it says nothing about whether a real client is still paired. The only reliable check is
+> to open Moonlight and see whether it asks for a PIN.
 
 **PC-side prerequisites (one-time, on the Windows gaming PC):**
 - BIOS/UEFI: enable **Wake-on-LAN** / "Power On by PCIe/PCI".

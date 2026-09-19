@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# root-maintenance.sh -- the parts of the 2026-08-26 maintenance pass that need
-# root. Everything else was applied through docker/compose and is already live.
+# root-maintenance.sh -- the privileged half of the maintenance passes. sudo on
+# this box always prompts for a password, so anything needing root collects here
+# instead of being run ad hoc. Everything else was applied through
+# docker/compose and is already live.
 #
 # Run it on the server:
 #     sudo /home/antoine/home-server/scripts/root-maintenance.sh
@@ -9,12 +11,18 @@
 # Each step is independent and idempotent; re-running is safe. Steps announce
 # themselves and can be skipped with the flags below.
 #
-#   --skip-lvm        do not grow the root logical volume
-#   --skip-docker     do not write /etc/docker/daemon.json (avoids a daemon reload)
-#   --skip-journal    do not vacuum the systemd journal
-#   --skip-timer      do not install the postgres backup timer
-#   --skip-apt        do not apply package updates
-#   --skip-dpkg       do not purge removed-but-configured packages
+#   --skip-lvm        do not grow the root logical volume          (2026-08-26)
+#   --skip-docker     do not write /etc/docker/daemon.json          (2026-08-26)
+#   --skip-journal    do not vacuum the systemd journal             (2026-08-26)
+#   --skip-timer      do not install the postgres backup timer      (2026-08-26)
+#   --skip-apt        do not apply package updates                  (2026-08-26)
+#   --skip-dpkg       do not purge removed-but-configured packages  (2026-08-26)
+#   --skip-update-timer  do not install the weekly update timer     (2026-09-19)
+#
+# To install only the 2026-09-19 step on a box where the earlier pass already
+# ran (the LVM/apt steps are heavy and there is no need to repeat them):
+#     sudo ./scripts/root-maintenance.sh \
+#       --skip-lvm --skip-docker --skip-journal --skip-timer --skip-apt --skip-dpkg
 #
 set -euo pipefail
 
@@ -23,6 +31,7 @@ JOURNAL_KEEP="${JOURNAL_KEEP:-500M}"
 REPO_DIR=/home/antoine/home-server
 
 SKIP_LVM=0 SKIP_DOCKER=0 SKIP_JOURNAL=0 SKIP_TIMER=0 SKIP_APT=0 SKIP_DPKG=0
+SKIP_UPDATE_TIMER=0
 for a in "$@"; do
   case "$a" in
     --skip-lvm) SKIP_LVM=1 ;;
@@ -31,7 +40,8 @@ for a in "$@"; do
     --skip-timer) SKIP_TIMER=1 ;;
     --skip-apt) SKIP_APT=1 ;;
     --skip-dpkg) SKIP_DPKG=1 ;;
-    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
+    --skip-update-timer) SKIP_UPDATE_TIMER=1 ;;
+    -h|--help) sed -n '2,27p' "$0"; exit 0 ;;
     *) echo "unknown flag: $a" >&2; exit 2 ;;
   esac
 done
@@ -143,7 +153,24 @@ if [[ "$SKIP_DPKG" == 0 ]]; then
   fi
 fi
 
-# --- 7. disk health (read-only, was unverifiable without root) ----------------
+# --- 7. weekly update timer (2026-09-19) --------------------------------------
+# weekly-update.sh calls itself "file used as root cron", but it was not in root
+# cron, antoine's crontab, or any timer -- so nothing had pulled images or
+# applied apt updates automatically. Install it the same way as the pg backup.
+if [[ "$SKIP_UPDATE_TIMER" == 0 ]]; then
+  say "Installing the weekly update timer"
+  install -m 0644 "${REPO_DIR}/config/systemd/home-server-weekly-update.service" /etc/systemd/system/
+  install -m 0644 "${REPO_DIR}/config/systemd/home-server-weekly-update.timer"   /etc/systemd/system/
+  systemctl daemon-reload
+  systemctl enable --now home-server-weekly-update.timer
+  systemctl list-timers home-server-weekly-update.timer --no-pager
+  note "it will apt-upgrade and restart changed containers -- to try it now:"
+  note "  systemctl start home-server-weekly-update.service"
+  note "  journalctl -u home-server-weekly-update.service -f"
+  note "to skip apt and only pull images, set SKIP_APT_UPDATES=1 in the unit"
+fi
+
+# --- 8. disk health (read-only, was unverifiable without root) ----------------
 say "SMART health"
 for d in /dev/sda /dev/sdb; do
   echo "--- $d"

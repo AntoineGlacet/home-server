@@ -1,0 +1,20 @@
+[Unit]
+Description=Weekly home-server update (apt, compose pull/up, prune)
+Documentation=https://github.com/antoineglacet/home-server
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Runs as root. weekly-update.sh shells out to `sudo apt`, and sudo on this box
+# always prompts for a password, so it cannot run unattended as antoine. The
+# script's own header already says "file used as root cron" -- it simply was
+# never installed anywhere, so the stack had no automated update path at all.
+User=root
+WorkingDirectory=/home/antoine/home-server
+Environment=HOMESERVER=/home/antoine/home-server
+ExecStart=/home/antoine/home-server/weekly-update.sh
+# An apt upgrade plus a pull of ~40 images on a home link takes a while, and
+# the default 90s start timeout would kill it partway through a pull.
+TimeoutStartSec=2h

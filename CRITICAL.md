@@ -1,5 +1,57 @@
 # CRITICAL — security items
 
+## 🔴 OPEN (found 2026-09-19): `SAMBA_PASSWORD` is still the leaked MQTT password
+
+The 2026-06-08 rotation below fixed the MQTT side, but the **same plaintext string is
+still live as `SAMBA_PASSWORD`** in the server's `.env`. It was committed to a public
+GitHub repo and only later purged from history, so it must be treated as burned: forks,
+clones and any cached view of the old objects may still have it.
+
+Verified on the server 2026-09-19 (value confirmed by comparison, not reproduced here —
+do not paste it into a tracked file):
+
+- `.env` `SAMBA_PASSWORD` equals the string purged from history on 2026-06-08.
+- It is visible in the running container's command line (`docker inspect samba`),
+  because dperson/samba takes `-u "user;password"` as an argument.
+- The share it guards is **all of `/media/data`** (5.5 TB) mounted **read-write**
+  (`-s "data;/data;yes;no;no;all"`, i.e. browsable, not read-only, guests denied).
+- Samba listens on `0.0.0.0:445` and `0.0.0.0:139`, so it is reachable from the whole
+  LAN *and* from wg-easy VPN clients. It is **not** port-forwarded at the router
+  (only TCP 80/443 and UDP 51820 are), so this is not internet-exposed.
+
+Decision 2026-09-19: documented, not rotated — deliberate, since rotating breaks every
+saved SMB credential on the Windows clients.
+
+### To fix later
+1. Generate a new password; set `SAMBA_PASSWORD` in the server `.env` (gitignored).
+2. `docker compose up -d samba` to recreate with the new argument.
+3. Re-enter the credential on each SMB client (Windows stores it per-share).
+4. Optional hardening while in there: bind the ports to the LAN interface rather than
+   `0.0.0.0` (`ports: ["10.13.89.90:445:445/tcp", ...]`) so VPN clients cannot reach it,
+   and consider a read-only share for anything that does not need writes.
+
+Related: [`docs/troubleshooting.md`](docs/troubleshooting.md), the MQTT entry below.
+
+## ✅ RESOLVED (2026-09-19): Stopped seeding 11 fake-video malware droppers
+
+`downloads/complete` held 11 files of ~1.2 GB each named like TV episodes but ending in
+`.exe`/`.scr` (`Silo S03E02 … .exe`, `Rick.and.Morty.S09E09….scr`, `Cape.Fear.S01E07….exe`,
+…) — the standard fake-video dropper campaign. All 11 were **registered in Transmission and
+being seeded**, so the box was distributing them.
+
+Harmless on the server itself (never executed on Linux), but they sat inside the Samba
+share above, which is browsable and writable from every LAN and VPN client — one
+double-click from a Windows machine is the whole attack.
+
+Removed with `transmission-remote --remove-and-delete` on 2026-09-19. Checks done first:
+every file had a link count of 1, so none was hardlinked into the Plex library (Sonarr had
+correctly refused to import them), and the four legitimate torrents that merely *contain* a
+99-byte `RARBG_DO_NOT_MIRROR.exe` were excluded by matching on the torrent name, not a
+recursive file search. Reclaimed ~12 GB.
+
+Worth re-checking after any indexer change: `find /media/data/downloads -type f \
+\( -iname '*.exe' -o -iname '*.scr' \) -size +100M`.
+
 ## ✅ RESOLVED (2026-06-08): Committed MQTT password rotated + purged from history
 
 The `hass` MQTT password was rotated everywhere (mosquitto `users.db`, Home Assistant

@@ -1,0 +1,17 @@
+[Unit]
+Description=Weekly home-server update
+
+[Timer]
+# Monday 04:30 local. Deliberately clear of the other scheduled work:
+#   03:30 daily  home-server-pg-backup.timer
+#   05:00 Sunday Duplicati (job schedule, Repeat=1W)
+#   08:50/17:50  minabot's in-container cron
+OnCalendar=Mon *-*-* 04:30:00
+# The box is not always on at 04:30, and a silently skipped window is exactly
+# how the postgres backup went 2.7 years without running.
+Persistent=true
+RandomizedDelaySec=900
+Unit=home-server-weekly-update.service
+
+[Install]
+WantedBy=timers.target

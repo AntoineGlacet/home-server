@@ -164,11 +164,36 @@ fixed IP↔MAC mapping, so a new DHCP lease silently breaks waking.
 
 ```
 docker logs --tail 5 wol-arp                 # should be silent; any line here is a failure
-ip neigh show 10.13.89.126                   # must show "lladdr <MAC> PERMANENT"
+ip neigh show "$WOL_IP"                      # must show "lladdr <MAC> PERMANENT"
 ```
 
 If the entry says `FAILED` or has no `lladdr`, the magic packet has nowhere to go and
 Moonlight's **Wake** button will appear to do nothing.
+
+### If the PC is rebuilt or changes NIC (2026-09-19)
+
+A DHCP reservation is bound to a **MAC**, not to the machine. When the PC was rebuilt it
+came back as `DESKTOP-K2T60TO` on a different adapter (`14:85:7f:55:7e:b8` instead of
+`6c:02:e0:40:24:51`), so the reservation for `10.13.89.126` stopped matching and the PC
+took a pool address (`10.13.89.122`). Everything pinned to `.126` broke simultaneously:
+Wake-on-LAN, and Moonlight over the VPN — while Moonlight on the LAN kept working, because
+it finds the PC by mDNS discovery, which does not cross the tunnel.
+
+To find the PC again after a rebuild, ask the network rather than guessing — whichever host
+answers on Sunshine's ports is the PC:
+
+```
+for i in $(seq 1 254); do ping -c1 -W1 10.13.89.$i >/dev/null 2>&1 & done; wait
+for ip in $(ip neigh show dev enp1s0 | grep -vE 'FAILED|INCOMPLETE' | awk '{print $1}'); do
+  timeout 2 bash -c "echo > /dev/tcp/$ip/47989" 2>/dev/null && echo "sunshine: $ip"
+done
+curl -s "http://<ip>:47989/serverinfo?uniqueid=0" | grep -o '<hostname>[^<]*'
+```
+
+Then: update the **DHCP reservation to the new MAC**, set `WOL_IP`/`WOL_MAC` to match, and
+re-pair Moonlight — a rebuilt Sunshine reports `PairStatus=0` and will not accept the old
+pairing. A Windows reinstall also resets the BIOS **Wake-on-LAN** option, the NIC's **Wake
+on Magic Packet** setting and **Fast Startup**, all three of which must be set again.
 
 **PC-side prerequisites (one-time, on the Windows gaming PC):**
 - BIOS/UEFI: enable **Wake-on-LAN** / "Power On by PCIe/PCI".

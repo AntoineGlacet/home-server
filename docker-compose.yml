@@ -978,8 +978,17 @@ services:
     environment:
       # Must match the gaming PC's DHCP reservation. If either changes, the
       # entry points at nothing and Wake-on-LAN silently stops working.
-      - WOL_IP=${WOL_IP:-10.13.89.126}
-      - WOL_MAC=${WOL_MAC:-6c:02:e0:40:24:51}
+      #
+      # Updated 2026-09-19. The PC was rebuilt (hostname is now the Windows
+      # default DESKTOP-K2T60TO) and came back on a different NIC:
+      #   old  10.13.89.126  6c:02:e0:40:24:51   <- the router reservation
+      #   new  10.13.89.122  14:85:7f:55:7e:b8   <- confirmed by Sunshine
+      # Both are globally-unique addresses, so this is a real second adapter,
+      # not Windows MAC randomisation. The reservation is bound to the old MAC,
+      # so it no longer applies and the PC takes a pool address -- which is why
+      # everything pinned to .126 broke at once.
+      - WOL_IP=${WOL_IP:-10.13.89.122}
+      - WOL_MAC=${WOL_MAC:-14:85:7f:55:7e:b8}
       - WOL_IFACE=${WOL_IFACE:-enp1s0}
     command:
       - sh

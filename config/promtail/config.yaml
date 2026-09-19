@@ -39,3 +39,17 @@ scrape_configs:
       - match:
           selector: '{container=~"loki|promtail"}'
           action: drop
+      # nordlynx pretty-prints the entire NordVPN server catalogue as JSON on
+      # every (re)connect -- thousands of lines in one burst. Promtail fell
+      # more than an hour behind draining that stream, which put the entries
+      # outside Loki's out-of-order window (max_chunk_age/2, 1h by default), so
+      # Loki 400'd every retry and the batch was discarded: ~525 "final error
+      # sending batch" per day, and real VPN log lines lost with it. Drop the
+      # JSON body only -- the "[#] ip link ...", "[<ts>] Connected!" and
+      # s6/Error lines that actually say what the tunnel did are kept.
+      - match:
+          selector: '{container="nordlynx"}'
+          stages:
+            - drop:
+                expression: '^\s*(?:[{}\[\],]+|"[^"]+"\s*:.*)\s*$'
+                drop_counter_reason: nordlynx_server_catalogue

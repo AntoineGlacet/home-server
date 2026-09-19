@@ -1,0 +1,5 @@
+# Grafana logs an error on every start when this directory is missing:
+#   "Failed to read plugin provisioning files from directory"
+# The host mount at ./config/grafana/provisioning shadows the image copy, so
+# plugins/ must exist here even though nothing provisions plugins.
+# Grafana only parses *.yaml/*.yml in provisioning dirs, so this file is inert.

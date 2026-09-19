@@ -158,12 +158,24 @@ check_system_load() {
 check_services() {
   echo -e "${CYAN}━━━ 🌐 Critical Services ━━━${NC}"
   
-  local services=("traefik" "prometheus" "grafana" "authentik-server" "postgres")
-  
+  # postgres has no container_name:, so compose names it <project>-postgres-1.
+  # Looking for a bare "postgres" reported NOT RUNNING on every single run --
+  # the same hardcoded-name bug that kept backup-postgres.sh from ever working.
+  local postgres_name
+  postgres_name=$(docker ps -a --filter 'label=com.docker.compose.service=postgres' \
+                              --format '{{.Names}}' | head -1)
+
+  local services=("traefik" "prometheus" "grafana" "authentik-server"
+                  "${postgres_name:-postgres}")
+
+  local service status
   for service in "${services[@]}"; do
-    if docker ps --format '{{.Names}}' | grep -q "^${service}$"; then
-      local status
-      status=$(docker ps --format '{{.Names}}\t{{.Status}}' | grep "^${service}" | awk '{print $2, $3}')
+    # Anchor the name filter: a plain "traefik" also matched
+    # traefik-certs-dumper and printed two status lines glued together.
+    # Take {{.Status}} whole, too -- awk '{print $2, $3}' turned
+    # "Up 10 minutes" into "Up 10".
+    status=$(docker ps --filter "name=^${service}$" --format '{{.Status}}')
+    if [[ -n "${status}" ]]; then
       echo -e "  ${GREEN}✓${NC} ${service}: ${status}"
     else
       echo -e "  ${RED}✗${NC} ${service}: NOT RUNNING"

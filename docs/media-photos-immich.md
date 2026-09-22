@@ -131,7 +131,7 @@ Memory limits are set in compose and are deliberate:
 
 | Container | Limit | Typical | Notes |
 | --- | --- | --- | --- |
-| `immich-server` | 1024M | 400–700M | Rises during big uploads/transcodes |
+| `immich-server` | 1536M | ~700M RSS idle | API + microservices in one container. `docker stats` shows ~950 MiB because it counts page cache; cgroup anon was 715 MB right after first boot, so 1 GiB left no headroom for uploads or transcodes |
 | `immich-machine-learning` | 1536M | ~200M idle | 1–1.3 GB with CLIP + face models loaded; `MACHINE_LEARNING_MODEL_TTL=120` unloads them after 2 min idle |
 | `immich-postgres` | 512M | 100–200M | `shm_size: 128mb` as upstream requires |
 | `immich-redis` | 128M | ~10M | |

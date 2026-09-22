@@ -1,80 +1,205 @@
-# Photos — Immich (deferred, documented for the future)
+---
+title: "Photos — Immich"
+weight: 7
+description: "Self-hosted Google Photos replacement: deployment, first run, phone backup, Takeout migration, backups"
+---
 
-> **Status:** not deployed. Captured 2026-06-28 while evaluating a Google Photos
-> replacement. Revisit when the storage + RAM constraints below are resolved.
+Immich is the stack's photo and video library, replacing Google Photos. It runs as
+four containers in the **PHOTOS (IMMICH)** section of `docker-compose.yml` and is
+reachable at **https://immich.antoineglacet.com** (web, and the server URL for the
+mobile app).
 
-## Decision (2026-06-29): deferred — hardware-limited
+> **Status:** deployed 2026-09-23 on Immich **v3.2.2**. The June 2026 deferral
+> (below) was lifted because the library to migrate is ~15 GB, not hundreds.
 
-Immich is the right tool (see below), and quality would be equal-or-better than
-Google Photos. **We are not deploying it on the current hardware.** The OptiPlex
-3050 (8 GB RAM, data drive 90% full) cannot comfortably host Immich's ML stack
-*and* a full photo library on top of the existing 39-container stack. This is a
-hardware ceiling, not a software choice — Google Photos stays the photo store for
-now.
+## Table of Contents
 
-**Revisit when any of these change (the upgrade triggers):**
-- **RAM:** box goes from 8 GB → 16 GB+ (Immich ML wants 1.5–3 GB headroom).
-- **Disk:** the data drive is expanded/replaced so a full Takeout import + ongoing
-  growth fits with room to spare (currently only ~530 GB free of 5.5 TB).
-- Or: the whole stack moves to a more capable host.
+- [Architecture](#architecture)
+- [Why Immich](#why-immich)
+- [First run (one time, you)](#first-run-one-time-you)
+- [Phone backup](#phone-backup)
+- [Migrating from Google Photos](#migrating-from-google-photos)
+- [Authentication](#authentication)
+- [Resources on the 8 GB box](#resources-on-the-8-gb-box)
+- [Backups](#backups)
+- [Upgrading](#upgrading)
+- [Troubleshooting](#troubleshooting)
+- [History: the June 2026 deferral](#history-the-june-2026-deferral)
 
-Until then this file is the complete build/migration plan, ready to execute.
+## Architecture
+
+| Container | Image | Role | Where its state lives |
+| --- | --- | --- | --- |
+| `immich-server` | `ghcr.io/immich-app/immich-server:v3.2.2` | API + web UI + background jobs | Library bind mount `${IMMICH_UPLOAD_LOCATION}` → `/data` (data HDD) |
+| `immich-machine-learning` | `ghcr.io/immich-app/immich-machine-learning:v3.2.2` | CLIP smart search, face detection, OCR | Named volume `immich_model_cache` (SSD) |
+| `immich-postgres` | `ghcr.io/immich-app/postgres:14-vectorchord…` | Immich's **own** Postgres with vector extensions | Named volume `immich_postgres_data` (SSD) |
+| `immich-redis` | `valkey/valkey:9` | Job queue | none (ephemeral) |
+
+- **Networks:** `immich-server` is on `homelab` + `homelab_proxy`; the other three are
+  `homelab`-only and never exposed.
+- **Ingress:** Traefik router `immich` → `immich-server:2283`, TLS via the Cloudflare
+  resolver, **no Authentik forward-auth** (see [Authentication](#authentication)).
+- **Library layout** under `/media/data/immich/`: `upload/`, `library/`, `thumbs/`,
+  `encoded-video/`, `profile/`, and `backups/` (Immich's own nightly DB dumps).
+- **GPU:** `/dev/dri` is passed to `immich-server` for Quick Sync video transcoding,
+  the same render node Plex gets. ML runs on CPU (the OpenVINO ML image is heavier and
+  not worth it for this library size).
+- **Do not** point Immich at the stack's shared `postgres` service. Immich pins a
+  specific Postgres build with VectorChord/pgvecto.rs and refuses to start on anything
+  else.
 
 ## Why Immich
 
-[Immich](https://immich.app) is the closest self-hosted equivalent to Google
-Photos. It is the only mature option that matches the one feature that actually
-matters — **automatic background phone backup** — alongside a timeline, albums,
-partner/shared albums, face recognition, map view, "memories," and ML-powered
-search (natural-language + OCR text-in-image).
+Immich is the closest self-hosted equivalent to Google Photos and the only mature
+option with a **first-party automatic phone backup** app, plus timeline, albums,
+partner sharing, face recognition, map, memories, and natural-language search.
 
-**Quality is equal-or-better than Google Photos.** Google's default "Storage
-saver" tier *recompresses* photos and video. Immich stores **original files
-untouched** at full resolution, including RAW and full-quality video. So there
-is no quality loss — it's an upgrade.
+Quality is equal or better: Google's "Storage saver" tier recompresses uploads,
+Immich stores **originals untouched** (RAW and full-quality video included).
 
-## Why it was deferred (constraints on the OptiPlex 3050)
+PhotoPrism is lighter on RAM but has no real phone-backup story, which is the whole
+point of leaving Google Photos.
 
-Measured 2026-06-28:
+## First run (one time, you)
 
-1. **Disk — the gating factor.** `/media/data` was at **90% full, ~534 GB free
-   of 5.5 TB**. A full Google Photos library plus ongoing growth needs a real
-   storage plan first (expand/replace the data drive, or dedicate a budget).
-   Confirm the Google Photos library size before committing.
-2. **RAM — tight.** Box runs ~5.2 GB used of 7.6 GB (~2.5 GB free). Immich adds
-   the heaviest footprint of any candidate: `immich-server` + its own Postgres
-   (with the `pgvector`/VectorChord extension) + Redis + a **machine-learning**
-   container that can spike **1.5–3 GB** during the initial face/smart-search
-   backfill. It will run but will swap during first import.
+1. Open https://immich.antoineglacet.com. The first visit shows **Getting Started**
+   — create the admin account (this is a local Immich account; Authentik SSO is
+   optional, see below).
+2. **Tame the job queues for this box.** Administration → Settings → Job Settings:
+   set *Smart Search*, *Face Detection*, *Facial Recognition* and *Video
+   Transcoding* concurrency to **1**, everything else to 2. This is what keeps the
+   first import from swapping the machine.
+3. **Enable hardware transcoding.** Administration → Settings → Video Transcoding →
+   Hardware Acceleration: **Quick Sync**. Leave the rest default.
+4. **Homepage widget.** Account (top right) → *Account Settings* → *API Keys* →
+   *New API Key*, name it `homepage`. Put the key in the server's `.env` as
+   `IMMICH_API_KEY=…`, then `docker compose up -d homepage` so the container picks
+   up the new variable. Until then the Immich card on Homepage shows an API error.
+5. Optional: Administration → Settings → Server → set *External domain* to
+   `https://immich.antoineglacet.com` so shared links are generated correctly.
 
-### Mitigations if/when revisited
-- Cap or temporarily disable the `immich-machine-learning` container; use a
-  smaller CLIP model; let ML jobs run slowly in the background.
-- Give Immich its own Postgres rather than sharing the stack's (Immich pins a
-  specific pgvector image and is picky about versions).
-- Memory-limit every Immich container in compose, as the rest of the stack does.
+## Phone backup
 
-## Integration notes (when building)
+Install **Immich** from the Play Store (or GitHub releases via Obtainium:
+`immich-app/immich`, the `app-*.apk` asset). Server URL:
+`https://immich.antoineglacet.com`. Log in, pick the albums to back up (Camera,
+Screenshots, WhatsApp…), enable background backup. No VPN required — this is one of
+the few services published through Traefik without Authentik in front, so the app
+works on mobile data.
 
-- **Do NOT put Immich behind Authentik forward-auth.** Like Plex, the Immich
-  mobile app talks to the API directly and its own login handles auth — a
-  forward-auth middleware breaks the app. Expose it via Traefik *without* the
-  `authentik@docker` middleware.
-- Traefik route would follow the existing pattern:
-  `immich.${TRAEFIK_DOMAIN}` → `immich-server:2283`.
-- Bind originals onto the big data drive (`${MEDIA}`-adjacent), not the system disk.
+## Migrating from Google Photos
 
-## Migration from Google Photos
+Use [`immich-go`](https://github.com/simulot/immich-go), not the web uploader: Google
+Takeout strips or garbles EXIF dates, and immich-go repairs them from Takeout's JSON
+sidecars and recreates albums.
 
-1. Request a **Google Takeout** export of Google Photos (multi-archive; can be
-   hundreds of GB — download to the data drive).
-2. Import with [`immich-go`](https://github.com/simulot/immich-go), which
-   reconstructs dates, albums, and geolocation from Google's JSON sidecars
-   (Takeout itself strips/garbles some EXIF; immich-go repairs it from sidecars).
+1. Request a **Google Takeout** export of *Google Photos only*, as `.zip` (2 GB or
+   10 GB parts). Download every part to the data drive, e.g.
+   `/media/data/downloads/takeout/`. Do **not** unzip — immich-go reads the archives.
+2. Create an API key for the import (Account Settings → API Keys, name `immich-go`).
+3. Run immich-go on the server (single static binary from its GitHub releases):
 
-## Lighter alternative
+   ```bash
+   cd /media/data/downloads/takeout
+   ./immich-go upload from-google-photos \
+     --server https://immich.antoineglacet.com \
+     --api-key "$IMMICH_GO_KEY" \
+     --dry-run \
+     takeout-*.zip
+   # sanity-check the plan, then run again without --dry-run
+   ```
 
-**PhotoPrism** is lighter on RAM, but its phone-backup story is weak (relies on
-WebDAV / third-party sync apps rather than a first-party auto-backup app), which
-undercuts the main reason to leave Google Photos. Prefer Immich unless RAM is the
-hard blocker.
+4. Watch Administration → Jobs. Thumbnails first, then metadata, then the ML jobs.
+   For ~15 GB (a few thousand assets) expect thumbnails in under an hour and the
+   ML backfill in one to three hours at concurrency 1.
+5. Once everything is in and spot-checked (dates, albums, a few videos), delete the
+   Takeout archives and revoke the `immich-go` API key.
+
+## Authentication
+
+Immich is **not** behind the `authentik@docker` forward-auth middleware, for the same
+reason Plex is not: the mobile app authenticates against `/api` itself and a
+redirect-to-login in front of it breaks the app. Immich's own login handles access.
+
+Optional single sign-on: Immich supports Authentik as an **OIDC** provider, which
+gives you the Authentik login button on both web and mobile. Setup steps are in
+[authentik.md → Immich OIDC Integration](authentik.md#immich-oidc-integration).
+
+## Resources on the 8 GB box
+
+Memory limits are set in compose and are deliberate:
+
+| Container | Limit | Typical | Notes |
+| --- | --- | --- | --- |
+| `immich-server` | 1024M | 400–700M | Rises during big uploads/transcodes |
+| `immich-machine-learning` | 1536M | ~200M idle | 1–1.3 GB with CLIP + face models loaded; `MACHINE_LEARNING_MODEL_TTL=120` unloads them after 2 min idle |
+| `immich-postgres` | 512M | 100–200M | `shm_size: 128mb` as upstream requires |
+| `immich-redis` | 128M | ~10M | |
+
+Expect some swapping during the initial ML backfill; it stops when the jobs drain. The
+Grafana rule **Container High Memory Usage** (> 1 GiB) may fire once for
+`immich-machine-learning` during that window — that is expected, not a fault.
+
+If the box is struggling, `docker compose stop immich-machine-learning` — everything
+except new smart-search/face indexing keeps working — and start it again when the
+queue can run overnight. Search on already-indexed assets is unaffected.
+
+A 16 GB RAM upgrade would let ML stay resident permanently; it is not required.
+
+## Backups
+
+- **Database:** Immich dumps its own DB nightly to `/data/backups/` inside the
+  library (`${IMMICH_UPLOAD_LOCATION}/backups/`), keeping 14 by default
+  (Administration → Settings → Backup Settings). `scripts/backup-postgres.sh` only
+  covers the shared stack Postgres, **not** Immich's — rely on Immich's dumps.
+- **Library:** the originals in `${IMMICH_UPLOAD_LOCATION}` are **not** covered by
+  Duplicati today (its source is `${HOMESERVER}` only) and the data drive is a single
+  HDD. Leaving Google Photos means this directory is the only copy of the photos.
+  **Add an off-site job before deleting anything from Google:** either a Duplicati
+  job with `${IMMICH_UPLOAD_LOCATION}` as source and B2/Hetzner as destination, or a
+  restic/rclone cron to the same. For ~15 GB the cost is negligible.
+- **Restore** (upstream procedure): fresh containers, restore the latest SQL dump
+  into `immich-postgres`, put the library back at `${IMMICH_UPLOAD_LOCATION}`, start
+  `immich-server`. See https://docs.immich.app/administration/backup-and-restore.
+
+## Upgrading
+
+Immich moves fast and **does** ship breaking changes; releases marked with a warning
+in the notes need a read before bumping. Procedure:
+
+1. Read https://github.com/immich-app/immich/releases for every version between the
+   pinned tag and the target. Look for "breaking", changed Postgres image, or new
+   required env vars.
+2. Bump **both** `immich-server` and `immich-machine-learning` tags together
+   (they must match). Bump the Postgres/Valkey digests only if the release notes
+   say so; the DB image is pinned by digest from the upstream compose.
+3. `./deploy.sh`. The server migrates the DB on start; watch
+   `docker compose logs -f immich-server` until "Immich Server is listening".
+
+## Troubleshooting
+
+```bash
+docker compose logs -f immich-server              # startup, DB migrations, job errors
+docker compose logs -f immich-machine-learning    # model downloads on first job
+docker compose ps immich-server immich-postgres immich-redis immich-machine-learning
+curl -s https://immich.antoineglacet.com/api/server/ping   # {"res":"pong"}
+```
+
+| Symptom | Likely cause / fix |
+| --- | --- |
+| Server restarts in a loop, log mentions `vectorchord` or `pgvecto.rs` | Wrong Postgres image or a version bump that requires a new DB image — check release notes. |
+| Mobile app "Server is not reachable" but web works | Something put `authentik@docker` on the `immich` router. Remove it. |
+| First ML job takes ages | Models (~1 GB) download into `immich_model_cache` on first use. One-time. |
+| `immich-machine-learning` OOM-killed | Lower Smart Search / Face Detection concurrency to 1, or raise the limit temporarily. |
+| Uploads of large videos fail | Traefik has no body-size middleware on this router; check the phone's network first. |
+| Homepage card shows "API Error" | `IMMICH_API_KEY` not set in `.env` yet, or homepage not recreated after setting it. |
+
+## History: the June 2026 deferral
+
+Evaluated 2026-06-28 and deferred 2026-06-29 because the OptiPlex 3050 (8 GB, data
+drive 90 % full) could not host Immich's ML stack **plus a full Google Photos library
+of unknown size** on top of the existing 39-container stack. Revisit triggers were
+RAM → 16 GB, a bigger data drive, or a smaller library. Re-evaluated 2026-09-23: the
+library turned out to be ~15 GB total, so the disk concern disappeared and the RAM
+concern became "cap the ML container and run the backfill once", which is how it is
+deployed above.

@@ -40,7 +40,7 @@ All services live in one `docker-compose.yml`:
 | Category | Services |
 | --- | --- |
 | **Smart Home** | Home Assistant, Mosquitto MQTT, Zigbee2MQTT |
-| **Media** | Plex, Sonarr, Radarr, Bazarr, Transmission, Prowlarr, Calibre Web |
+| **Media** | Plex, Immich, Sonarr, Radarr, Bazarr, Transmission, Prowlarr, Calibre Web |
 | **Monitoring** | Prometheus, Grafana, Loki, Promtail, cAdvisor, Glances, Node Exporter |
 | **Infrastructure** | Traefik, Authentik, AdGuard Home, PostgreSQL, Redis |
 | **Remote Access** | wg-easy (WireGuard VPN), NordLynx (torrent VPN) |
@@ -78,6 +78,7 @@ docker compose ps                 # Container status
 | **AdGuard** | https://adguard.antoineglacet.com | DNS & ad blocking |
 | **Home Assistant** | https://homeassistant.antoineglacet.com | Home automation |
 | **Plex** | https://plex.antoineglacet.com | Media server |
+| **Immich** | https://immich.antoineglacet.com | Photo & video library (Google Photos replacement) |
 | **Minabot** | — (see [minabot/README.md](minabot/README.md)) | Minagine auto clock-in/out bot |
 
 ## Architecture
@@ -109,6 +110,7 @@ Three network tiers isolate traffic:
 - **[Authentik](docs/authentik.md)** - SSO setup, user management, OAuth integration
 - **[Monitoring](docs/monitoring.md)** - Prometheus, Grafana, Loki, alerting, dashboards
 - **[Remote Access](docs/remote-access.md)** - WireGuard VPN (wg-easy), AdGuard DNS, Sunshine/Moonlight game streaming
+- **[Photos (Immich)](docs/media-photos-immich.md)** - Google Photos replacement: first run, phone backup, Takeout migration, backups
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
 
 ### Performance & Optimization

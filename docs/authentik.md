@@ -130,6 +130,7 @@ These services require Authentik login:
 These services use their own authentication:
 
 - **Plex**: Native authentication (Authentik breaks many Plex clients)
+- **Immich**: Native authentication, optionally with Authentik as OIDC provider (forward auth breaks the mobile app — see [Immich OIDC Integration](#immich-oidc-integration))
 - **Home Assistant**: Built-in user management
 - **Prometheus**: Internal only (no external exposure)
 
@@ -144,6 +145,10 @@ These services use their own authentication:
 - Needs direct access for automations
 - Mobile app requires native auth
 - Companion app integration
+
+**Immich:**
+- Mobile app talks to `/api` directly and does its own login; a forward-auth redirect in front breaks it
+- Same pattern as Plex; SSO is done *inside* Immich via OIDC instead
 
 ## User Management
 
@@ -260,6 +265,52 @@ GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'Grafana Admins') 
 Then in Authentik:
 1. Create groups: `Grafana Admins`, `Grafana Editors`
 2. Assign users to groups
+
+## Immich OIDC Integration
+
+Immich is not behind forward auth (the mobile app would break), but it can use
+Authentik as an OpenID Connect provider so the web and mobile login screens get a
+**Login with Authentik** button. Optional — Immich's local admin account keeps
+working either way.
+
+### Setup in Authentik
+
+1. **Create Provider:**
+   - Applications → Providers → Create
+   - Type: OAuth2/OpenID Provider
+   - Name: `immich-oidc`
+   - Client Type: Confidential
+   - Redirect URIs (one per line, strict):
+     - `https://immich.antoineglacet.com/auth/login`
+     - `https://immich.antoineglacet.com/user-settings`
+     - `https://immich.antoineglacet.com/api/oauth/mobile-redirect`
+   - Signing key: any available certificate
+   - Save and note: Client ID, Client Secret
+
+2. **Create Application:**
+   - Applications → Applications → Create
+   - Name: `Immich`
+   - Slug: `immich`  ← the slug is part of the issuer URL below
+   - Provider: `immich-oidc`
+   - Launch URL: `https://immich.antoineglacet.com`
+
+### Configure Immich
+
+Administration → Settings → **Authentication Settings** → OAuth:
+
+| Field | Value |
+| --- | --- |
+| Enable | on |
+| Issuer URL | `https://authentik.antoineglacet.com/application/o/immich/` |
+| Client ID / Secret | from the provider above |
+| Scope | `openid email profile` |
+| Button text | `Login with Authentik` |
+| Auto register | on (creates the Immich user on first login) |
+| Mobile redirect URI override | **on**, value `https://immich.antoineglacet.com/api/oauth/mobile-redirect` |
+
+Save, log out, and confirm the button appears on the login page. Once your Authentik
+user has logged in once, you can optionally disable *Password login* in the same
+settings page; keep the local admin password somewhere safe first.
 
 ## Monitoring
 

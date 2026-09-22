@@ -592,6 +592,139 @@ services:
       - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
 
   # ----------------------------
+  # PHOTOS (IMMICH)
+  # ----------------------------
+  # Google Photos replacement — see docs/media-photos-immich.md. The four
+  # containers mirror the upstream release compose (v3.2.2), adapted to this
+  # stack: pinned tags, memory caps, shared logging, stack networks. The library
+  # (originals, thumbnails, encoded video, nightly DB dumps) lives on the data HDD
+  # at ${IMMICH_UPLOAD_LOCATION}; the database and ML model cache are named
+  # volumes on the SSD, because Immich's Postgres should not sit on a spinning disk.
+  #
+  # ⚠️ NOT behind Authentik forward-auth, same rule as Plex: the mobile app talks
+  # to /api directly and Immich has its own login (Authentik can be wired in as an
+  # OIDC provider instead — docs/authentik.md).
+  #
+  # 8 GB box: limits below are deliberate. The ML container is the only heavy
+  # part and only during the first import; it unloads idle models after 2 min.
+
+  immich-server:
+    logging: *default-logging
+    image: ghcr.io/immich-app/immich-server:v3.2.2
+    container_name: immich-server
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - DB_HOSTNAME=immich-postgres
+      - DB_USERNAME=immich
+      - DB_PASSWORD=${IMMICH_DB_PASSWORD}
+      - DB_DATABASE_NAME=immich
+      - REDIS_HOSTNAME=immich-redis
+      - IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003
+      # Traefik fronts this from a docker bridge network; trust it so the real
+      # client IP shows in Immich's logs and audit trail.
+      - IMMICH_TRUSTED_PROXIES=172.16.0.0/12
+    volumes:
+      - ${IMMICH_UPLOAD_LOCATION}:/data
+      - /etc/localtime:/etc/localtime:ro
+    # Intel Quick Sync (HD 630) for video transcoding — the same render node
+    # Plex is given. Enable in Immich: Administration > Settings > Video
+    # Transcoding > Hardware Acceleration = Quick Sync.
+    devices:
+      - /dev/dri:/dev/dri
+    depends_on:
+      immich-postgres:
+        condition: service_healthy
+      immich-redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+        reservations:
+          memory: 384M
+    networks:
+      - homelab
+      - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.immich.rule=Host(`immich.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.immich.entrypoints=websecure"
+      - "traefik.http.routers.immich.tls.certresolver=cloudflare"
+      # ⚠️ No authentik@docker middleware here — breaks the mobile app (see above)
+      - "traefik.http.services.immich.loadbalancer.server.port=2283"
+
+  immich-machine-learning:
+    logging: *default-logging
+    image: ghcr.io/immich-app/immich-machine-learning:v3.2.2
+    container_name: immich-machine-learning
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      # Unload CLIP / face models after 2 min idle so the container falls back
+      # to ~200 MB between jobs. Single worker: this box has 4 cores and 8 GB.
+      - MACHINE_LEARNING_MODEL_TTL=120
+      - MACHINE_LEARNING_WORKERS=1
+    volumes:
+      - immich_model_cache:/cache
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+        reservations:
+          memory: 256M
+    networks:
+      - homelab
+
+  immich-postgres:
+    logging: *default-logging
+    # Immich pins its own Postgres build (VectorChord + pgvecto.rs). Do NOT point
+    # it at the stack's shared postgres — versions and extensions won't match.
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
+    container_name: immich-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${IMMICH_DB_PASSWORD}
+      - POSTGRES_USER=immich
+      - POSTGRES_DB=immich
+      - POSTGRES_INITDB_ARGS=--data-checksums
+    volumes:
+      - immich_postgres_data:/var/lib/postgresql/data
+    shm_size: 128mb
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "immich", "-d", "immich" ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    networks:
+      - homelab
+
+  immich-redis:
+    logging: *default-logging
+    image: docker.io/valkey/valkey:9@sha256:70739f85ad2ee01a726a965584a0f94895f01b0c60b3cc8b0aeef11eaa6888cf
+    container_name: immich-redis
+    restart: unless-stopped
+    healthcheck:
+      test: redis-cli ping | grep -q PONG || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    networks:
+      - homelab
+
+  # ----------------------------
   # BOOKS / LIBRARY
   # ----------------------------
 
@@ -834,6 +967,7 @@ services:
       - HOMEPAGE_VAR_BAZARR_API_KEY=${BAZARR_API_KEY}
       - HOMEPAGE_VAR_TAUTULLI_API_KEY=${TAUTULLI_API_KEY}
       - HOMEPAGE_VAR_PLEX_TOKEN=${PLEX_TOKEN}
+      - HOMEPAGE_VAR_IMMICH_API_KEY=${IMMICH_API_KEY}
     networks:
       - homelab
       - homelab_proxy
@@ -1257,3 +1391,6 @@ services:
 volumes:
   postgres_data:
   authentik_redis_data:
+  # Immich: DB + ML model cache on the SSD (the library itself is a bind mount)
+  immich_postgres_data:
+  immich_model_cache:

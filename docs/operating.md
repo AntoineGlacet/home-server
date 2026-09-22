@@ -375,6 +375,7 @@ MOVIES=/media/data/media/movies
 TV=/media/data/media/tv
 DOWNLOADS=/media/data/downloads
 LIBRARY=/media/data/media/calibre-library
+IMMICH_UPLOAD_LOCATION=/media/data/immich   # Immich photo library (originals + nightly DB dumps)
 ```
 
 **Permissions:**
@@ -384,6 +385,10 @@ LIBRARY=/media/data/media/calibre-library
 ### Duplicati Backups
 
 Encrypted backups of `${BACKUP}` directory.
+
+> ⚠️ The Immich library at `${IMMICH_UPLOAD_LOCATION}` is **not** in any Duplicati job yet.
+> Add an off-site job for it before deleting anything from Google Photos — see
+> [media-photos-immich.md → Backups](media-photos-immich.md#backups).
 
 **Access:** https://duplicati.antoineglacet.com
 

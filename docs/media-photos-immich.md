@@ -71,10 +71,13 @@ point of leaving Google Photos.
    first import from swapping the machine.
 3. **Enable hardware transcoding.** Administration → Settings → Video Transcoding →
    Hardware Acceleration: **Quick Sync**. Leave the rest default.
-4. **Homepage widget.** Account (top right) → *Account Settings* → *API Keys* →
-   *New API Key*, name it `homepage`. Put the key in the server's `.env` as
-   `IMMICH_API_KEY=…`, then `docker compose up -d homepage` so the container picks
-   up the new variable. Until then the Immich card on Homepage shows an API error.
+4. **Homepage widget.** Logged in as the **admin** user: Account (top right) →
+   *Account Settings* → *API Keys* → *New API Key*, name it `homepage`, tick only
+   **`server.statistics`**. The widget calls `/api/server/statistics`, which Immich
+   restricts to admins, so a key from a non-admin user fails even with that scope.
+   Put the key in the server's `.env` as `IMMICH_API_KEY=…`, then
+   `docker compose up -d homepage` so the container picks up the new variable.
+   Until then the Immich card on Homepage shows an API error.
 5. Optional: Administration → Settings → Server → set *External domain* to
    `https://immich.antoineglacet.com` so shared links are generated correctly.
 
@@ -96,7 +99,13 @@ sidecars and recreates albums.
 1. Request a **Google Takeout** export of *Google Photos only*, as `.zip` (2 GB or
    10 GB parts). Download every part to the data drive, e.g.
    `/media/data/downloads/takeout/`. Do **not** unzip — immich-go reads the archives.
-2. Create an API key for the import (Account Settings → API Keys, name `immich-go`).
+2. Create an API key for the import (Account Settings → API Keys, name `immich-go`)
+   with these permissions: `asset.read`, `asset.statistics`, `asset.update`,
+   `asset.upload`, `asset.copy`, `asset.delete`, `asset.download`, `album.create`,
+   `album.read`, `albumAsset.create`, `server.about`, `stack.create`, `tag.asset`,
+   `tag.create`, `user.read`. Created as the admin user, also add `job.create` and
+   `job.read` so immich-go can pause background jobs during the upload. Revoke the
+   key when the import is done.
 3. Run immich-go on the server (single static binary from its GitHub releases):
 
    ```bash

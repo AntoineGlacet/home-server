@@ -94,35 +94,125 @@ works on mobile data.
 
 Use [`immich-go`](https://github.com/simulot/immich-go), not the web uploader: Google
 Takeout strips or garbles EXIF dates, and immich-go repairs them from Takeout's JSON
-sidecars and recreates albums.
+sidecars, recreates albums, and skips duplicates on re-runs.
 
-1. Request a **Google Takeout** export of *Google Photos only*, as `.zip` (2 GB or
-   10 GB parts). Download every part to the data drive, e.g.
-   `/media/data/downloads/takeout/`. Do **not** unzip — immich-go reads the archives.
-2. Create an API key for the import (Account Settings → API Keys, name `immich-go`)
-   with these permissions: `asset.read`, `asset.statistics`, `asset.update`,
-   `asset.upload`, `asset.copy`, `asset.delete`, `asset.download`, `album.create`,
-   `album.read`, `albumAsset.create`, `server.about`, `stack.create`, `tag.asset`,
-   `tag.create`, `user.read`. Created as the admin user, also add `job.create` and
-   `job.read` so immich-go can pause background jobs during the upload. Revoke the
-   key when the import is done.
-3. Run immich-go on the server (single static binary from its GitHub releases):
+**Installed:** `~/bin/immich-go` on the OptiPlex, v0.32.0 (static binary, no deps).
+Staging directory: `/media/data/downloads/takeout/`.
 
-   ```bash
-   cd /media/data/downloads/takeout
-   ./immich-go upload from-google-photos \
-     --server https://immich.antoineglacet.com \
-     --api-key "$IMMICH_GO_KEY" \
-     --dry-run \
-     takeout-*.zip
-   # sanity-check the plan, then run again without --dry-run
-   ```
+> Google retired the Photos Library API for third-party clients, so Takeout is the
+> only complete export path. There is no live sync.
 
-4. Watch Administration → Jobs. Thumbnails first, then metadata, then the ML jobs.
-   For ~15 GB (a few thousand assets) expect thumbnails in under an hour and the
-   ML backfill in one to three hours at concurrency 1.
-5. Once everything is in and spot-checked (dates, albums, a few videos), delete the
-   Takeout archives and revoke the `immich-go` API key.
+### 1. Request the Takeout (you, ~hours to days)
+
+At [takeout.google.com](https://takeout.google.com):
+
+- **Deselect all**, then select **Google Photos** only.
+- Under *All photo albums included*, leave everything ticked.
+- Delivery: **send download link by email**; file type **.zip**; size **10 GB**.
+
+Google emails a link when the archive is ready — minutes for a small library,
+sometimes a day or more. **The links expire after 7 days.**
+
+### 2. Get the archives onto the server
+
+Download the parts on the laptop or PC, then drop them into the SMB share:
+
+```
+\\10.13.89.90\data\downloads\takeout        (Windows)
+smb://10.13.89.90/data/downloads/takeout      (phone / Linux)
+```
+
+Do **not** unzip — immich-go reads the archives directly and needs the JSON
+sidecars inside them. Check every part arrived (Google numbers them
+`takeout-<date>-001.zip`, `-002`, …) before importing; a missing part means
+missing photos.
+
+### 3. Create the API key (you, in Immich)
+
+Account Settings → API Keys → New API Key, name it `immich-go`. As the admin user,
+the simplest is **Select all**; the minimum scopes otherwise are `asset.read`,
+`asset.statistics`, `asset.update`, `asset.upload`, `asset.copy`, `asset.delete`,
+`asset.download`, `album.create`, `album.read`, `albumAsset.create`, `server.about`,
+`stack.create`, `tag.asset`, `tag.create`, `user.read`, plus `job.create` and
+`job.read` for the `--admin-api-key` flag below (immich-go pauses background jobs
+while it uploads).
+
+### 4. Turn down the job concurrency first
+
+Administration → Settings → Job Settings: set **Smart Search**, **Face Detection**,
+**Facial Recognition** and **Video Transcoding** to **1**, Thumbnail Generation and
+Metadata Extraction to **2**. Defaults (3–5) will thrash swap on this 8 GB box
+during the import. Save before starting.
+
+### 5. Dry run, then import
+
+On the server (`ssh optiplex`):
+
+```bash
+export IMMICH_KEY='<the immich-go api key>'
+cd /media/data/downloads/takeout
+
+# Dry run first — reports what it would upload, touches nothing
+~/bin/immich-go upload from-google-photos \
+  --server https://immich.antoineglacet.com \
+  --api-key "$IMMICH_KEY" \
+  --admin-api-key "$IMMICH_KEY" \
+  --concurrent-tasks 2 \
+  --dry-run \
+  takeout-*.zip
+
+# Looks right? Same command without --dry-run, under tmux so an SSH drop
+# doesn't kill it
+tmux new -s immich-import
+~/bin/immich-go upload from-google-photos \
+  --server https://immich.antoineglacet.com \
+  --api-key "$IMMICH_KEY" \
+  --admin-api-key "$IMMICH_KEY" \
+  --concurrent-tasks 2 \
+  takeout-*.zip
+# detach with Ctrl-b d, reattach with: tmux attach -t immich-import
+```
+
+Defaults worth knowing: albums are recreated (`--sync-albums`), archived photos and
+partner photos are included, trashed photos are **not**. Add `--include-trashed` if
+you want the bin too. `--concurrent-tasks 2` is deliberate — the default 4 is too
+much for this box.
+
+Re-running the same command is safe: immich-go asks the server what it already has
+and skips duplicates, so an interrupted import resumes cleanly.
+
+### 6. Watch it land
+
+```bash
+ssh optiplex 'docker stats --no-stream | grep immich; free -h | sed -n 2,3p'
+```
+
+Administration → Jobs in the web UI shows the queues draining: thumbnails and
+metadata first, then Smart Search and Face Detection. For ~15 GB (a few thousand
+assets) expect the upload in well under an hour and the ML backfill in one to three
+hours at concurrency 1. It is fine to leave the ML queues running overnight.
+
+### 7. Verify before trusting it
+
+- Asset count roughly matches Google Photos (Google's own count is in the Photos
+  settings page).
+- Spot-check dates on old photos — this is what Takeout gets wrong and immich-go
+  fixes, so it is the thing worth checking.
+- Albums are present with sensible contents.
+- A few videos play in the web UI and the mobile app.
+- Faces appear under People once Face Detection finishes.
+
+### 8. Only then, clean up
+
+1. **Set up the off-site backup** (see [Backups](#backups)) — this is the point of
+   no return: once Google is emptied, `/media/data/immich` on a single HDD is the
+   only copy.
+2. Delete the Takeout archives from `/media/data/downloads/takeout/`.
+3. Revoke the `immich-go` API key.
+4. Turn off Google Photos backup in the Google Photos app on the phone, and confirm
+   the Immich app's background backup is on and has caught up.
+5. Leave the Google library in place for a few weeks as a safety net before deleting
+   anything there.
 
 ## Authentication
 

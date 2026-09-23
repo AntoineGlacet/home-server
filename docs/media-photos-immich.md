@@ -9,8 +9,10 @@ four containers in the **PHOTOS (IMMICH)** section of `docker-compose.yml` and i
 reachable at **https://immich.antoineglacet.com** (web, and the server URL for the
 mobile app).
 
-> **Status:** deployed 2026-09-23 on Immich **v3.2.2**. The June 2026 deferral
-> (below) was lifted because the library to migrate is ~15 GB, not hundreds.
+> **Status:** deployed 2026-09-23 on Immich **v3.2.2**. Google Photos imported the
+> same night: 22,072 assets from a 31 GB Takeout (see
+> [Actual run](#actual-run-2026-09-23-for-next-time)). The June 2026 deferral (below)
+> was lifted because the library fit comfortably, not the hundreds of GB feared.
 
 ## Table of Contents
 
@@ -188,9 +190,54 @@ ssh optiplex 'docker stats --no-stream | grep immich; free -h | sed -n 2,3p'
 ```
 
 Administration → Jobs in the web UI shows the queues draining: thumbnails and
-metadata first, then Smart Search and Face Detection. For ~15 GB (a few thousand
-assets) expect the upload in well under an hour and the ML backfill in one to three
-hours at concurrency 1. It is fine to leave the ML queues running overnight.
+metadata first, then Smart Search and Face Detection.
+
+**Pause the ML queues while metadata runs.** With everything running at once the
+box hit load 17 and swap climbed ~1 GB/hour, and metadata crawled at ~20 jobs/min
+because ML held the CPU. Pausing Smart Search, Face Detection, Facial Recognition
+and OCR (paused jobs are kept, not failed) took metadata to ~700/min:
+
+```bash
+for q in smartSearch faceDetection facialRecognition ocr; do
+  curl -s -X PUT -H "x-api-key: $IMMICH_KEY" -H 'Content-Type: application/json' \
+    -d '{"command":"pause","force":false}' \
+    https://immich.antoineglacet.com/api/jobs/$q
+done
+# ...and "resume" instead of "pause" once metadataExtraction shows waiting=0
+```
+
+### Actual run, 2026-09-23 (for next time)
+
+| | |
+| --- | --- |
+| Takeout | 31 GB in 4 zip parts (not the ~15 GB estimated) |
+| Imported | 22,072 assets: 21,339 photos, 733 videos, 4 albums, 362 archived |
+| Skipped | 269 trashed (default), 621 in-Takeout duplicates, 7 "Failed Videos" Google itself could not process |
+| Upload | ~75 min at `--concurrent-tasks 2`, 0 upload errors |
+| Metadata backlog | ~66,000 jobs (about 3 per asset); ~3 h once the ML queues were paused |
+| ML backfill | Smart Search ~2 h, Face Detection ~4.5 h, OCR ~22 h at concurrency 1 |
+
+### Known Takeout problems and fixes
+
+- **WhatsApp media carry Google's upload date, not the real one.** WhatsApp strips
+  EXIF, so Google dated them by when they were uploaded (a bulk upload in March and
+  November 2020). The Takeout JSON carries that wrong date and immich-go faithfully
+  applies it. 6,218 files named like `IMG-20170101-WA0000.jpg` were re-dated from
+  the filename with `scripts/immich-fix-whatsapp-dates.py` (`plan`, `apply`,
+  `refresh`, `rollback`). Every original date is backed up in
+  `~/immich-migration/wa-date-fix-plan.csv` on the server; `rollback` restores them.
+  **Gotcha:** `PUT /api/assets` with `dateTimeOriginal` updates the EXIF row and
+  writes the XMP sidecar, but the automatically queued metadata pass can race the
+  sidecar write and leave the timeline date (`localDateTime`) stale. Follow every
+  bulk date edit with `POST /api/assets/jobs {"name":"refresh-metadata"}` for the
+  same ids.
+- **Pixel motion photos keep their motion.** Takeout ships each as a
+  `PXL_….MP.jpg` still (with the clip embedded) *plus* a separate `PXL_….MP` clip.
+  immich-go ignores the `.MP` files as unknown, which is fine: Immich extracts the
+  embedded clip during metadata extraction (556 motion photos after the run).
+- **"File not found" warnings during metadata extraction** are the storage template
+  moving files from `upload/` to `library/` under a job that still has the old
+  path. A full on-disk check after the run found 0 missing originals.
 
 ### 7. Verify before trusting it
 

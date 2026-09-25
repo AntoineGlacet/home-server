@@ -15,7 +15,8 @@ duplicates: for each group Immich found (Utilities > Review duplicates), keep th
   carry over favourite status, and send the other copies to trash.
 clutter: screenshots (by filename) plus anything whose OCR text is >= --min-chars
   characters (documents, receipts, chat and email screenshots, memes, textbook pages).
-  They are tagged "Cleanup/Text-heavy" and archived.
+  They are tagged "Cleanup/Text-heavy" and archived. Anything in an album is left alone:
+  being filed in an album means someone chose to keep it on show.
 """
 import csv, json, os, re, shutil, subprocess, sys, urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -126,7 +127,8 @@ def cl_rows_api(min_chars):
     """Same selection as the SQL below, via the API: page all timeline assets, fetch OCR per asset."""
     assets, page = [], 1
     while page:
-        res = api('POST', '/search/metadata', {'visibility': 'timeline', 'size': 1000, 'page': page})['assets']
+        res = api('POST', '/search/metadata', {'visibility': 'timeline', 'isNotInAlbum': True,
+                                               'size': 1000, 'page': page})['assets']
         assets += [(a['id'], a['originalFileName']) for a in res['items']]
         page = int(res['nextPage']) if res.get('nextPage') else None
 
@@ -153,6 +155,7 @@ def cl_plan(min_chars):
                                 else 'text' end
                     from asset a left join t on t."assetId" = a.id
                     where a."deletedAt" is null and a.visibility = 'timeline'
+                      and not exists (select 1 from album_asset aa where aa."assetId" = a.id)
                       and (coalesce(t.chars, 0) >= {int(min_chars)}
                            or a."originalFileName" ~* '(^|[_ -])screen[_ -]?shot|^scr_')''')
     cl_write(rows)

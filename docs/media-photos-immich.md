@@ -343,7 +343,11 @@ problem only shows up away from home.
 
 Result of the 2026-09-25 run: 178 duplicate groups resolved (192 copies to trash —
 mostly near-identical burst frames, plus WhatsApp images saved twice at different
-compression).
+compression). Clutter: 1,965 matched (473 screenshots, 1,492 text-heavy); 81 of them
+sat in albums and were left on the timeline, so 1,884 were archived and tagged. Every
+sample checked — shipping labels, posters, price shelves, flyers, email and bank
+screenshots — was genuinely clutter, so the 150-character threshold is a good default.
+Items in albums are now excluded by the script itself.
 
 ## Authentication
 

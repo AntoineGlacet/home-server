@@ -86,6 +86,13 @@ share instead (below).
 
 Duplicates (same checksum) are rejected, so re-dropping a folder is safe.
 
+**Gotcha — moving whole folders in:** the consumer watches for new *files* (inotify).
+`mv`-ing a directory tree into `consume/` in one go produces a single event for the
+directory and nothing gets picked up. Either copy files in (SMB copies are fine), or
+after a bulk `mv` run `docker compose restart paperless`: on start the consumer scans
+everything already in `consume/`. Import speed on this box is ~15 s per document
+including OCR, one at a time.
+
 ## How documents are organised
 
 Folders don't work for admin papers (one lease is housing, a country, a landlord and a
@@ -118,6 +125,19 @@ Import pattern: copy the source into a staging folder, **remove what is not a do
 files — those belong in a password manager), then move the staging tree into
 `consume/` so folder names become first tags. Inventories live in `~/personal-docs/` on
 the server (not in git).
+
+**rclone filter gotcha:** don't mix `--include` and `--exclude` — once an include rule
+is present the excludes are effectively ignored (that is how a Drive photo folder
+slipped into the first import). Use ordered `--filter` rules instead:
+
+```bash
+~/bin/rclone copy gdrive: /media/data/paperless/staging \
+  --filter "- other/Photos/**" --filter "- *.txt" \
+  --filter "+ *.{pdf,PDF,jpg,JPG,jpeg,png}" --filter "- *"
+```
+
+First import (2026-09-25): 187 documents from Drive and the old server admin folder,
+7 cross-source duplicates rejected automatically. Gmail backlog not imported yet.
 
 ## Resources
 

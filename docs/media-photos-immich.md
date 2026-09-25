@@ -21,6 +21,8 @@ mobile app).
 - [First run (one time, you)](#first-run-one-time-you)
 - [Phone backup](#phone-backup)
 - [Migrating from Google Photos](#migrating-from-google-photos)
+- [Importing local photo folders](#importing-local-photo-folders)
+- [Decluttering](#decluttering)
 - [Authentication](#authentication)
 - [Resources on the 8 GB box](#resources-on-the-8-gb-box)
 - [Backups](#backups)
@@ -261,6 +263,88 @@ done
 5. Leave the Google library in place for a few weeks as a safety net before deleting
    anything there.
 
+## Importing local photo folders
+
+Done 2026-09-25 for the pre-Google archive in `/media/data/media/photos` (2006–2013:
+Hong Kong years, Japan, Cambodia, Camp Ô 2007, …). Recipe, in order:
+
+1. **Inventory and hash first.** Every candidate file is SHA1-hashed (Immich's own
+   checksum) and classified against the Immich DB: `new`, internal duplicate, already
+   in Immich, or **already in Immich's trash** (skip those, or the import resurrects
+   photos you just deleted). Result on the server: `~/immich-migration/hashed.tsv`.
+2. **Stage with hard links.** Only the selected `new` files are hard-linked into
+   `/media/data/downloads/immich-staging/photos/` (same filesystem, zero extra space,
+   originals untouched). Staging is also where folder names get tidied: `NEW/HONG KONG`
+   re-rooted to `Hong Kong`, self-nested folders flattened. Manifest:
+   `~/immich-migration/staging-manifest.tsv`.
+3. **Import one argument per top-level folder** so album names don't start with the
+   staging dir's name:
+   `immich-go upload from-folder --folder-as-album PATH --album-path-joiner " / " "Japan" "Hong Kong" …`
+   gives albums `Japan`, `Hong Kong / Camille`, `Hong Kong / Lantau / Tai O`.
+   Loose files at the top go in a second run without `--folder-as-album`.
+4. **Re-pause the ML queues after immich-go finishes.** With `--admin-api-key`
+   immich-go pauses Immich's jobs during the upload and *resumes all of them* at the
+   end, undoing any pause you set. That put ML and a 7,600-job metadata backlog on the
+   CPU together and got immich-server OOM-killed once.
+5. Then drain metadata, fix dates, and index one queue at a time (see
+   [Resources](#resources-on-the-8-gb-box)).
+
+| | |
+| --- | --- |
+| Scanned | `media/photos` 30 GB + `media/documents` 10 GB |
+| Imported | 7,960 personal photos/videos, 20.3 GB, 0 errors, 36 albums |
+| Kept out on purpose | work photos (`MTR 820 HK`, `documents/TAFF`), `documents/ADMIN PERSO` (deferred to the documents clean-up) |
+| Skipped | 1,531 internal duplicates, 59 already in Immich, 44 in Immich's trash |
+
+The source folders were **left in place**: until an off-site backup exists they are
+the only other copy. Deleting them later frees ~35 GB.
+
+### Wrong camera clocks
+
+A Casio EX-Z6 fell back to 2006-01-01 three times after 9 Sep 2012, stranding 435
+Xi'an / Bangkok / Causeway Bay photos and videos in 2006. The gaps between shots stay
+right when a clock resets, so one known time per run fixes a whole run:
+`scripts/immich-shift-camera-clock.py` with a segments file
+(`scripts/immich-casio-2012-segments.json`), same plan / apply / refresh / rollback
+model as the WhatsApp fix. How the anchors were found, for next time:
+
+- **Runs:** sort that camera's files by number; a run ends wherever the clock jumps
+  backwards.
+- **Day:** the owner's memory (Bangkok = birthday weekend) plus the *other* cameras,
+  which rule weekends out (a Hong Kong hike on 15 Sep, Macao on 6–7 Oct).
+- **Hour:** look at the photos. Night arrival, midday, a sunset, an airport security
+  gate line up with only one start time.
+
+## Decluttering
+
+`scripts/immich-declutter.py`, never permanent, each step writes a plan CSV that `undo`
+replays:
+
+- **`duplicates`**: for each group Immich's duplicate detection found, keep the copy
+  with the most pixels, add it to every album any copy was in, carry favourites over,
+  and send the rest to **trash** via `POST /api/duplicates/resolve`.
+- **`clutter`**: screenshots (by filename) plus anything with ≥ 150 characters of OCR
+  text — a sampled check found that to be email and chat screenshots, receipts, bank
+  pages, booking confirmations, textbook pages and memes. They are **archived** (off
+  the timeline, still searchable, never expire) and tagged `Cleanup/Text-heavy`. Delete
+  them for real from the Archive view if wanted.
+
+Run duplicate detection before `duplicates` (it only runs after smart search, and did
+not run at all on the first import until started by hand), and OCR before `clutter`.
+
+**These scripts also run off the LAN.** They talk to the public
+`https://immich.antoineglacet.com` (Immich has no forward-auth in front), so they work
+from the laptop anywhere. Two things made that work: Cloudflare returns 403 to Python's
+default `Python-urllib` user agent, so the scripts send their own, and `clutter plan`
+falls back from SQL to the API (paged `POST /search/metadata` + `GET /assets/{id}/ocr`)
+when the `immich-postgres` container isn't local. On the LAN the same hostname resolves
+straight to the server via AdGuard and never touches Cloudflare, which is why the
+problem only shows up away from home.
+
+Result of the 2026-09-25 run: 178 duplicate groups resolved (192 copies to trash —
+mostly near-identical burst frames, plus WhatsApp images saved twice at different
+compression).
+
 ## Authentication
 
 Immich is **not** behind the `authentik@docker` forward-auth middleware, for the same
@@ -291,6 +375,19 @@ except new smart-search/face indexing keeps working — and start it again when 
 queue can run overnight. Search on already-indexed assets is unaffected.
 
 A 16 GB RAM upgrade would let ML stay resident permanently; it is not required.
+
+**After any bulk import, run the heavy queues one at a time**, not all at once:
+thumbnails → smart search → duplicate detection → face detection → facial recognition →
+OCR. Together they push immich-server into its memory cap (it was OOM-killed ~10 times
+across the two imports, restarting in ~10 s each time) and can leave assets with no
+thumbnail, which then silently skip every later stage. A missing-only catch-up
+(`PUT /api/jobs/<queue> {"command":"start","force":false}`, thumbnails first) fixes
+those. After each import, check nothing visible lacks a thumbnail:
+
+```sql
+select count(*) from asset a where a."deletedAt" is null and a.visibility <> 'hidden'
+  and not exists (select 1 from asset_file f where f."assetId" = a.id and f.type = 'thumbnail');
+```
 
 ## Backups
 

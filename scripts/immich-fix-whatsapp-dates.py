@@ -28,7 +28,9 @@ def psql(sql):
 
 def api(method, path, body):
     req = urllib.request.Request(BASE + path, method=method, data=json.dumps(body).encode(),
-                                 headers={'x-api-key': KEY, 'Content-Type': 'application/json'})
+                                 headers={'x-api-key': KEY, 'Content-Type': 'application/json',
+                                          # Cloudflare 403s the default Python-urllib UA off the LAN
+                                          'User-Agent': 'home-server-immich-scripts/1.0'})
     with urllib.request.urlopen(req, timeout=60) as r:
         return r.status
 

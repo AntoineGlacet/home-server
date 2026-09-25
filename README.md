@@ -44,6 +44,7 @@ All services live in one `docker-compose.yml`:
 | **Monitoring** | Prometheus, Grafana, Loki, Promtail, cAdvisor, Glances, Node Exporter |
 | **Infrastructure** | Traefik, Authentik, AdGuard Home, PostgreSQL, Redis |
 | **Remote Access** | wg-easy (WireGuard VPN), NordLynx (torrent VPN) |
+| **Documents** | Paperless-ngx |
 | **Utilities** | Homepage, Duplicati, Syncthing, Samba, DDClient, FlareSolverr |
 
 ## Common Operations
@@ -79,6 +80,7 @@ docker compose ps                 # Container status
 | **Home Assistant** | https://homeassistant.antoineglacet.com | Home automation |
 | **Plex** | https://plex.antoineglacet.com | Media server |
 | **Immich** | https://immich.antoineglacet.com | Photo & video library (Google Photos replacement) |
+| **Paperless** | https://paperless.antoineglacet.com | Personal admin documents (OCR, search, auto-filing) |
 | **Minabot** | — (see [minabot/README.md](minabot/README.md)) | Minagine auto clock-in/out bot |
 
 ## Architecture
@@ -110,6 +112,7 @@ Three network tiers isolate traffic:
 - **[Authentik](docs/authentik.md)** - SSO setup, user management, OAuth integration
 - **[Monitoring](docs/monitoring.md)** - Prometheus, Grafana, Loki, alerting, dashboards
 - **[Remote Access](docs/remote-access.md)** - WireGuard VPN (wg-easy), AdGuard DNS, Sunshine/Moonlight game streaming
+- **[Documents (Paperless-ngx)](docs/documents-paperless.md)** - Admin papers: login via Authentik, drop folder, Drive/Gmail import, backups
 - **[Photos (Immich)](docs/media-photos-immich.md)** - Google Photos replacement: first run, phone backup, Takeout migration, backups
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
 

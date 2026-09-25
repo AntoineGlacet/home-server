@@ -19,6 +19,7 @@ Complete documentation for the home server setup.
 | **[authentik.md](authentik.md)** | SSO, authentication, user management, OAuth integration |
 | **[monitoring.md](monitoring.md)** | Prometheus, Grafana, Loki, alerting, dashboards |
 | **[remote-access.md](remote-access.md)** | WireGuard VPN (wg-easy), AdGuard DNS, game streaming |
+| **[documents-paperless.md](documents-paperless.md)** | Paperless-ngx: admin documents, drop folder, Drive/Gmail import, backups |
 | **[media-photos-immich.md](media-photos-immich.md)** | Immich photo library: first run, phone backup, Google Takeout migration, backups |
 | **[troubleshooting.md](troubleshooting.md)** | Common issues and solutions for all components |
 

@@ -725,6 +725,98 @@ services:
       - homelab
 
   # ----------------------------
+  # DOCUMENTS (PAPERLESS-NGX)
+  # ----------------------------
+  # Personal admin papers — see docs/documents-paperless.md. Single user.
+  # DB is a dedicated role + database in the shared stack Postgres (so
+  # scripts/backup-postgres.sh picks it up automatically); originals, drop folder
+  # and exports live on the data HDD under ${PAPERLESS_ROOT}; the search index and
+  # classifier live in ./config/paperless/data on the SSD.
+  #
+  # Behind authentik@docker like the rest of the web apps, and Authentik's
+  # X-authentik-username header logs you straight in (remote-user). Safe because
+  # every path goes through the forward-auth middleware, which overwrites that
+  # header; remote-user is NOT enabled for the API.
+  #
+  # No Tika/Gotenberg (Office-file conversion) on purpose: ~500 MB more RAM on an
+  # 8 GB box. PDFs and images only; add them later if .docx/.xlsx ingestion matters.
+
+  paperless:
+    logging: *default-logging
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.2.1
+    container_name: paperless
+    restart: unless-stopped
+    depends_on:
+      - paperless-redis
+      - postgres
+    environment:
+      - USERMAP_UID=${PUID}
+      - USERMAP_GID=${PGID}
+      - PAPERLESS_TIME_ZONE=${TZ}
+      - PAPERLESS_URL=https://paperless.${TRAEFIK_DOMAIN}
+      - PAPERLESS_SECRET_KEY=${PAPERLESS_SECRET_KEY}
+      - PAPERLESS_REDIS=redis://paperless-redis:6379
+      - PAPERLESS_DBENGINE=postgresql
+      - PAPERLESS_DBHOST=postgres
+      - PAPERLESS_DBNAME=paperless
+      - PAPERLESS_DBUSER=paperless
+      - PAPERLESS_DBPASS=${PAPERLESS_DB_PASSWORD}
+      # Creates the user on first start; the password is only a break-glass login
+      - PAPERLESS_ADMIN_USER=antoine
+      - PAPERLESS_ADMIN_PASSWORD=${PAPERLESS_ADMIN_PASSWORD}
+      - PAPERLESS_ENABLE_HTTP_REMOTE_USER=true
+      - PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME=HTTP_X_AUTHENTIK_USERNAME
+      - PAPERLESS_LOGOUT_REDIRECT_URL=https://authentik.${TRAEFIK_DOMAIN}/if/flow/default-invalidation-flow/
+      # OCR: documents are French, English and Japanese. jpn is installed at start.
+      - PAPERLESS_OCR_LANGUAGES=jpn jpn-vert
+      - PAPERLESS_OCR_LANGUAGE=eng+fra+jpn
+      # Drop folder: subfolders become tags (e.g. consume/marriage/x.pdf -> tag "marriage")
+      - PAPERLESS_CONSUMER_RECURSIVE=true
+      - PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS=true
+      - PAPERLESS_CONSUMER_DELETE_DUPLICATES=true
+      # Human-browsable originals on disk: 2026/BNP/Relevé de compte.pdf
+      - PAPERLESS_FILENAME_FORMAT={{ created_year }}/{{ correspondent }}/{{ title }}
+      # Keep it light on this box: one worker, one OCR thread
+      - PAPERLESS_TASK_WORKERS=1
+      - PAPERLESS_THREADS_PER_WORKER=1
+      - PAPERLESS_WEBSERVER_WORKERS=1
+    volumes:
+      - ./config/paperless/data:/usr/src/paperless/data
+      - ${PAPERLESS_ROOT}/media:/usr/src/paperless/media
+      - ${PAPERLESS_ROOT}/consume:/usr/src/paperless/consume
+      - ${PAPERLESS_ROOT}/export:/usr/src/paperless/export
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+        reservations:
+          memory: 256M
+    networks:
+      - homelab
+      - homelab_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=homelab_proxy"
+      - "traefik.http.routers.paperless.rule=Host(`paperless.${TRAEFIK_DOMAIN}`)"
+      - "traefik.http.routers.paperless.entrypoints=websecure"
+      - "traefik.http.routers.paperless.tls.certresolver=cloudflare"
+      - "traefik.http.routers.paperless.middlewares=authentik@docker"
+      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+
+  paperless-redis:
+    logging: *default-logging
+    image: redis:7.4-alpine
+    container_name: paperless-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    networks:
+      - homelab
+
+  # ----------------------------
   # BOOKS / LIBRARY
   # ----------------------------
 
@@ -968,6 +1060,7 @@ services:
       - HOMEPAGE_VAR_TAUTULLI_API_KEY=${TAUTULLI_API_KEY}
       - HOMEPAGE_VAR_PLEX_TOKEN=${PLEX_TOKEN}
       - HOMEPAGE_VAR_IMMICH_API_KEY=${IMMICH_API_KEY}
+      - HOMEPAGE_VAR_PAPERLESS_API_TOKEN=${PAPERLESS_API_TOKEN}
     networks:
       - homelab
       - homelab_proxy

@@ -376,6 +376,7 @@ TV=/media/data/media/tv
 DOWNLOADS=/media/data/downloads
 LIBRARY=/media/data/media/calibre-library
 IMMICH_UPLOAD_LOCATION=/media/data/immich   # Immich photo library (originals + nightly DB dumps)
+PAPERLESS_ROOT=/media/data/paperless       # Paperless archive (media/), drop folder (consume/), exports
 ```
 
 **Permissions:**

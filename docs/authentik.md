@@ -124,6 +124,7 @@ These services require Authentik login:
 - **Management**: Traefik Dashboard, AdGuard Home
 - **Media**: Sonarr, Radarr, Bazarr, Prowlarr, Transmission, Calibre Web
 - **Utilities**: Zigbee2MQTT, Duplicati, Syncthing, SiYuan
+- **Documents**: Paperless-ngx — also trusts the `X-authentik-username` header, so no second login (see [documents-paperless.md](documents-paperless.md#login))
 
 ### Services WITHOUT Authentik
 

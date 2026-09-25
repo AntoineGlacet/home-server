@@ -3,6 +3,14 @@
         icon: siyuan
         href: https://siyuan.antoineglacet.com
         description: notes & productivity
+    - Paperless:
+        icon: paperless-ngx
+        href: https://paperless.antoineglacet.com
+        description: Personal admin documents
+        widget:
+            type: paperlessngx
+            url: http://paperless:8000
+            key: "{{HOMEPAGE_VAR_PAPERLESS_API_TOKEN}}"
     - Home Assistant:
         icon: home-assistant
         href: https://homeassistant.antoineglacet.com
